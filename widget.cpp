@@ -1,5 +1,6 @@
 #include "widget.h"
 #include "ui_widget.h"
+#include "ai.h"
 #include <QDebug>
 #include <QMouseEvent>
 
@@ -31,11 +32,12 @@ void Widget::mousePressEvent(QMouseEvent *qme)
 {
     if(qme->button() & Qt::LeftButton)
     {
-        QPoint presspos(qme->x(),qme->y());
-        qDebug() << presspos;
-        if(game && game->vTopLeft < presspos && presspos < game->vBottomRight)
+        QPoint pos(qme->x(),qme->y());
+        if(game && game->vTopLeft < pos && pos < game->vBottomRight)
         {
-            game->putChess(presspos);
+            int x = (pos.x() - game->vTopLeft.x()) / game->gridSize;
+            int y = (pos.y() - game->vTopLeft.y()) / game->gridSize;
+            game->click(x,y);
         }
     }
 }
@@ -51,6 +53,8 @@ void Widget::on_Reversi_Button_clicked()
     game = new Reversi(this,
                        ui->Board->pos(),
                        ui->BCount_LCD, ui->WCount_LCD);
+    Ai* ai = new ReversiAi(game);
+    QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     ui->MainMenu->hide();
     ui->GameMenu->show();
     ui->Board->show();
@@ -80,5 +84,18 @@ void Widget::on_Menu_Button_clicked()
 
 void Widget::on_Save_Button_clicked()
 {
-    ui->MainMenu->show();
+    QFile saveFile(QString("savedGames/1.txt"));
+    if(!saveFile.open(QFile::ReadWrite)) qDebug() << "Failed to open file!";
+    QTextStream cout(&saveFile);
+    cout << 1;
+}
+
+void Widget::on_Load_Button_clicked()
+{
+    QFile saveFile(QString("savedGames/1.txt"));
+    if(!saveFile.open(QFile::ReadWrite)) qDebug() << "Failed to open file!";
+    QTextStream cin(&saveFile);
+    int data;
+    cin >> data;
+    qDebug() << data;
 }

@@ -36,6 +36,7 @@ private slots:
     void on_Undo_Button_clicked();
     void on_Menu_Button_clicked();
     void on_Save_Button_clicked();
+    void on_Load_Button_clicked();
 };
 
 #endif // WIDGET_H

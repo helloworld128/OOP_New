@@ -20,22 +20,47 @@ void Game::drawChess(int x,int y,int player)
     board[x][y] = player;
 }
 
-void Game::putChess(const QPoint &pos)
+void Game::nextPlayer()
 {
-    int x = (pos.x() - vTopLeft.x()) / gridSize;
-    int y = (pos.y() - vTopLeft.y()) / gridSize;
-    //qDebug() << x << y << QString("activePlayer:") << activePlayer;
+    if(gameover) return;
+    static bool cantmove[2] = {false, false};
+    activePlayer = 1 - activePlayer;
+    calculatePossibleMoves();
+    if(possibleMoves.empty())
+    {
+        qDebug() << "this player cannot move: Player " + QString::number(activePlayer);
+        if(cantmove[1 - activePlayer])
+        {
+            showResult();
+            return;
+        }
+        cantmove[activePlayer] = true;
+        nextPlayer();
+    }
+    else
+    {
+        cantmove[activePlayer] = false;
+        if(playerType[activePlayer] == AI) emit aiPlay();
+    }
+}
+
+void Game::click(int x, int y)
+{
+    if(gameover) return;
 
     if(canPut(x,y))
     {
-        drawChess(x,y,activePlayer);
-        update(x,y);
+        put(x,y);
         saveStatus();
-        activePlayer = 1 - activePlayer;
-        calculatePossibleMoves();
         check();
-        if(mode == HUMANvsAI) aiplay();
+        nextPlayer();
     }
+}
+
+void Reversi::check()
+{
+    if(black->intValue() + white->intValue() == 64)
+        showResult();
 }
 
 void Game::saveStatus()
@@ -48,14 +73,11 @@ void Game::saveStatus()
         }
 }
 
-void Game::undo()
+void Reversi::undo()
 {
     if(moveCount <= 0) return;
-
-    //Caution!
-    activePlayer = 1 - activePlayer;
-
-    moveCount--;
+    moveCount-=2;
+    gameover = false;
     for(int i = 0;i < 9;i++)
     {
         for(int j = 0;j < 9;j++)
@@ -69,11 +91,21 @@ void Game::undo()
             }
         }
     }
+    calculateChessNum();
+}
 
+void Reversi::showResult()
+{
+    Dialog* dialog = new Dialog;
+    QString s(QString::number(black->intValue()) + " : " + QString::number(white->intValue()) + ", " +
+              ((black->intValue() > white->intValue()) ? "black" : "white") + " wins!");
+    dialog->setText(s);
+    gameover = true;
+    dialog->exec();
 }
 
 Reversi::Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w)
-                :black(b), white(w)
+    :black(b), white(w)
 {
     vTopLeft = vTL;
     vBottomRight = vTL + QPoint(480,480);
@@ -101,6 +133,7 @@ void Reversi::init()
             board[i][j] = -1;
             pictures[i][j]->hide();
         }
+    gameover = false;
     moveCount = 0;
     previousMove[0][3][3] = previousMove[0][4][4] = 0;
     previousMove[0][3][4] = previousMove[0][4][3] = 1;
@@ -139,9 +172,24 @@ bool Reversi::canPut(int xpos, int ypos)
     return false;
 }
 
-void Reversi::update(int xpos, int ypos)
+void Reversi::calculateChessNum()
 {
-    int reverseList[6][2] = {0};
+    //Calculate chess numbers & display
+    int b = 0, w = 0;
+    for(int i = 0;i < 8;i++)
+        for(int j = 0;j < 8;j++)
+        {
+            if(board[i][j] == 0) b++;
+            if(board[i][j] == 1) w++;
+        }
+    black->display(b);
+    white->display(w);
+}
+
+void Reversi::put(int xpos, int ypos)
+{
+    drawChess(xpos,ypos,activePlayer);
+    int reverseList[10][2] = {0};
     int dir[8][2]={{1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,1},{0,1},{1,1}};
     for(int i = 0;i < 8;i++)
     {
@@ -163,35 +211,7 @@ void Reversi::update(int xpos, int ypos)
             for(int j = 0;j < p;j++)
                 drawChess(reverseList[j][0],reverseList[j][1],activePlayer);
     }
-
-    //Calculate chess numbers & display
-    int b = 0, w = 0;
-    for(int i = 0;i < 8;i++)
-        for(int j = 0;j < 8;j++)
-        {
-            if(board[i][j] == 0) b++;
-            if(board[i][j] == 1) w++;
-        }
-    black->display(b);
-    white->display(w);
-}
-
-void Reversi::check()
-{
-    if(black->intValue() + white->intValue() == 64)
-    {
-End:    Dialog* dialog = new Dialog;
-        QString s(QString::number(black->intValue()) + " : " + QString::number(white->intValue()) + ", " +
-                  ((black->intValue() > white->intValue()) ? "black" : "white") + " wins!");
-        dialog->setText(s);
-        dialog->exec();
-    }
-    if(possibleMoves.empty())
-    {
-        if(lastPlayerNotMove) goto End;
-        lastPlayerNotMove = true;
-        activePlayer = 1 - activePlayer;
-    }
+    calculateChessNum();
 }
 
 void Reversi::calculatePossibleMoves()
@@ -200,18 +220,6 @@ void Reversi::calculatePossibleMoves()
     for(int i = 0;i < 8;i++)
         for(int j = 0;j < 8;j++)
             if(canPut(i,j)) possibleMoves.push_back(QPoint(i,j));
-}
-
-void Reversi::aiplay()
-{
-    if(!possibleMoves.empty())
-    {
-        int x = possibleMoves[0].x(), y = possibleMoves[0].y();
-        drawChess(x,y,activePlayer);
-        update(x,y);
-    }
-    else lastPlayerNotMove = true;
-    activePlayer = 1 - activePlayer;
 }
 
 FIR::FIR(QWidget* parent)

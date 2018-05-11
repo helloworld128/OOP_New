@@ -27,12 +27,14 @@ SOURCES += \
         main.cpp \
         widget.cpp \
     games.cpp \
-    dialog.cpp
+    dialog.cpp \
+    ai.cpp
 
 HEADERS += \
         widget.h \
         games.h \
-    dialog.h
+    dialog.h \
+    ai.h
 
 FORMS += \
         widget.ui \
