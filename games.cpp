@@ -5,9 +5,7 @@
 
 Game::Game()
 {
-    vTopLeft = QPoint(70,50);
     gridSize = 60;
-    vBottomRight = QPoint(530,550);
 }
 
 Game::~Game(){}
@@ -74,9 +72,11 @@ void Game::undo()
 
 }
 
-Reversi::Reversi(QWidget* parent)
+Reversi::Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w)
+                :black(b), white(w)
 {
-
+    vTopLeft = vTL;
+    vBottomRight = vTL + QPoint(480,480);
     for(int i = 0;i < 9;i++)
         for(int j = 0;j < 9;j++)
         {
@@ -87,6 +87,7 @@ Reversi::Reversi(QWidget* parent)
 
 Reversi::~Reversi()
 {
+    black->display(0); white->display(0);
     for(int i = 0;i < 9;i++)
         for(int j = 0;j < 9;j++)
             delete pictures[i][j];

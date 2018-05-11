@@ -3,14 +3,18 @@
 #include <QDebug>
 #include <QMouseEvent>
 
+namespace Ui
+{
+    class Widget;
+}
+
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    ui->GameMenu->hide();
     ui->Board->hide();
-    ui->BCount_Label->hide(); ui->WCount_Label->hide(); ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
-    ui->Start_Button->hide(); ui->Undo_Button->hide(); ui->Menu_Button->hide();
 }
 
 Widget::~Widget()
@@ -42,32 +46,14 @@ void Widget::on_Start_Button_clicked()
     game->init();
 }
 
-void Widget::hideHomeScreenUI()
-{
-    ui->Title_Label->hide();
-    ui->Reversi_Button->hide();
-    ui->FIR_Button->hide();
-    ui->Go_Button->hide();
-}
-
-void Widget::showHomeScreenUI()
-{
-    ui->Title_Label->show();
-    ui->Reversi_Button->show();
-    ui->FIR_Button->show();
-    ui->Go_Button->show();
-}
-
 void Widget::on_Reversi_Button_clicked()
 {
-    game = new Reversi(this);
-    Reversi* ptr = dynamic_cast<Reversi*>(game);
-    ptr->black = ui->BCount_LCD;
-    ptr->white = ui->WCount_LCD;
-    hideHomeScreenUI();
+    game = new Reversi(this,
+                       ui->Board->pos(),
+                       ui->BCount_LCD, ui->WCount_LCD);
+    ui->MainMenu->hide();
+    ui->GameMenu->show();
     ui->Board->show();
-    ui->BCount_Label->show(); ui->WCount_Label->show(); ui->BCount_LCD->show(); ui->WCount_LCD->show();
-    ui->Start_Button->show(); ui->Undo_Button->show(); ui->Menu_Button->show();
 }
 
 void Widget::on_FIR_Button_clicked()
@@ -86,10 +72,13 @@ void Widget::on_Undo_Button_clicked()
 
 void Widget::on_Menu_Button_clicked()
 {
-    showHomeScreenUI();
+    ui->MainMenu->show();
+    ui->GameMenu->hide();
     ui->Board->hide();
-    ui->BCount_Label->hide(); ui->WCount_Label->hide(); ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
-    ui->Start_Button->hide(); ui->Undo_Button->hide(); ui->Menu_Button->hide();
-    ui->BCount_LCD->display(0); ui->WCount_LCD->display(0);
     delete game;
+}
+
+void Widget::on_Save_Button_clicked()
+{
+    ui->MainMenu->show();
 }

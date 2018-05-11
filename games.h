@@ -37,12 +37,13 @@ protected:
     std::vector<QPoint> possibleMoves;
     int moveCount = 0;
     MODE mode = HUMANvsAI;
+
 };
 
 class Reversi:public Game
 {
 public:
-    Reversi(QWidget* parent);
+    Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w);
     void init();
     bool canPut(int xpos, int ypos);
     void update(int xpos, int ypos);
