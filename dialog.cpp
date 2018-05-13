@@ -6,6 +6,7 @@ Dialog::Dialog(QWidget *parent) :
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
+    this->setWindowTitle(QString("Result"));
 }
 
 void Dialog::setText(const QString& str)

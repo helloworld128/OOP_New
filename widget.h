@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QMouseEvent>
 #include <QLCDNumber>
+#include <QButtonGroup>
 #include "games.h"
 
 namespace Ui {
@@ -26,6 +27,7 @@ protected:
     void mousePressEvent(QMouseEvent *);
 
 private:
+    QButtonGroup selectBPlayer,selectWPlayer;
 
 private slots:
 
@@ -37,6 +39,7 @@ private slots:
     void on_Menu_Button_clicked();
     void on_Save_Button_clicked();
     void on_Load_Button_clicked();
+    void on_Online_Button_clicked();
 };
 
 #endif // WIDGET_H

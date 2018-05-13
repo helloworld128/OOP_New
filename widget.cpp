@@ -3,6 +3,7 @@
 #include "ai.h"
 #include <QDebug>
 #include <QMouseEvent>
+#include "udptest.h"
 
 namespace Ui
 {
@@ -16,6 +17,9 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
     ui->GameMenu->hide();
     ui->Board->hide();
+    selectBPlayer.addButton(ui->BPlayer); selectBPlayer.addButton(ui->BAI);
+    selectWPlayer.addButton(ui->WPlayer); selectWPlayer.addButton(ui->WAI);
+    ui->BPlayer->setChecked(true); ui->WPlayer->setChecked(true);
 }
 
 Widget::~Widget()
@@ -45,7 +49,7 @@ void Widget::mousePressEvent(QMouseEvent *qme)
 
 void Widget::on_Start_Button_clicked()
 {
-    game->init();
+    game->init(ui->BPlayer->isChecked(),ui->WPlayer->isChecked());
 }
 
 void Widget::on_Reversi_Button_clicked()
@@ -57,12 +61,23 @@ void Widget::on_Reversi_Button_clicked()
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     ui->MainMenu->hide();
     ui->GameMenu->show();
+    ui->BCount_LCD->show(); ui->WCount_LCD->show();
+    QImage* img = new QImage("./images/chessboard.png");
+    ui->Board->setPixmap(QPixmap::fromImage(*img));
     ui->Board->show();
 }
 
 void Widget::on_FIR_Button_clicked()
 {
-//    game = new FIR(this);
+    game = new FIR(this, ui->Board->pos());
+    Ai* ai = new FIRAi(game);
+    QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
+    ui->MainMenu->hide();
+    ui->GameMenu->show();
+    ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
+    QImage* img = new QImage("./images/board2.png");
+    ui->Board->setPixmap(QPixmap::fromImage(*img));
+    ui->Board->show();
 }
 void Widget::on_Go_Button_clicked()
 {
@@ -98,4 +113,10 @@ void Widget::on_Load_Button_clicked()
     int data;
     cin >> data;
     qDebug() << data;
+}
+
+void Widget::on_Online_Button_clicked()
+{
+    UdpTest* udptest = new UdpTest();
+    udptest->exec();
 }

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,17 +28,20 @@ SOURCES += \
         widget.cpp \
     games.cpp \
     dialog.cpp \
-    ai.cpp
+    ai.cpp \
+    udptest.cpp
 
 HEADERS += \
         widget.h \
         games.h \
     dialog.h \
-    ai.h
+    ai.h \
+    udptest.h
 
 FORMS += \
         widget.ui \
-    dialog.ui
+    dialog.ui \
+    udptest.ui
 
 DISTFILES +=
 

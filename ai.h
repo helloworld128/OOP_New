@@ -12,7 +12,8 @@ protected:
     Game* game;
 
 protected slots:
-    virtual void aiPlay() = 0;
+    virtual void aiPlay();
+    virtual QPoint evaluate() = 0;
 };
 
 class ReversiAi:public Ai
@@ -21,7 +22,16 @@ public:
     ReversiAi(Game* g):Ai(g){}
 
 protected:
-    void aiPlay();
+    QPoint evaluate();
+};
+
+class FIRAi:public Ai
+{
+public:
+    FIRAi(Game* g):Ai(g){}
+
+protected:
+    QPoint evaluate();
 };
 
 #endif // AI_H
