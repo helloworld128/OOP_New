@@ -14,7 +14,9 @@ Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
 {
+    game = nullptr;
     ui->setupUi(this);
+    ui->Reversi_Button->show();
     ui->GameMenu->hide();
     ui->Board->hide();
     selectBPlayer.addButton(ui->BPlayer); selectBPlayer.addButton(ui->BAI);
@@ -34,10 +36,10 @@ bool operator <(const QPoint& left,const QPoint& right)
 
 void Widget::mousePressEvent(QMouseEvent *qme)
 {
-    if(qme->button() & Qt::LeftButton)
+    if(qme->button() == Qt::LeftButton)
     {
         QPoint pos(qme->x(),qme->y());
-        if(game && game->vTopLeft < pos && pos < game->vBottomRight)
+        if(game != nullptr && game->vTopLeft < pos && pos < game->vBottomRight)
         {
             int x = (pos.x() - game->vTopLeft.x()) / game->gridSize;
             int y = (pos.y() - game->vTopLeft.y()) / game->gridSize;
@@ -63,6 +65,7 @@ void Widget::on_Reversi_Button_clicked()
     ui->GameMenu->show();
     ui->BCount_LCD->show(); ui->WCount_LCD->show();
     QImage* img = new QImage("./images/chessboard.png");
+    //QPixmap m = QPixmap::fromImage(*img);
     ui->Board->setPixmap(QPixmap::fromImage(*img));
     ui->Board->show();
 }

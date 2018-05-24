@@ -72,10 +72,10 @@ color:rgb(255, 170, 255)</string>
   <widget class="QLabel" name="Board">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>50</y>
+     <x>10</x>
+     <y>60</y>
      <width>480</width>
-     <height>479</height>
+     <height>480</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -93,17 +93,20 @@ color:rgb(255, 170, 255)</string>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QWidget" name="GameMenu" native="true">
    <property name="geometry">
     <rect>
-     <x>580</x>
-     <y>40</y>
-     <width>161</width>
-     <height>521</height>
+     <x>550</x>
+     <y>50</y>
+     <width>231</width>
+     <height>531</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="Gamemenu" rowstretch="1,1,1,2,2,2,2,2,0">
+   <layout class="QGridLayout" name="Gamemenu" rowstretch="1,0,0,0,0,0,0,0,0">
     <property name="verticalSpacing">
      <number>20</number>
     </property>
@@ -125,23 +128,21 @@ color:rgb(255, 170, 255)</string>
       </item>
      </layout>
     </item>
-    <item row="0" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QRadioButton" name="BPlayer">
-        <property name="text">
-         <string>Human</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="BAI">
-        <property name="text">
-         <string>AI</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+    <item row="4" column="0" colspan="2">
+     <widget class="QPushButton" name="Online_Button">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
+      </property>
+      <property name="text">
+       <string>OnlineTest</string>
+      </property>
+     </widget>
     </item>
     <item row="2" column="1">
      <widget class="QLabel" name="WCount_Label">
@@ -169,6 +170,24 @@ color:rgb(255, 170, 255)</string>
       </property>
      </widget>
     </item>
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QRadioButton" name="BPlayer">
+        <property name="text">
+         <string>Human</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="BAI">
+        <property name="text">
+         <string>AI</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
     <item row="6" column="0">
      <widget class="QPushButton" name="Save_Button">
       <property name="sizePolicy">
@@ -182,6 +201,22 @@ color:rgb(255, 170, 255)</string>
       </property>
       <property name="text">
        <string>Save</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0" colspan="2">
+     <widget class="QPushButton" name="Menu_Button">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
+      </property>
+      <property name="text">
+       <string>Menu</string>
       </property>
      </widget>
     </item>
@@ -211,22 +246,6 @@ color:rgb(255, 170, 255)</string>
       </property>
       <property name="text">
        <string>Load</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="0" colspan="2">
-     <widget class="QPushButton" name="Menu_Button">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
-      </property>
-      <property name="text">
-       <string>Menu</string>
       </property>
      </widget>
     </item>
@@ -272,22 +291,6 @@ color:rgb(255, 170, 255)</string>
       </property>
       <property name="text">
        <string>Start</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0" colspan="2">
-     <widget class="QPushButton" name="Online_Button">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
-      </property>
-      <property name="text">
-       <string>OnlineTest</string>
       </property>
      </widget>
     </item>
