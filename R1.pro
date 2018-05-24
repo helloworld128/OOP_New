@@ -29,14 +29,16 @@ SOURCES += \
     games.cpp \
     dialog.cpp \
     ai.cpp \
-    udptest.cpp
+    udptest.cpp \
+    myitem.cpp
 
 HEADERS += \
         widget.h \
         games.h \
     dialog.h \
     ai.h \
-    udptest.h
+    udptest.h \
+    myitem.h
 
 FORMS += \
         widget.ui \

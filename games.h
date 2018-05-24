@@ -8,7 +8,7 @@ class Game:public QObject
 {
     Q_OBJECT
 public:
-    Game();
+    Game(QLabel* _currentPlayerPict);
     friend class ReversiAi;
     friend class FIRAi;
     void click(int x, int y);
@@ -46,12 +46,13 @@ protected:
     int moveCount = -1;
     PLAYERTYPE playerType[2];
     int gridNum;
+    QLabel* currentPlayerPict;
 };
 
 class Reversi:public Game
 {
 public:
-    Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w);
+    Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w, QLabel *_currentPlayerPict);
     void init(bool bIsHuman, bool wIsHuman);
     bool canPut(int xpos, int ypos);
     void put(int xpos, int ypos);
@@ -69,7 +70,7 @@ private:
 class FIR:public Game
 {
 public:
-    FIR(QWidget* parent, QPoint vTL);
+    FIR(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict);
     bool canPut(int xpos, int ypos);
     void showResult();
     void check(int xpos, int ypos);

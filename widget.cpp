@@ -16,12 +16,13 @@ Widget::Widget(QWidget *parent) :
 {
     game = nullptr;
     ui->setupUi(this);
-    ui->Reversi_Button->show();
     ui->GameMenu->hide();
     ui->Board->hide();
+    ui->MainMenu->hide();
     selectBPlayer.addButton(ui->BPlayer); selectBPlayer.addButton(ui->BAI);
     selectWPlayer.addButton(ui->WPlayer); selectWPlayer.addButton(ui->WAI);
     ui->BPlayer->setChecked(true); ui->WPlayer->setChecked(true);
+    setWindowIcon(QIcon(QString("./images/logo.png")));
 }
 
 Widget::~Widget()
@@ -58,21 +59,23 @@ void Widget::on_Reversi_Button_clicked()
 {
     game = new Reversi(this,
                        ui->Board->pos(),
-                       ui->BCount_LCD, ui->WCount_LCD);
+                       ui->BCount_LCD, ui->WCount_LCD,
+                       ui->CurrentPlayerPict);
     Ai* ai = new ReversiAi(game);
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     ui->MainMenu->hide();
     ui->GameMenu->show();
     ui->BCount_LCD->show(); ui->WCount_LCD->show();
     QImage* img = new QImage("./images/chessboard.png");
-    //QPixmap m = QPixmap::fromImage(*img);
     ui->Board->setPixmap(QPixmap::fromImage(*img));
     ui->Board->show();
 }
 
 void Widget::on_FIR_Button_clicked()
 {
-    game = new FIR(this, ui->Board->pos());
+    game = new FIR(this,
+                   ui->Board->pos(),
+                   ui->CurrentPlayerPict);
     Ai* ai = new FIRAi(game);
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     ui->MainMenu->hide();
@@ -97,6 +100,7 @@ void Widget::on_Menu_Button_clicked()
     ui->MainMenu->show();
     ui->GameMenu->hide();
     ui->Board->hide();
+    ui->CurrentPlayerPict->hide();
     delete game;
 }
 
@@ -121,5 +125,18 @@ void Widget::on_Load_Button_clicked()
 void Widget::on_Online_Button_clicked()
 {
     UdpTest* udptest = new UdpTest();
+    connect(udptest, SIGNAL(PlayReversi()), this, SLOT(on_Reversi_Button_clicked()));
     udptest->exec();
+}
+
+void Widget::on_Local_Button_clicked()
+{
+    ui->Menu->hide();
+    ui->MainMenu->show();
+}
+
+void Widget::on_Back_Button_clicked()
+{
+    ui->MainMenu->hide();
+    ui->Menu->show();
 }

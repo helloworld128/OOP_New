@@ -16,9 +16,17 @@ public:
     explicit UdpTest(QWidget *parent = 0);
     ~UdpTest();
 
+signals:
+    void PlayReversi();
+
 private slots:
-    void on_Send_Button_clicked();
     void processPendingDatagrams();
+
+    void on_Create_Button_clicked();
+
+    void on_Join_Button_clicked();
+
+    void on_Leave_Button_clicked();
 
 private:
     QUdpSocket* sender;
