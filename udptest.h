@@ -28,6 +28,8 @@ private slots:
 
     void on_Leave_Button_clicked();
 
+    void on_Spectate_Button_clicked();
+
 private:
     QUdpSocket* sender;
     QUdpSocket* receiver;

@@ -26,36 +26,6 @@ UdpTest::~UdpTest()
     delete ui;
 }
 
-//void UdpTest::on_Send_Button_clicked()
-//{
-//    //    QString localName = QHostInfo::localHostName();
-//    //    QHostInfo info = QHostInfo::fromName(localName);
-//    //    qDebug() << info.localDomainName();
-//    //    qDebug() << info.addresses();
-//    //    qDebug() << localName;
-
-//    for (QNetworkInterface interface : QNetworkInterface::allInterfaces())
-//    {
-//        QList<QNetworkAddressEntry> entryList = interface.addressEntries();
-
-//        //遍历每一个IP地址(每个包含一个IP地址，一个子网掩码和一个广播地址)
-//        foreach(QNetworkAddressEntry entry, entryList)
-//        {
-//            if(entry.ip().protocol() == QAbstractSocket::IPv4Protocol)
-//            {
-//                //IP地址
-//                qDebug() << "IP Address:" << entry.ip().toString();
-
-//                //子网掩码
-//                qDebug() << "Netmask:" << entry.netmask().toString();
-
-//                //广播地址
-//                qDebug() << "Broadcast:" << entry.broadcast().toString();
-//            }
-//        }
-//    }
-//}
-
 void UdpTest::processPendingDatagrams()
 {
     QByteArray datagram;
@@ -85,5 +55,10 @@ void UdpTest::on_Join_Button_clicked()
     close();
 }
 
-
 void UdpTest::on_Leave_Button_clicked(){close();}
+
+
+
+void UdpTest::on_Spectate_Button_clicked()
+{
+}
