@@ -3,9 +3,8 @@
 #include <QDebug>
 #include <QDialog>
 
-Game::Game(QLabel* _currentPlayerPict)
+Game::Game()
 {
-    currentPlayerPict = _currentPlayerPict;
     gridSize = 60;
 }
 
@@ -31,10 +30,6 @@ void Game::nextPlayer()
 
     static bool cantmove[2] = {false, false};
     activePlayer = 1 - activePlayer;
-    QImage* img;
-    if(activePlayer == 0) img = new QImage("./images/stoneB.png");
-    else img = new QImage("./images/stoneW.png");
-    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
     calculatePossibleMoves();
     if(possibleMoves.empty())
     {
@@ -135,8 +130,6 @@ void Game::init(bool bIsHuman, bool wIsHuman)
     gameover = false;
     moveCount = -1;
     activePlayer = 0;
-    QImage* img = new QImage("./images/stoneB.png");
-    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
     saveStatus();
     if(playerType[0] == AI)
     {
@@ -196,8 +189,8 @@ void Reversi::showResult()
     dialog->exec();
 }
 
-Reversi::Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w, QLabel* _currentPlayerPict)
-    :black(b), white(w), Game(_currentPlayerPict)
+Reversi::Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w)
+    :black(b), white(w)
 {
     gridNum = 8;
     vTopLeft = vTL;
@@ -237,8 +230,6 @@ void Reversi::init(bool bIsHuman, bool wIsHuman)
     black->display(2);
     white->display(2);
     activePlayer = 0;
-    QImage* img = new QImage("./images/stoneB.png");
-    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
     saveStatus();
     calculatePossibleMoves();
     if(playerType[0] == AI)
@@ -316,11 +307,12 @@ void Reversi::put(int xpos, int ypos)
     calculateChessNum();
 }
 
-FIR::FIR(QWidget* parent, QPoint vTL, QLabel *_currentPlayerPict) : Game(_currentPlayerPict)
+FIR::FIR(QWidget* parent, QPoint vTL)
 {
     gridNum = 9;
     vTopLeft = vTL - QPoint(30,30);
     vBottomRight = vTL + QPoint(540,540);
+    FullFlag = true;
     for(int i = 0;i < 9;i++)
         for(int j = 0;j < 9;j++)
         {
@@ -338,34 +330,61 @@ bool FIR::canPut(int xpos, int ypos)
 void FIR::showResult()
 {
     Dialog* dialog = new Dialog;
-    QString s(QString(activePlayer ? "White" : "Black") + QString(" wins!"));
-    dialog->setText(s);
+    if (!FullFlag){
+        QString s(QString(activePlayer ? "White" : "Black") + QString(" wins!"));
+        dialog->setText(s);
+    }
+
+    else {
+        QString s(QString("Draw!"));
+        dialog->setText(s);
+   }
     gameover = true;
     dialog->exec();
 }
 
 void FIR::check(int xpos, int ypos)
 {
-    Game::check();
     bool gameEndFlag = false;
-    int dir[8][2]={{1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,1},{0,1},{1,1}};
-    for(int i = 0;i < 8;i++)
+    int dir[4][2]={{1, 0},{1, -1},{0, -1},{1, 1}};
+    for(int i = 0; i < 4; i++)
     {
         int x = xpos, y = ypos;
         int count = 0;
-        while(0 <= x && x <= 8 && 0 <= y && y <= 8)
-        {
-            if(board[x][y] == activePlayer) count++;
-            else break;
+        while(0 <= x && x <= 8 && 0 <= y && y <= 8 && board[x][y] == activePlayer){
+            count++;
             x += dir[i][0]; y += dir[i][1];
+        }
+        x = xpos - dir[i][0]; y = ypos - dir[i][1];
+        while(0 <= x && x <= 8 && 0 <= y && y <= 8 && board[x][y] == activePlayer){
+            count++;
+            x -= dir[i][0]; y -= dir[i][1];
         }
         if(count >= 5)
         {
             gameEndFlag = true;
+            FullFlag = false;
             break;
         }
     }
-    if(gameEndFlag) showResult();
+    if (!gameEndFlag){
+        bool flag = false;
+        for (int i = 0; i < 9; i++){
+            for (int j = 0; j < 9; j++){
+                if (board[i][j] == -1){
+                    FullFlag = false;
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag) break;
+        }
+        if (!flag) {
+            FullFlag = true;
+            gameEndFlag = true;
+        }
+    }
+    if (gameEndFlag) showResult();
 }
 
 FIR::~FIR()
