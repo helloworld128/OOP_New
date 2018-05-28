@@ -80,4 +80,17 @@ private:
     bool FullFlag;
 };
 
+class Go:public Game
+{
+public:
+    Go(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict);
+    ~Go();
+    bool occurredbefore();
+    bool stillalive(int xpos, int ypos, int Player, int _board[9][9]);
+    bool canPut(int xpos, int ypos);
+    void eliminate(int xpos, int ypos, int Player);
+    void put(int xpos, int ypos);
+    void showResult();
+};
+
 #endif // GAMES_H

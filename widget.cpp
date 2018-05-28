@@ -89,7 +89,15 @@ void Widget::on_FIR_Button_clicked()
 }
 void Widget::on_Go_Button_clicked()
 {
-
+    game = new Go(this,
+                  ui->Board->pos(),
+                  ui->CurrentPlayerPict);
+    ui->MainMenu->hide();
+    ui->GameMenu->show();
+    ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
+    QImage* img = new QImage("./images/board2.png");
+    ui->Board->setPixmap(QPixmap::fromImage(*img));
+    ui->Board->show();
 }
 
 void Widget::on_Undo_Button_clicked()

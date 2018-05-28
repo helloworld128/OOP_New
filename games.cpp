@@ -353,7 +353,7 @@ void FIR::showResult()
     else {
         QString s(QString("Draw!"));
         dialog->setText(s);
-   }
+    }
     gameover = true;
     dialog->exec();
 }
@@ -407,4 +407,141 @@ FIR::~FIR()
     for(int i = 0;i < 9;i++)
         for(int j = 0;j < 9;j++)
             delete pictures[i][j];
+}
+
+Go::Go(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict): Game(_currentPlayerPict)
+{
+    gridNum = 9;
+    vTopLeft = vTL - QPoint(30,30);
+    vBottomRight = vTL + QPoint(540,540);
+    for(int i = 0;i < 9;i++)
+        for(int j = 0;j < 9;j++)
+        {
+            pictures[i][j] = new QLabel(parent);
+            pictures[i][j]->move(vTopLeft.x() + i * gridSize, vTopLeft.y() + j * gridSize);
+        }
+}
+
+Go::~Go()
+{
+    for(int i = 0;i < 9;i++)
+        for(int j = 0;j < 9;j++)
+            delete pictures[i][j];
+}
+
+bool Go::occurredbefore()
+{
+    for (int t = 0; t <= moveCount; t++)
+    {
+        bool flag;
+        if (previousPlayer[t] == activePlayer) flag = true; else flag = false;
+        for (int i = 0; i < 9; i++) if (flag)
+            for (int j = 0; j < 9; j++)
+                if (board[i][j] != previousMove[t][i][j]) flag = false;
+        if (flag) return true;
+    }
+    return false;
+}
+
+bool Go::stillalive(int xpos, int ypos, int Player, int _board[9][9])
+{
+    int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
+    int q[90][2];
+    bool visited[9][9] = {0};
+    int f = -1, r = 0;
+    q[0][0] = xpos, q[0][1] = ypos, visited[xpos][ypos] = true;
+    while (f < r)
+    {
+        f++;
+        for (int i = 0 ; i < 4; i++)
+        {
+            int x = q[f][0] + dir[i][0], y = q[f][1] + dir[i][1];
+            if (0 <= x && x < 9 && 0 <= y && y < 9)
+            {
+                if (_board[x][y] == -1) return true;
+                if (_board[x][y] == Player && !visited[x][y])
+                {
+                    r++;
+                    q[r][0] = x;
+                    q[r][1] = y;
+                    visited[x][y] = true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool Go::canPut(int xpos, int ypos)
+{
+    int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
+    if(board[xpos][ypos] != -1) return false;
+    if (stillalive(xpos, ypos, activePlayer, board)) return true;
+
+    int _board[9][9];
+    for (int i = 0; i < 9; i++)
+        for (int j = 0; j < 9; j++) _board[i][j] = board[i][j];
+    _board[xpos][ypos] = activePlayer;
+
+    for (int i = 0; i < 4; i++)
+    {
+        int x = xpos + dir[i][0], y = ypos + dir[i][1];
+        if (0 <= x && x < 9 && 0 <= y && y < 9 && !stillalive(x,y,1-activePlayer,_board)) return true;
+    }
+    return false;
+}
+
+void Go::eliminate(int xpos, int ypos, int Player)
+{
+    int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
+    int q[90][2];
+    bool visited[9][9] = {0};
+    int f = -1, r = 0;
+    q[0][0] = xpos, q[0][1] = ypos, visited[xpos][ypos] = true;
+    while (f < r)
+    {
+        f++;
+        for (int i = 0 ; i < 4; i++)
+        {
+            int x = q[f][0] + dir[i][0], y = q[f][1] + dir[i][1];
+            if (0 <= x && x < 9 && 0 <= y && y < 9)
+            {
+                if (board[x][y] == -1) return;
+                if (board[x][y] == Player && !visited[x][y])
+                {
+                    r++;
+                    q[r][0] = x;
+                    q[r][1] = y;
+                    visited[x][y] = true;
+                }
+            }
+        }
+    }
+    for (int t = 0; t <= r; t++)
+    {
+        int xx = q[t][0], yy = q[t][1];
+        board[xx][yy] = -1;
+        pictures[xx][yy]->hide();
+    }
+}
+
+void Go::put(int xpos, int ypos)
+{
+    Game::drawChess(xpos,ypos,activePlayer);
+    int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
+    for (int i = 0; i < 4; i++)
+    {
+        int x = xpos + dir[i][0], y = ypos + dir[i][1];
+        if (0 <= x && x < 9 && 0 <= y && y < 9 && board[x][y] == 1-activePlayer) eliminate(x,y,1-activePlayer);
+    }
+    if (occurredbefore()) this->undo();
+}
+
+void Go::showResult()
+{
+    Dialog* dialog = new Dialog;
+    QString s("Game Finished!");
+    dialog->setText(s);
+    gameover = true;
+    dialog->exec();
 }
