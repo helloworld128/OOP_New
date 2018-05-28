@@ -14,6 +14,8 @@ public:
     void click(int x, int y);
     virtual void undo();
     virtual void init(bool bIsHuman, bool wIsHuman);
+    virtual void nextPlayer();
+    virtual void showResult() = 0;
     virtual ~Game();
 
     QPoint vTopLeft;
@@ -26,9 +28,7 @@ signals:
 
 protected:
     void drawChess(int x,int y, int player);
-    virtual void nextPlayer();
     void saveStatus();
-    virtual void showResult() = 0;
     virtual bool canPut(int xpos, int ypos) = 0;
     virtual void put(int xpos, int ypos);
     virtual void calculatePossibleMoves();

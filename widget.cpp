@@ -71,6 +71,9 @@ void Widget::on_Reversi_Button_clicked()
     QImage* img = new QImage("./images/chessboard.png");
     ui->Board->setPixmap(QPixmap::fromImage(*img));
     ui->Board->show();
+    ui->StopOnce_Button->hide();
+    ui->GiveUp_Button->hide();
+
 }
 
 void Widget::on_FIR_Button_clicked()
@@ -86,6 +89,9 @@ void Widget::on_FIR_Button_clicked()
     QImage* img = new QImage("./images/board2.png");
     ui->Board->setPixmap(QPixmap::fromImage(*img));
     ui->Board->show();
+    ui->StopOnce_Button->hide();
+    ui->GiveUp_Button->hide();
+
 }
 void Widget::on_Go_Button_clicked()
 {
@@ -98,6 +104,8 @@ void Widget::on_Go_Button_clicked()
     QImage* img = new QImage("./images/board2.png");
     ui->Board->setPixmap(QPixmap::fromImage(*img));
     ui->Board->show();
+    ui->StopOnce_Button->show();
+    ui->GiveUp_Button->show();
 }
 
 void Widget::on_Undo_Button_clicked()
@@ -149,4 +157,14 @@ void Widget::on_Back_Button_clicked()
 {
     ui->MainMenu->hide();
     ui->Menu->show();
+}
+
+void Widget::on_GiveUp_Button_clicked()
+{
+    game->showResult();
+}
+
+void Widget::on_StopOnce_Button_clicked()
+{
+    game->nextPlayer();
 }
