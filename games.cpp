@@ -31,6 +31,8 @@ void Game::nextPlayer()
 
     static bool cantmove[2] = {false, false};
     activePlayer = 1 - activePlayer;
+    if (playerType[activePlayer] != HUMAN) waiting = true;
+    else waiting = false;
     QImage* img;
     if(activePlayer == 0) img = new QImage("./images/stoneB.png");
     else img = new QImage("./images/stoneW.png");
@@ -139,6 +141,7 @@ void Game::init(bool bIsHuman, bool wIsHuman)
     currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
     currentPlayerPict->show();
     saveStatus();
+    if(playerType[0] != HUMAN) waiting = true;
     if(playerType[0] == AI)
     {
         calculatePossibleMoves();
@@ -243,6 +246,7 @@ void Reversi::init(bool bIsHuman, bool wIsHuman)
     currentPlayerPict->show();
     saveStatus();
     calculatePossibleMoves();
+    if(playerType[0] != HUMAN) waiting = true;
     if(playerType[0] == AI)
     {
         emit aiPlay();

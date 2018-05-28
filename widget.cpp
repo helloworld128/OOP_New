@@ -39,6 +39,7 @@ void Widget::mousePressEvent(QMouseEvent *qme)
 {
     if(qme->button() == Qt::LeftButton)
     {
+        if (game->waiting) return;
         QPoint pos(qme->x(),qme->y());
         if(game != nullptr && game->vTopLeft < pos && pos < game->vBottomRight)
         {
@@ -64,6 +65,7 @@ void Widget::on_Reversi_Button_clicked()
     Ai* ai = new ReversiAi(game);
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     ui->MainMenu->hide();
+    ui->Menu->hide();
     ui->GameMenu->show();
     ui->BCount_LCD->show(); ui->WCount_LCD->show();
     QImage* img = new QImage("./images/chessboard.png");
@@ -124,9 +126,9 @@ void Widget::on_Load_Button_clicked()
 
 void Widget::on_Online_Button_clicked()
 {
-    WaitingRoom* udptest = new WaitingRoom();
-    connect(udptest, SIGNAL(PlayReversi()), this, SLOT(on_Reversi_Button_clicked()));
-    udptest->exec();
+    WaitingRoom* hall = new WaitingRoom();
+    connect(hall, SIGNAL(PlayReversi()), this, SLOT(on_Reversi_Button_clicked()));
+    hall->exec();
 }
 
 void Widget::on_Local_Button_clicked()

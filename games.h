@@ -19,6 +19,7 @@ public:
     QPoint vTopLeft;
     QPoint vBottomRight;
     int gridSize;
+    bool waiting = false;
 
 signals:
     void aiPlay();

@@ -2,7 +2,8 @@
 #define WAITINGROOM_H
 
 #include <QDialog>
-#include <QUdpSocket>
+#include <QTcpSocket>
+#include <QButtonGroup>
 
 namespace Ui {
 class WaitingRoom;
@@ -20,7 +21,7 @@ signals:
     void PlayReversi();
 
 private slots:
-    void processPendingDatagrams();
+    void readData();
 
     void on_Create_Button_clicked();
 
@@ -30,10 +31,19 @@ private slots:
 
     void on_Spectate_Button_clicked();
 
+    void on_Cancel_Button_clicked();
+
+    void on_OK_Button_clicked();
+
+    void on_lineEdit_editingFinished();
+
+    void on_Refresh_Button_clicked();
+
 private:
-    QUdpSocket* sender;
-    QUdpSocket* receiver;
+    void requestCurrentGames();
     Ui::WaitingRoom *ui;
+    QTcpSocket* socket = nullptr;
+    QButtonGroup games, role;
 };
 
 #endif // WAITINGROOM_H
