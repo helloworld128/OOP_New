@@ -430,21 +430,21 @@ Go::~Go()
             delete pictures[i][j];
 }
 
-bool Go::occurredbefore()
+bool Go::judgeRepeat(const int Board[9][9])
 {
     for (int t = 0; t <= moveCount; t++)
     {
         bool flag;
-        if (previousPlayer[t] == activePlayer) flag = true; else flag = false;
+        if (previousPlayer[t] == 1 - activePlayer) flag = true; else flag = false;
         for (int i = 0; i < 9; i++) if (flag)
             for (int j = 0; j < 9; j++)
-                if (board[i][j] != previousMove[t][i][j]) flag = false;
+                if (Board[i][j] != previousMove[t][i][j]) flag = false;
         if (flag) return true;
     }
     return false;
 }
 
-bool Go::stillalive(int xpos, int ypos, int Player, int _board[9][9])
+bool Go::stillalive(int xpos, int ypos, int Player, const int _board[9][9])
 {
     int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
     int q[90][2];
@@ -475,21 +475,54 @@ bool Go::stillalive(int xpos, int ypos, int Player, int _board[9][9])
 
 bool Go::canPut(int xpos, int ypos)
 {
-    int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
     if(board[xpos][ypos] != -1) return false;
-    if (stillalive(xpos, ypos, activePlayer, board)) return true;
 
+    bool flag = true;
+
+    int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
     int _board[9][9];
     for (int i = 0; i < 9; i++)
         for (int j = 0; j < 9; j++) _board[i][j] = board[i][j];
     _board[xpos][ypos] = activePlayer;
 
-    for (int i = 0; i < 4; i++)
+    if (stillalive(xpos, ypos, activePlayer, _board)) flag = true;
+    for (int ii = 0; ii < 4; ii++)
     {
-        int x = xpos + dir[i][0], y = ypos + dir[i][1];
-        if (0 <= x && x < 9 && 0 <= y && y < 9 && !stillalive(x,y,1-activePlayer,_board)) return true;
+        int x = xpos + dir[ii][0], y = ypos + dir[ii][1];
+        if (0 <= x && x < 9 && 0 <= y && y < 9 && !stillalive(x,y,1-activePlayer,_board))
+        {
+            flag = true;
+            int q[90][2];
+            bool visited[9][9] = {0};
+            int f = -1, r = 0;
+            q[0][0] = x, q[0][1] = y, visited[x][y] = true;
+            while (f < r)
+            {
+                f++;
+                for (int i = 0 ; i < 4; i++)
+                {
+                    int x = q[f][0] + dir[i][0], y = q[f][1] + dir[i][1];
+                    if (0 <= x && x < 9 && 0 <= y && y < 9)
+                    {
+                        if (_board[x][y] == 1 - activePlayer && !visited[x][y])
+                        {
+                            r++;
+                            q[r][0] = x;
+                            q[r][1] = y;
+                            visited[x][y] = true;
+                        }
+                    }
+                }
+            }
+            for (int t = 0; t <= r; t++)
+            {
+                int xx = q[t][0], yy = q[t][1];
+                 _board[xx][yy] = -1;
+            }
+        }
     }
-    return false;
+    if (judgeRepeat(_board)) flag = false;
+    return flag;
 }
 
 void Go::eliminate(int xpos, int ypos, int Player)
@@ -521,10 +554,10 @@ void Go::eliminate(int xpos, int ypos, int Player)
     for (int t = 0; t <= r; t++)
     {
         int xx = q[t][0], yy = q[t][1];
-        board[xx][yy] = -1;
-        pictures[xx][yy]->hide();
-      }
-  }
+         board[xx][yy] = -1;
+         pictures[xx][yy]->hide();
+    }
+}
 
 void Go::put(int xpos, int ypos)
 {
@@ -535,7 +568,6 @@ void Go::put(int xpos, int ypos)
         int x = xpos + dir[i][0], y = ypos + dir[i][1];
         if (0 <= x && x < 9 && 0 <= y && y < 9 && board[x][y] == 1-activePlayer) eliminate(x,y,1-activePlayer);
     }
-    if (occurredbefore()) this->undo();
 }
 
 void Go::showResult()

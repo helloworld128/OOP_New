@@ -84,13 +84,13 @@ class Go:public Game
 {
 public:
     Go(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict);
-    ~Go();
-    bool occurredbefore();
-    bool stillalive(int xpos, int ypos, int Player, int _board[9][9]);
-    bool canPut(int xpos, int ypos);
-    void eliminate(int xpos, int ypos, int Player);
-    void put(int xpos, int ypos);
-    void showResult();
+        bool canPut(int xpos, int ypos);
+        void put(int xpos, int ypos);
+        void showResult();
+        bool judgeRepeat(const int Board[9][9]);
+        bool stillalive(int xpos, int ypos, int Player,const int _board[9][9]);
+        void eliminate(int xpos, int ypos, int Player);
+        virtual ~Go();
 };
 
 #endif // GAMES_H
