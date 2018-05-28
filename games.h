@@ -75,6 +75,8 @@ public:
     void showResult();
     void check(int xpos, int ypos);
     virtual ~FIR();
+private:
+    bool FullFlag;
 };
 
 #endif // GAMES_H

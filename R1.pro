@@ -29,21 +29,21 @@ SOURCES += \
     games.cpp \
     dialog.cpp \
     ai.cpp \
-    udptest.cpp \
-    myitem.cpp
+    myitem.cpp \
+    waitingroom.cpp
 
 HEADERS += \
         widget.h \
         games.h \
     dialog.h \
     ai.h \
-    udptest.h \
-    myitem.h
+    myitem.h \
+    waitingroom.h
 
 FORMS += \
         widget.ui \
     dialog.ui \
-    udptest.ui
+    waitingroom.ui
 
 DISTFILES +=
 

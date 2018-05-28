@@ -3,8 +3,9 @@
 #include <QDebug>
 #include <QDialog>
 
-Game::Game()
+Game::Game(QLabel* _currentPlayerPict)
 {
+    currentPlayerPict = _currentPlayerPict;
     gridSize = 60;
 }
 
@@ -30,6 +31,10 @@ void Game::nextPlayer()
 
     static bool cantmove[2] = {false, false};
     activePlayer = 1 - activePlayer;
+    QImage* img;
+    if(activePlayer == 0) img = new QImage("./images/stoneB.png");
+    else img = new QImage("./images/stoneW.png");
+    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
     calculatePossibleMoves();
     if(possibleMoves.empty())
     {
@@ -130,6 +135,9 @@ void Game::init(bool bIsHuman, bool wIsHuman)
     gameover = false;
     moveCount = -1;
     activePlayer = 0;
+    QImage* img = new QImage("./images/stoneB.png");
+    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
+    currentPlayerPict->show();
     saveStatus();
     if(playerType[0] == AI)
     {
@@ -189,8 +197,8 @@ void Reversi::showResult()
     dialog->exec();
 }
 
-Reversi::Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w)
-    :black(b), white(w)
+Reversi::Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w, QLabel* _currentPlayerPict)
+    :black(b), white(w), Game(_currentPlayerPict)
 {
     gridNum = 8;
     vTopLeft = vTL;
@@ -230,6 +238,9 @@ void Reversi::init(bool bIsHuman, bool wIsHuman)
     black->display(2);
     white->display(2);
     activePlayer = 0;
+    QImage* img = new QImage("./images/stoneB.png");
+    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
+    currentPlayerPict->show();
     saveStatus();
     calculatePossibleMoves();
     if(playerType[0] == AI)
@@ -307,7 +318,7 @@ void Reversi::put(int xpos, int ypos)
     calculateChessNum();
 }
 
-FIR::FIR(QWidget* parent, QPoint vTL)
+FIR::FIR(QWidget* parent, QPoint vTL, QLabel *_currentPlayerPict) : Game(_currentPlayerPict)
 {
     gridNum = 9;
     vTopLeft = vTL - QPoint(30,30);

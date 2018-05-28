@@ -1,20 +1,20 @@
-#ifndef UDPTEST_H
-#define UDPTEST_H
+#ifndef WAITINGROOM_H
+#define WAITINGROOM_H
 
 #include <QDialog>
 #include <QUdpSocket>
 
 namespace Ui {
-class UdpTest;
+class WaitingRoom;
 }
 
-class UdpTest : public QDialog
+class WaitingRoom : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit UdpTest(QWidget *parent = 0);
-    ~UdpTest();
+    explicit WaitingRoom(QWidget *parent = 0);
+    ~WaitingRoom();
 
 signals:
     void PlayReversi();
@@ -33,7 +33,7 @@ private slots:
 private:
     QUdpSocket* sender;
     QUdpSocket* receiver;
-    Ui::UdpTest *ui;
+    Ui::WaitingRoom *ui;
 };
 
-#endif // UDPTEST_H
+#endif // WAITINGROOM_H

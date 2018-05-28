@@ -3,7 +3,7 @@
 #include "ai.h"
 #include <QDebug>
 #include <QMouseEvent>
-#include "udptest.h"
+#include "waitingroom.h"
 
 namespace Ui
 {
@@ -124,7 +124,7 @@ void Widget::on_Load_Button_clicked()
 
 void Widget::on_Online_Button_clicked()
 {
-    UdpTest* udptest = new UdpTest();
+    WaitingRoom* udptest = new WaitingRoom();
     connect(udptest, SIGNAL(PlayReversi()), this, SLOT(on_Reversi_Button_clicked()));
     udptest->exec();
 }

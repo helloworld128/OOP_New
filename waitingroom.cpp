@@ -1,13 +1,13 @@
-#include "udptest.h"
-#include "ui_udptest.h"
+#include "waitingroom.h"
 #include "myitem.h"
+#include "ui_waitingroom.h"
 #include <QHostInfo>
 #include <QNetworkInterface>
 #include <QListWidgetItem>
 
-UdpTest::UdpTest(QWidget *parent) :
+WaitingRoom::WaitingRoom(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::UdpTest)
+    ui(new Ui::WaitingRoom)
 {
     sender = new QUdpSocket(this);
     receiver = new QUdpSocket(this);
@@ -21,12 +21,12 @@ UdpTest::UdpTest(QWidget *parent) :
     ui->List->setItemWidget(aItem,new MyItem(0, QString("hello"), QString("hell")));
 }
 
-UdpTest::~UdpTest()
+WaitingRoom::~WaitingRoom()
 {
     delete ui;
 }
 
-void UdpTest::processPendingDatagrams()
+void WaitingRoom::processPendingDatagrams()
 {
     QByteArray datagram;
     while (receiver->hasPendingDatagrams()) {
@@ -37,7 +37,7 @@ void UdpTest::processPendingDatagrams()
     }
 }
 
-void UdpTest::on_Create_Button_clicked()
+void WaitingRoom::on_Create_Button_clicked()
 {
     QListWidgetItem *aItem = new QListWidgetItem;
     aItem->setSizeHint(QSize(0,80));
@@ -46,7 +46,7 @@ void UdpTest::on_Create_Button_clicked()
     ui->List->setItemWidget(aItem,item);
 }
 
-void UdpTest::on_Join_Button_clicked()
+void WaitingRoom::on_Join_Button_clicked()
 {
     QListWidgetItem* selected = ui->List->currentItem();
     QWidget* _item = ui->List->itemWidget(selected);
@@ -55,10 +55,10 @@ void UdpTest::on_Join_Button_clicked()
     close();
 }
 
-void UdpTest::on_Leave_Button_clicked(){close();}
+void WaitingRoom::on_Leave_Button_clicked(){close();}
 
 
 
-void UdpTest::on_Spectate_Button_clicked()
+void WaitingRoom::on_Spectate_Button_clicked()
 {
 }
