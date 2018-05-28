@@ -22,7 +22,7 @@ void Game::drawChess(int x,int y,int player)
 }
 
 void Game::nextPlayer()
-{  
+{
     if(gameover) return;
 
     //it's bad practice, but necessary to implement hints for reversi
@@ -409,6 +409,7 @@ FIR::~FIR()
             delete pictures[i][j];
 }
 
+
 Go::Go(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict): Game(_currentPlayerPict)
 {
     gridNum = 9;
@@ -522,8 +523,8 @@ void Go::eliminate(int xpos, int ypos, int Player)
         int xx = q[t][0], yy = q[t][1];
         board[xx][yy] = -1;
         pictures[xx][yy]->hide();
-    }
-}
+      }
+  }
 
 void Go::put(int xpos, int ypos)
 {
