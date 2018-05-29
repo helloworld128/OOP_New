@@ -1,5 +1,6 @@
 #include "games.h"
 #include "dialog.h"
+#include "util.h"
 #include <QDebug>
 #include <QDialog>
 
@@ -13,11 +14,7 @@ Game::~Game(){}
 
 void Game::drawChess(int x,int y,int player)
 {
-    QImage* img;
-    if(player == 0) img = new QImage("./images/stoneB.png");
-    else img = new QImage("./images/stoneW.png");
-    pictures[x][y]->setPixmap(QPixmap::fromImage(*img));
-    pictures[x][y]->show();
+    setPicture(pictures[x][y], (player == 0) ? BLACKCHESS : WHITECHESS);
     board[x][y] = player;
 }
 
@@ -33,10 +30,7 @@ void Game::nextPlayer()
     activePlayer = 1 - activePlayer;
     if (playerType[activePlayer] != HUMAN) waiting = true;
     else waiting = false;
-    QImage* img;
-    if(activePlayer == 0) img = new QImage("./images/stoneB.png");
-    else img = new QImage("./images/stoneW.png");
-    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
+    setPicture(currentPlayerPict, (activePlayer == 0) ? BLACKCHESS : WHITECHESS);
     calculatePossibleMoves();
     if(possibleMoves.empty())
     {
@@ -137,9 +131,7 @@ void Game::init(bool bIsHuman, bool wIsHuman)
     gameover = false;
     moveCount = -1;
     activePlayer = 0;
-    QImage* img = new QImage("./images/stoneB.png");
-    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
-    currentPlayerPict->show();
+    setPicture(currentPlayerPict, BLACKCHESS);
     saveStatus();
     if(playerType[0] != HUMAN) waiting = true;
     if(playerType[0] == AI)
@@ -159,11 +151,8 @@ void Game::check()
 
 void Reversi::hint()
 {
-    QImage* img = new QImage("./images/hint.png");
-    for(auto it = possibleMoves.begin();it != possibleMoves.end();it++)
-    {
-        pictures[it->x()][it->y()]->setPixmap(QPixmap::fromImage(*img));
-        pictures[it->x()][it->y()]->show();
+    for(auto it = possibleMoves.begin();it != possibleMoves.end();it++) {
+        setPicture(pictures[it->x()][it->y()], HINT);
     }
 }
 
@@ -241,9 +230,7 @@ void Reversi::init(bool bIsHuman, bool wIsHuman)
     black->display(2);
     white->display(2);
     activePlayer = 0;
-    QImage* img = new QImage("./images/stoneB.png");
-    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
-    currentPlayerPict->show();
+    setPicture(currentPlayerPict, BLACKCHESS);
     saveStatus();
     calculatePossibleMoves();
     if(playerType[0] != HUMAN) waiting = true;

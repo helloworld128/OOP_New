@@ -1,6 +1,7 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include "ai.h"
+#include "util.h"
 #include <QDebug>
 #include <QMouseEvent>
 #include "waitingroom.h"
@@ -68,9 +69,7 @@ void Widget::on_Reversi_Button_clicked()
     ui->Menu->hide();
     ui->GameMenu->show();
     ui->BCount_LCD->show(); ui->WCount_LCD->show();
-    QImage* img = new QImage("./images/chessboard.png");
-    ui->Board->setPixmap(QPixmap::fromImage(*img));
-    ui->Board->show();
+    setPicture(ui->Board, BOARD_1);
     ui->StopOnce_Button->hide();
     ui->GiveUp_Button->hide();
 
@@ -86,9 +85,7 @@ void Widget::on_FIR_Button_clicked()
     ui->MainMenu->hide();
     ui->GameMenu->show();
     ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
-    QImage* img = new QImage("./images/board2.png");
-    ui->Board->setPixmap(QPixmap::fromImage(*img));
-    ui->Board->show();
+    setPicture(ui->Board, BOARD_2);
     ui->StopOnce_Button->hide();
     ui->GiveUp_Button->hide();
 
@@ -101,9 +98,7 @@ void Widget::on_Go_Button_clicked()
     ui->MainMenu->hide();
     ui->GameMenu->show();
     ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
-    QImage* img = new QImage("./images/board2.png");
-    ui->Board->setPixmap(QPixmap::fromImage(*img));
-    ui->Board->show();
+    setPicture(ui->Board, BOARD_2);
     ui->StopOnce_Button->show();
     ui->GiveUp_Button->show();
 }
