@@ -83,12 +83,12 @@ private:
 class Go:public Game
 {
 public:
-    Go(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict);
+        Go(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict);
         bool canPut(int xpos, int ypos);
         void put(int xpos, int ypos);
         void showResult();
-        bool judgeRepeat(const int Board[9][9]);
-        bool stillalive(int xpos, int ypos, int Player,const int _board[9][9]);
+        bool judgeRepeat(int xpos, int ypos, int** Board);
+        bool stillalive(int xpos, int ypos, int Player, int** _board);
         void eliminate(int xpos, int ypos, int Player);
         virtual ~Go();
 };
