@@ -12,6 +12,7 @@ public:
     friend class ReversiAi;
     friend class FIRAi;
     void click(int x, int y);
+    void reStart();
     virtual void undo();
     virtual void init(bool bIsHuman, bool wIsHuman);
     virtual void nextPlayer();
@@ -22,6 +23,9 @@ public:
     QPoint vBottomRight;
     int gridSize;
     bool waiting = false;
+    int moveCount = -1;
+    int activePlayer = 0;      //0-Black; 1-White
+    int previousMove[100][9][9];
 
 signals:
     void aiPlay();
@@ -34,17 +38,14 @@ protected:
     virtual void calculatePossibleMoves();
     virtual void check();
 
-    //0-Black; 1-White
-    int activePlayer = 0;
 
     bool gameover = false;
     enum PLAYERTYPE{AI,HUMAN};
     QLabel* pictures[9][9];
     int board[9][9];
-    int previousMove[100][9][9];
     int previousPlayer[100];
     std::vector<QPoint> possibleMoves;
-    int moveCount = -1;
+
     PLAYERTYPE playerType[2];
     int gridNum;
     QLabel* currentPlayerPict;

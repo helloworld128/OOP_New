@@ -2,8 +2,11 @@
 #include "ui_widget.h"
 #include "ai.h"
 #include "util.h"
+#include <games.h>
 #include <QDebug>
+#include <QFileDialog>
 #include <QMouseEvent>
+#include <QTextStream>
 #include "waitingroom.h"
 
 namespace Ui
@@ -119,20 +122,46 @@ void Widget::on_Menu_Button_clicked()
 
 void Widget::on_Save_Button_clicked()
 {
-    QFile saveFile(QString("savedGames/1.txt"));
-    if(!saveFile.open(QFile::ReadWrite)) qDebug() << "Failed to open file!";
-    QTextStream cout(&saveFile);
-    cout << 1;
+     QString fileName(tr("game.txt"));
+     QString dir = QFileDialog::getExistingDirectory
+             (this,tr("Open Directory"),"/home", QFileDialog::ShowDirsOnly
+                                                     | QFileDialog::DontResolveSymlinks);
+     QDir d;
+     QFile file(dir+"/"+fileName);
+     file.open(QIODevice::ReadWrite);
+     QTextStream stream(&file);
+     stream << game->moveCount << endl;
+     stream << game->activePlayer << endl;
+     for (int t = 0 ; t <= game->moveCount; t++)
+         for (int i = 0; i < 9; i++)
+         {
+             for (int j = 0; j < 9; j++)
+             {
+                 int x = game->previousMove[t][i][j];
+                 stream << x << "  ";
+             }
+             stream << endl;
+         }
+     file.close();
 }
 
 void Widget::on_Load_Button_clicked()
 {
-    QFile saveFile(QString("savedGames/1.txt"));
-    if(!saveFile.open(QFile::ReadWrite)) qDebug() << "Failed to open file!";
-    QTextStream cin(&saveFile);
-    int data;
-    cin >> data;
-    qDebug() << data;
+    QString fileName("game.txt");
+    QString dir = QFileDialog::getExistingDirectory
+            (this,tr("Open Directory"),"/home", QFileDialog::ShowDirsOnly
+                                                    | QFileDialog::DontResolveSymlinks);
+    QDir d;
+    QFile file(dir+"/"+fileName);
+    file.open(QIODevice::ReadWrite);
+    QTextStream stream(&file);
+    stream >> game->moveCount >> game->activePlayer;
+    for (int t = 0 ; t <= game->moveCount; t++)
+        for (int i = 0; i < 9; i++)
+            for (int j = 0; j < 9; j++)
+                stream >> game->previousMove[t][i][j];
+    game->reStart();
+    file.close();
 }
 
 void Widget::on_Online_Button_clicked()

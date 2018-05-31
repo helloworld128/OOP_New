@@ -117,7 +117,6 @@ void Game::saveStatus()
             previousMove[moveCount][i][j] = board[i][j];
         }
 }
-
 void Game::init(bool bIsHuman, bool wIsHuman)
 {
     for(int i = 0;i < 9;i++)
@@ -147,6 +146,23 @@ void Game::check()
         for(int j = 0;j < gridNum;j++)
             if(board[i][j] == -1) return;
     showResult();
+}
+
+
+void Game::reStart()
+{
+    for (int x = 0; x < 9; x++)
+        for (int y = 0; y < 9; y++)
+        {
+            if (previousMove[moveCount][x][y] == 0)
+                setPicture(pictures[x][y], BLACKCHESS);
+            if (previousMove[moveCount][x][y] == 1)
+                setPicture(pictures[x][y], WHITECHESS);
+            if (previousMove[moveCount][x][y] == -1)
+                pictures[x][y]->hide();
+        }
+
+    nextPlayer();
 }
 
 void Reversi::hint()
