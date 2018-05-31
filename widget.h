@@ -23,7 +23,7 @@ public:
     ~Widget();
 
     Game* game;
-    WaitingRoom* hall;
+    WaitingRoom* hall = nullptr;
 
 protected:
     void mousePressEvent(QMouseEvent *);

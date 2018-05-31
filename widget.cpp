@@ -4,11 +4,9 @@
 #include "util.h"
 #include <QDebug>
 #include <QMouseEvent>
-<<<<<<< Updated upstream
-=======
 #include <QFileDialog>
 #include "waitingroom.h"
->>>>>>> Stashed changes
+
 
 namespace Ui
 {
@@ -92,10 +90,17 @@ void Widget::on_Reversi_Button_clicked()
     ui->MainMenu->hide();
     ui->Menu->hide();
     ui->GameMenu->show();
-    ui->BCount_LCD->show(); ui->WCount_LCD->show();
     setPicture(ui->Board, BOARD_1);
     ui->StopOnce_Button->hide();
     ui->GiveUp_Button->hide();
+    ui->BCount_LCD->show(); ui->WCount_LCD->show();
+    if (hall != nullptr){
+        ui->Save_Button->hide(); ui->Load_Button->hide(); ui->Undo_Button->hide();
+        ui->bName->setText("payer1");
+        ui->wName->setText("plaer2");
+        ui->Start_Button->setText("Ready");
+        ui->BAI->hide(); ui->BPlayer->hide(); ui->WAI->hide(); ui->WPlayer->hide();
+    }
 
 }
 
@@ -113,7 +118,13 @@ void Widget::on_FIR_Button_clicked()
     setPicture(ui->Border, BORDER);
     ui->StopOnce_Button->hide();
     ui->GiveUp_Button->hide();
-
+    if (hall != nullptr){
+        ui->Save_Button->hide(); ui->Load_Button->hide(); ui->Undo_Button->hide();
+        ui->bName->setText("payer1");
+        ui->wName->setText("plaer2");
+        ui->Start_Button->setText("Ready");
+        ui->BAI->hide(); ui->BPlayer->hide(); ui->WAI->hide(); ui->WPlayer->hide();
+    }
 }
 void Widget::on_Go_Button_clicked()
 {
@@ -127,6 +138,13 @@ void Widget::on_Go_Button_clicked()
     setPicture(ui->Border, BORDER);
     ui->StopOnce_Button->show();
     ui->GiveUp_Button->show();
+    if (hall != nullptr){
+        ui->Save_Button->hide(); ui->Load_Button->hide(); ui->Undo_Button->hide();
+        ui->bName->setText("payer1");
+        ui->wName->setText("plaer2");
+        ui->Start_Button->setText("Ready");
+        ui->BAI->hide(); ui->BPlayer->hide(); ui->WAI->hide(); ui->WPlayer->hide();
+    }
 }
 
 void Widget::on_Undo_Button_clicked()
