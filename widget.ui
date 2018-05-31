@@ -156,6 +156,9 @@ color:rgb(255, 170, 255)</string>
     </item>
     <item row="12" column="0" colspan="2">
      <widget class="QPushButton" name="StopOnce_Button">
+      <property name="styleSheet">
+       <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
+      </property>
       <property name="text">
        <string>StopOnce</string>
       </property>
@@ -304,10 +307,16 @@ color:rgb(255, 170, 255)</string>
       </property>
       <item>
        <widget class="QLabel" name="wPict">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
         <property name="maximumSize">
          <size>
-          <width>50</width>
-          <height>50</height>
+          <width>40</width>
+          <height>40</height>
          </size>
         </property>
         <property name="styleSheet">
@@ -333,7 +342,7 @@ color:rgb(255, 170, 255)</string>
       <item>
        <widget class="QLabel" name="wName">
         <property name="styleSheet">
-         <string notr="true">font: 18pt &quot;Adobe Arabic&quot;;</string>
+         <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
         </property>
         <property name="text">
          <string>White</string>
@@ -343,12 +352,18 @@ color:rgb(255, 170, 255)</string>
      </layout>
     </item>
     <item row="3" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,2">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,2">
       <property name="sizeConstraint">
        <enum>QLayout::SetDefaultConstraint</enum>
       </property>
       <item>
        <widget class="QLabel" name="bPict">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
         <property name="maximumSize">
          <size>
           <width>40</width>
@@ -372,7 +387,7 @@ color:rgb(255, 170, 255)</string>
       <item>
        <widget class="QLabel" name="bName">
         <property name="styleSheet">
-         <string notr="true">font: 18pt &quot;Adobe Arabic&quot;;</string>
+         <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
         </property>
         <property name="text">
          <string>Black</string>
@@ -386,6 +401,9 @@ color:rgb(255, 170, 255)</string>
     </item>
     <item row="11" column="0" colspan="2">
      <widget class="QPushButton" name="GiveUp_Button">
+      <property name="styleSheet">
+       <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
+      </property>
       <property name="text">
        <string>GiveUp</string>
       </property>

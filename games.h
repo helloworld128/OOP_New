@@ -22,6 +22,8 @@ public:
     QPoint vBottomRight;
     int gridSize;
     bool waiting = false;
+    int moveCount = -1;
+    int previousMove[100][9][9];
 
 signals:
     void aiPlay();
@@ -41,10 +43,8 @@ protected:
     enum PLAYERTYPE{AI,HUMAN};
     QLabel* pictures[9][9];
     int board[9][9];
-    int previousMove[100][9][9];
     int previousPlayer[100];
     std::vector<QPoint> possibleMoves;
-    int moveCount = -1;
     PLAYERTYPE playerType[2];
     int gridNum;
     QLabel* currentPlayerPict;

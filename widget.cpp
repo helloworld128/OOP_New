@@ -4,6 +4,11 @@
 #include "util.h"
 #include <QDebug>
 #include <QMouseEvent>
+<<<<<<< Updated upstream
+=======
+#include <QFileDialog>
+#include "waitingroom.h"
+>>>>>>> Stashed changes
 
 namespace Ui
 {
@@ -139,12 +144,25 @@ void Widget::on_Menu_Button_clicked()
     delete game;
 }
 
-void Widget::on_Save_Button_clicked()
-{
-    QFile saveFile(QString("savedGames/1.txt"));
-    if(!saveFile.open(QFile::ReadWrite)) qDebug() << "Failed to open file!";
-    QTextStream cout(&saveFile);
-    cout << 1;
+void Widget::on_Save_Button_clicked(){
+    QString fileName(tr("game.txt"));
+    QString dir = QFileDialog::getExistingDirectory
+            (this,tr("Open Directory"),"/home", QFileDialog::ShowDirsOnly
+             | QFileDialog::DontResolveSymlinks);
+    QDir d;
+    QFile file(dir+"/"+fileName);
+    file.open(QIODevice::ReadWrite);
+    QDataStream stream(&file);
+    stream << game-> moveCount;
+    for (int t = 0 ; t <= game->moveCount; t++)
+    {
+        for (int i = 0; i < 9; i++){
+            for (int j = 0; j < 9; j++)
+                stream << game->previousMove[t][i][j] << "\0";
+            stream << "\n";
+        }
+    }
+    file.close();
 }
 
 void Widget::on_Load_Button_clicked()
