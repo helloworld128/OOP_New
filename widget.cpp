@@ -4,7 +4,6 @@
 #include "util.h"
 #include <QDebug>
 #include <QMouseEvent>
-#include "waitingroom.h"
 
 namespace Ui
 {
@@ -19,6 +18,7 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
     ui->GameMenu->hide();
     ui->Board->hide();
+    ui->Border->hide();
     ui->MainMenu->hide();
     selectBPlayer.addButton(ui->BPlayer); selectBPlayer.addButton(ui->BAI);
     selectWPlayer.addButton(ui->WPlayer); selectWPlayer.addButton(ui->WAI);
@@ -49,6 +49,25 @@ void Widget::mousePressEvent(QMouseEvent *qme)
             game->click(x,y);
         }
     }
+}
+
+//type: 0-reversi, 1-FIR, 2-go
+void Widget::createGame(int type, int side, QString name){
+    switch(type){
+    case 0:
+        on_Reversi_Button_clicked();
+        break;
+    case 1:
+        on_FIR_Button_clicked();
+        break;
+    case 2:
+        on_Go_Button_clicked();
+        break;
+    }
+    //game->isOnlineGame = true;
+    //connect(game, SIGNAL(put(int,int)), hall, SLOT(sendMove(int,int)));
+    //connect(hall, SIGNAL(receiveMove(int,int), game, SLOT(opponentPut(int,int)));
+    hall->close();
 }
 
 
@@ -86,6 +105,7 @@ void Widget::on_FIR_Button_clicked()
     ui->GameMenu->show();
     ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
     setPicture(ui->Board, BOARD_2);
+    setPicture(ui->Border, BORDER);
     ui->StopOnce_Button->hide();
     ui->GiveUp_Button->hide();
 
@@ -99,6 +119,7 @@ void Widget::on_Go_Button_clicked()
     ui->GameMenu->show();
     ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
     setPicture(ui->Board, BOARD_2);
+    setPicture(ui->Border, BORDER);
     ui->StopOnce_Button->show();
     ui->GiveUp_Button->show();
 }
@@ -113,6 +134,7 @@ void Widget::on_Menu_Button_clicked()
     ui->MainMenu->show();
     ui->GameMenu->hide();
     ui->Board->hide();
+    ui->Border->hide();
     ui->CurrentPlayerPict->hide();
     delete game;
 }
@@ -137,8 +159,8 @@ void Widget::on_Load_Button_clicked()
 
 void Widget::on_Online_Button_clicked()
 {
-    WaitingRoom* hall = new WaitingRoom();
-    connect(hall, SIGNAL(PlayReversi()), this, SLOT(on_Reversi_Button_clicked()));
+    hall = new WaitingRoom();
+    connect(hall, SIGNAL(createGame(int,int,QString)), this, SLOT(createGame(int,int,QString)));
     hall->exec();
 }
 

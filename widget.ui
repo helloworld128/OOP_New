@@ -128,13 +128,13 @@ color:rgb(255, 170, 255)</string>
   <widget class="QWidget" name="GameMenu" native="true">
    <property name="geometry">
     <rect>
-     <x>550</x>
+     <x>570</x>
      <y>40</y>
      <width>231</width>
      <height>541</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="Gamemenu" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0" columnstretch="1,1" rowminimumheight="0,0,0,0,20,20,0,0,0,0,0,0,0,0" columnminimumwidth="0,0">
+   <layout class="QGridLayout" name="Gamemenu" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0,0" columnstretch="1,1" rowminimumheight="0,0,0,0,20,20,0,0,0,0,0,0,0" columnminimumwidth="0,0">
     <property name="verticalSpacing">
      <number>15</number>
     </property>
@@ -396,8 +396,8 @@ color:rgb(255, 170, 255)</string>
   <widget class="QLabel" name="CurrentPlayerPict">
    <property name="geometry">
     <rect>
-     <x>680</x>
-     <y>40</y>
+     <x>700</x>
+     <y>35</y>
      <width>60</width>
      <height>60</height>
     </rect>
@@ -476,6 +476,20 @@ color:rgb(255, 170, 255)</string>
     </item>
    </layout>
   </widget>
+  <widget class="QLabel" name="Border">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>30</y>
+     <width>560</width>
+     <height>560</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
+  <zorder>Border</zorder>
   <zorder>Board</zorder>
   <zorder>GameMenu</zorder>
   <zorder>CurrentPlayerPict</zorder>
