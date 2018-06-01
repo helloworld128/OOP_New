@@ -51,7 +51,7 @@ void WaitingRoom::on_Join_Button_clicked()
     QListWidgetItem* selected = ui->List->currentItem();
     QWidget* _item = ui->List->itemWidget(selected);
     MyItem* item = dynamic_cast<MyItem*>(_item);
-    emit PlayReversi();
+    qDebug() << item->nameb;
     hide();
 }
 
@@ -71,7 +71,14 @@ void WaitingRoom::on_Cancel_Button_clicked()
 
 void WaitingRoom::on_OK_Button_clicked()
 {
+    int tmpType;
+    int tmpSide;
+    if (ui->rButton->isChecked()) tmpType = 0;
+    else if (ui->fButton->isChecked()) tmpType = 1;
+    else tmpType = 2;
+    tmpSide = ui->white->isChecked();
 
+    emit createGame(tmpType, tmpSide, ui->lineEdit->text());
 }
 
 void WaitingRoom::on_lineEdit_editingFinished()

@@ -45,7 +45,6 @@ protected:
     int board[9][9];
     int previousPlayer[100];
     std::vector<QPoint> possibleMoves;
-
     PLAYERTYPE playerType[2];
     int gridNum;
     QLabel* currentPlayerPict;

@@ -18,7 +18,7 @@ public:
     ~WaitingRoom();
 
 signals:
-    void PlayReversi();
+    void createGame(int type, int side, QString name);
 
 private slots:
     void readData();
