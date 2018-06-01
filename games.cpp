@@ -1,5 +1,6 @@
 #include "games.h"
 #include "dialog.h"
+#include "util.h"
 #include <QDebug>
 #include <QDialog>
 
@@ -13,11 +14,7 @@ Game::~Game(){}
 
 void Game::drawChess(int x,int y,int player)
 {
-    QImage* img;
-    if(player == 0) img = new QImage("./images/stoneB.png");
-    else img = new QImage("./images/stoneW.png");
-    pictures[x][y]->setPixmap(QPixmap::fromImage(*img));
-    pictures[x][y]->show();
+    setPicture(pictures[x][y], (player == 0) ? BLACKCHESS : WHITECHESS);
     board[x][y] = player;
 }
 
@@ -33,10 +30,7 @@ void Game::nextPlayer()
     activePlayer = 1 - activePlayer;
     if (playerType[activePlayer] != HUMAN) waiting = true;
     else waiting = false;
-    QImage* img;
-    if(activePlayer == 0) img = new QImage("./images/stoneB.png");
-    else img = new QImage("./images/stoneW.png");
-    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
+    setPicture(currentPlayerPict, (activePlayer == 0) ? BLACKCHESS : WHITECHESS);
     calculatePossibleMoves();
     if(possibleMoves.empty())
     {
@@ -123,7 +117,6 @@ void Game::saveStatus()
             previousMove[moveCount][i][j] = board[i][j];
         }
 }
-
 void Game::init(bool bIsHuman, bool wIsHuman)
 {
     for(int i = 0;i < 9;i++)
@@ -137,9 +130,7 @@ void Game::init(bool bIsHuman, bool wIsHuman)
     gameover = false;
     moveCount = -1;
     activePlayer = 0;
-    QImage* img = new QImage("./images/stoneB.png");
-    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
-    currentPlayerPict->show();
+    setPicture(currentPlayerPict, BLACKCHESS);
     saveStatus();
     if(playerType[0] != HUMAN) waiting = true;
     if(playerType[0] == AI)
@@ -157,13 +148,27 @@ void Game::check()
     showResult();
 }
 
+
+void Game::reStart()
+{
+    for (int x = 0; x < 9; x++)
+        for (int y = 0; y < 9; y++)
+        {
+            if (previousMove[moveCount][x][y] == 0)
+                setPicture(pictures[x][y], BLACKCHESS);
+            if (previousMove[moveCount][x][y] == 1)
+                setPicture(pictures[x][y], WHITECHESS);
+            if (previousMove[moveCount][x][y] == -1)
+                pictures[x][y]->hide();
+        }
+
+    nextPlayer();
+}
+
 void Reversi::hint()
 {
-    QImage* img = new QImage("./images/hint.png");
-    for(auto it = possibleMoves.begin();it != possibleMoves.end();it++)
-    {
-        pictures[it->x()][it->y()]->setPixmap(QPixmap::fromImage(*img));
-        pictures[it->x()][it->y()]->show();
+    for(auto it = possibleMoves.begin();it != possibleMoves.end();it++) {
+        setPicture(pictures[it->x()][it->y()], HINT);
     }
 }
 
@@ -241,9 +246,7 @@ void Reversi::init(bool bIsHuman, bool wIsHuman)
     black->display(2);
     white->display(2);
     activePlayer = 0;
-    QImage* img = new QImage("./images/stoneB.png");
-    currentPlayerPict->setPixmap(QPixmap::fromImage(*img));
-    currentPlayerPict->show();
+    setPicture(currentPlayerPict, BLACKCHESS);
     saveStatus();
     calculatePossibleMoves();
     if(playerType[0] != HUMAN) waiting = true;
@@ -430,21 +433,61 @@ Go::~Go()
             delete pictures[i][j];
 }
 
-bool Go::occurredbefore()
+bool Go::judgeRepeat(int xpos, int ypos, int** _board)
 {
+    int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
+    for (int d = 0; d < 4; d++)
+    {
+        int x = xpos + dir[d][0], y = ypos + dir[d][1];
+        if (x < 0 || x >= 9 || y < 0 || y >= 9||_board[x][y] != 1 - activePlayer)
+            continue;
+        bool canEliminate = true;
+        int q[90][2] = {0};
+        bool visited[9][9] = {0};
+        int f = -1, r = 0;
+        q[0][0] = x, q[0][1] = y, visited[x][y] = true;
+        while (f < r && canEliminate)
+        {
+            f++;
+            for (int i = 0 ; i < 4; i++)
+            {
+                int xx = q[f][0] + dir[i][0], yy = q[f][1] + dir[i][1];
+                if (0 <= xx && xx < 9 && 0 <= yy && yy < 9)
+                {
+                    if (_board[xx][yy] == -1) canEliminate = false;
+                    if (_board[xx][yy] == 1 - activePlayer && !visited[xx][yy])
+                    {
+                        r++;
+                        q[r][0] = xx;
+                        q[r][1] = yy;
+                        visited[xx][yy] = true;
+                    }
+                }
+            }
+        }
+        if (canEliminate)
+            for (int t = 0; t <= r; t++)
+            {
+                int x = q[t][0], y = q[t][1];
+                _board[x][y] = -1;
+            }
+    }
+
+
     for (int t = 0; t <= moveCount; t++)
     {
-        bool flag;
-        if (previousPlayer[t] == activePlayer) flag = true; else flag = false;
-        for (int i = 0; i < 9; i++) if (flag)
+        bool flag = false;
+        if (previousPlayer[t] == activePlayer) flag = true;
+        for (int i = 0; i < 9; i++)
             for (int j = 0; j < 9; j++)
-                if (board[i][j] != previousMove[t][i][j]) flag = false;
+                if (previousMove[t][i][j] != _board[i][j]) flag = false;
         if (flag) return true;
     }
+
     return false;
 }
 
-bool Go::stillalive(int xpos, int ypos, int Player, int _board[9][9])
+bool Go::stillalive(int xpos, int ypos, int Player, int** _board)
 {
     int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
     int q[90][2];
@@ -475,21 +518,32 @@ bool Go::stillalive(int xpos, int ypos, int Player, int _board[9][9])
 
 bool Go::canPut(int xpos, int ypos)
 {
-    int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
     if(board[xpos][ypos] != -1) return false;
-    if (stillalive(xpos, ypos, activePlayer, board)) return true;
 
-    int _board[9][9];
+    bool flag = false;
+
+    int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
+    int **_board = new int*[9];
+    for (int i = 0; i < 9 ; i++ ) _board[i] = new int[9];
     for (int i = 0; i < 9; i++)
         for (int j = 0; j < 9; j++) _board[i][j] = board[i][j];
     _board[xpos][ypos] = activePlayer;
 
-    for (int i = 0; i < 4; i++)
+    if (stillalive(xpos, ypos, activePlayer, _board)) flag = true;
+    else for (int i = 0; i < 4; i++)
     {
         int x = xpos + dir[i][0], y = ypos + dir[i][1];
-        if (0 <= x && x < 9 && 0 <= y && y < 9 && !stillalive(x,y,1-activePlayer,_board)) return true;
+        if (0 <= x && x < 9 && 0 <= y && y < 9 &&
+                !stillalive(x,y,1-activePlayer,_board))
+            flag = true;
     }
-    return false;
+
+   if (judgeRepeat(xpos, ypos, _board)) flag = false;
+
+    for (int i = 0; i < 9 ; i++ ) delete[] _board[i];
+    delete[] _board;
+
+    return flag;
 }
 
 void Go::eliminate(int xpos, int ypos, int Player)
@@ -521,10 +575,10 @@ void Go::eliminate(int xpos, int ypos, int Player)
     for (int t = 0; t <= r; t++)
     {
         int xx = q[t][0], yy = q[t][1];
-        board[xx][yy] = -1;
-        pictures[xx][yy]->hide();
-      }
-  }
+         board[xx][yy] = -1;
+         pictures[xx][yy]->hide();
+    }
+}
 
 void Go::put(int xpos, int ypos)
 {
@@ -535,7 +589,6 @@ void Go::put(int xpos, int ypos)
         int x = xpos + dir[i][0], y = ypos + dir[i][1];
         if (0 <= x && x < 9 && 0 <= y && y < 9 && board[x][y] == 1-activePlayer) eliminate(x,y,1-activePlayer);
     }
-    if (occurredbefore()) this->undo();
 }
 
 void Go::showResult()

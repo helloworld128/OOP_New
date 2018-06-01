@@ -6,9 +6,11 @@
 
 class MyItem : public QWidget{
     QGridLayout layout;
-    QLabel type, black, bName, white, wName;
+    QLabel Type, black, bName, white, wName;
 public:
     MyItem(int _type, QString _bName, QString _wName);
+    int type;
+    QString nameb, namew;
 };
 
 #endif // MYITEM_H

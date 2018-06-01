@@ -30,7 +30,8 @@ SOURCES += \
     dialog.cpp \
     ai.cpp \
     myitem.cpp \
-    waitingroom.cpp
+    waitingroom.cpp \
+    util.cpp
 
 HEADERS += \
         widget.h \
@@ -38,7 +39,8 @@ HEADERS += \
     dialog.h \
     ai.h \
     myitem.h \
-    waitingroom.h
+    waitingroom.h \
+    util.h
 
 FORMS += \
         widget.ui \

@@ -6,6 +6,7 @@
 #include <QLCDNumber>
 #include <QButtonGroup>
 #include "games.h"
+#include "waitingroom.h"
 
 namespace Ui {
 class Widget;
@@ -22,6 +23,7 @@ public:
     ~Widget();
 
     Game* game;
+    WaitingRoom* hall = nullptr;
 
 protected:
     void mousePressEvent(QMouseEvent *);
@@ -31,6 +33,7 @@ private:
 
 private slots:
 
+    void createGame(int type, int side, QString name);
     void on_Start_Button_clicked();
     void on_Reversi_Button_clicked();
     void on_FIR_Button_clicked();
@@ -42,6 +45,8 @@ private slots:
     void on_Online_Button_clicked();
     void on_Local_Button_clicked();
     void on_Back_Button_clicked();
+    void on_GiveUp_Button_clicked();
+    void on_StopOnce_Button_clicked();
 };
 
 #endif // WIDGET_H
