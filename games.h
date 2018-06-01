@@ -12,6 +12,7 @@ public:
     friend class ReversiAi;
     friend class FIRAi;
     void click(int x, int y);
+    void reStart();
     virtual void undo();
     virtual void init(bool bIsHuman, bool wIsHuman);
     virtual void nextPlayer();
@@ -23,6 +24,7 @@ public:
     int gridSize;
     bool waiting = false;
     int moveCount = -1;
+    int activePlayer = 0;      //0-Black; 1-White
     int previousMove[100][9][9];
 
 signals:
@@ -36,8 +38,6 @@ protected:
     virtual void calculatePossibleMoves();
     virtual void check();
 
-    //0-Black; 1-White
-    int activePlayer = 0;
 
     bool gameover = false;
     enum PLAYERTYPE{AI,HUMAN};
