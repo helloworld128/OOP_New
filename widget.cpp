@@ -43,6 +43,7 @@ void Widget::mousePressEvent(QMouseEvent *qme)
 {
     if(qme->button() == Qt::LeftButton)
     {
+        if (game == nullptr) return;
         if (game->waiting) return;
         QPoint pos(qme->x(),qme->y());
         if(game != nullptr && game->vTopLeft < pos && pos < game->vBottomRight)
