@@ -26,15 +26,17 @@ public:
     int moveCount = -1;
     int activePlayer = 0;      //0-Black; 1-White
     int previousMove[100][9][9];
+    int isOnlineGame = false;
 
 signals:
     void aiPlay();
+    void sendPut(int x, int y);
 
 protected:
     void drawChess(int x,int y, int player);
     void saveStatus();
-    virtual bool canPut(int xpos, int ypos) = 0;
     virtual void put(int xpos, int ypos);
+    virtual bool canPut(int xpos, int ypos) = 0;
     virtual void calculatePossibleMoves();
     virtual void check();
 

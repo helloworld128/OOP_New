@@ -71,8 +71,8 @@ void Widget::createGame(int type, int side, QString name){
         on_Go_Button_clicked();
         break;
     }
-    //game->isOnlineGame = true;
-    //connect(game, SIGNAL(put(int,int)), hall, SLOT(sendMove(int,int)));
+    game->isOnlineGame = true;
+    connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
     //connect(hall, SIGNAL(receiveMove(int,int), game, SLOT(opponentPut(int,int)));
     hall->close();
 }

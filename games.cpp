@@ -68,6 +68,7 @@ void Game::click(int x, int y)
 
 void Game::put(int xpos, int ypos)
 {
+    if (isOnlineGame) emit sendPut(xpos, ypos);
     drawChess(xpos,ypos,activePlayer);
 }
 

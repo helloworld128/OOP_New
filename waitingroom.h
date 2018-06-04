@@ -22,21 +22,14 @@ signals:
 
 private slots:
     void readData();
-
+    void sendMove(int x, int y);
     void on_Create_Button_clicked();
-
     void on_Join_Button_clicked();
-
     void on_Leave_Button_clicked();
-
     void on_Spectate_Button_clicked();
-
     void on_Cancel_Button_clicked();
-
     void on_OK_Button_clicked();
-
     void on_lineEdit_editingFinished();
-
     void on_Refresh_Button_clicked();
 
 private:

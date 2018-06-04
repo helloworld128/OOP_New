@@ -504,7 +504,7 @@ color:rgb(255, 170, 255)</string>
     </rect>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string/>
    </property>
   </widget>
   <zorder>Border</zorder>

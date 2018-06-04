@@ -10,7 +10,7 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     ui(new Ui::WaitingRoom)
 {
     socket = new QTcpSocket(this);
-    socket->connectToHost(QHostAddress("183.172.107.254"),23333);
+    socket->connectToHost(QHostAddress::LocalHost,23333);
     connect(socket, SIGNAL(readyRead()), this, SLOT(readData()));
     ui->setupUi(this);
     ui->ChooseGame->hide();
@@ -19,14 +19,14 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     ui->rButton->setChecked(true); ui->black->setChecked(true);
     requestCurrentGames();
 
-    QListWidgetItem *aItem = new QListWidgetItem;
-    aItem->setSizeHint(QSize(0,80));
-    ui->List->addItem(aItem);
-    ui->List->setItemWidget(aItem,new MyItem(0, QString("hello"), QString("hell")));
+//    QListWidgetItem *aItem = new QListWidgetItem;
+//    aItem->setSizeHint(QSize(0,80));
+//    ui->List->addItem(aItem);
+//    ui->List->setItemWidget(aItem,new MyItem(0, QString("hello"), QString("hell")));
 }
 
 void WaitingRoom::requestCurrentGames(){
-    socket->write(QByteArray::fromStdString("r"));
+    socket->write("g");
 }
 
 WaitingRoom::~WaitingRoom()
@@ -36,7 +36,33 @@ WaitingRoom::~WaitingRoom()
 
 void WaitingRoom::readData()
 {
+    char type;
+    auto content = socket->readAll().data();
+    sscanf(content, "%c",&type);
+    switch (type){
+    //gameList received
+    case 'g':
+        break;
+    //opponent ready
+    case 'r':
+        break;
+    //opponent put
+    case 'p':
+        break;
+    //opponent left
+    case 'e':
+        break;
+    //TODO: opponent surrendered? other functions?
+    default:
+        qDebug() << "unknown command received!";
+        break;
+    }
+}
 
+void WaitingRoom::sendMove(int x, int y){
+    QByteArray tmp;
+    tmp.append('p').append(x + '0').append(y + '0');
+    socket->write(tmp);
 }
 
 void WaitingRoom::on_Create_Button_clicked()
