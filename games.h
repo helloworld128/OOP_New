@@ -11,7 +11,6 @@ public:
     Game(QLabel* _currentPlayerPict);
     friend class ReversiAi;
     friend class FIRAi;
-    void click(int x, int y);
     void reStart();
     virtual void undo();
     virtual void init(bool bIsHuman, bool wIsHuman);
@@ -32,6 +31,12 @@ signals:
     void aiPlay();
     void sendPut(int x, int y);
 
+public slots:
+    void click(int x, int y);
+
+protected slots:
+    void opponentReady();
+
 protected:
     void drawChess(int x,int y, int player);
     void saveStatus();
@@ -42,7 +47,7 @@ protected:
 
 
     bool gameover = false;
-    enum PLAYERTYPE{AI,HUMAN};
+    enum PLAYERTYPE{AI,HUMAN,ONLINE};
     QLabel* pictures[9][9];
     int board[9][9];
     int previousPlayer[100];

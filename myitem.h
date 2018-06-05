@@ -10,6 +10,8 @@ class MyItem : public QWidget{
 public:
     MyItem(int _type, QString _bName, QString _wName);
     int type;
+    //uid is a 4-digit int used to uniquely identify a game.
+    int uid;
     QString nameb, namew;
 };
 

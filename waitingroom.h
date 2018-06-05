@@ -18,11 +18,16 @@ public:
     ~WaitingRoom();
 
 signals:
-    void createGame(int type, int side, QString name);
+    void createGame(int type, int side, QString localName, QString otherName = "");
+    void opponentReady();
+    void opponentPut(int x, int y);
+    void opponentEntered(char* name);
+    void opponentLeft();
 
 private slots:
     void readData();
     void sendMove(int x, int y);
+    void sendReady();
     void on_Create_Button_clicked();
     void on_Join_Button_clicked();
     void on_Leave_Button_clicked();
@@ -37,6 +42,7 @@ private:
     Ui::WaitingRoom *ui;
     QTcpSocket* socket = nullptr;
     QButtonGroup games, role;
+    QString playerName;
 };
 
 #endif // WAITINGROOM_H

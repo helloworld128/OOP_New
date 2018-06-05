@@ -1,7 +1,7 @@
 #include "myitem.h"
 #include <QLabel>
 
-MyItem::MyItem(int _type, QString _bName, QString _wName) : type(_type), nameb(_bName), namew(_wName)
+MyItem::MyItem(int _type, QString _bName, QString _wName) : type(_type), nameb(_bName), namew(_wName), uid(5387)
 {
     switch (_type){
     case 0:

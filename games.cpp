@@ -18,6 +18,10 @@ void Game::drawChess(int x,int y,int player)
     board[x][y] = player;
 }
 
+void Game::opponentReady(){
+
+}
+
 void Game::nextPlayer()
 {
     if(gameover) return;
@@ -93,6 +97,7 @@ void Game::undo()
     }
     activePlayer = moveCount ? (1 - previousPlayer[moveCount]) : 0;
     gameover = false;
+    setPicture(currentPlayerPict, activePlayer == 0 ? BLACKCHESS : WHITECHESS);
     for(int i = 0;i < 9;i++)
     {
         for(int j = 0;j < 9;j++)
@@ -129,6 +134,7 @@ void Game::init(bool bIsHuman, bool wIsHuman)
     playerType[0] = bIsHuman ? HUMAN : AI;
     playerType[1] = wIsHuman ? HUMAN : AI;
     gameover = false;
+    waiting = false;
     moveCount = -1;
     activePlayer = 0;
     setPicture(currentPlayerPict, BLACKCHESS);
@@ -239,6 +245,7 @@ void Reversi::init(bool bIsHuman, bool wIsHuman)
     playerType[0] = bIsHuman ? HUMAN : AI;
     playerType[1] = wIsHuman ? HUMAN : AI;
     gameover = false;
+    waiting = false;
     moveCount = -1;
     drawChess(3,3,0);
     drawChess(4,4,0);

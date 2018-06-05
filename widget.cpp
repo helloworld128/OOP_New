@@ -59,7 +59,7 @@ void Widget::mousePressEvent(QMouseEvent *qme)
 }
 
 //type: 0-reversi, 1-FIR, 2-go
-void Widget::createGame(int type, int side, QString name){
+void Widget::createGame(int type, int side, QString localName, QString otherName){
     switch(type){
     case 0:
         on_Reversi_Button_clicked();
@@ -72,9 +72,18 @@ void Widget::createGame(int type, int side, QString name){
         break;
     }
     game->isOnlineGame = true;
+    changeOnlineUI();
     connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
+    connect(hall, SIGNAL(opponentReady()), game, SLOT(opponentReady()));
+    connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(click(int,int)));
+    connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
+    //connect(game, SIGNAL(on_Ready_Button_Clicked), hall, SLOT(sendReady()));
     //connect(hall, SIGNAL(receiveMove(int,int), game, SLOT(opponentPut(int,int)));
     hall->close();
+}
+
+void Widget::changeOnlineUI(){
+
 }
 
 
@@ -116,6 +125,7 @@ void Widget::on_FIR_Button_clicked()
     Ai* ai = new FIRAi(game);
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     ui->MainMenu->hide();
+    ui->Menu->hide();
     ui->GameMenu->show();
     ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
     setPicture(ui->Board, BOARD_2);
@@ -136,6 +146,7 @@ void Widget::on_Go_Button_clicked()
                   ui->Board->pos(),
                   ui->CurrentPlayerPict);
     ui->MainMenu->hide();
+    ui->Menu->hide();
     ui->GameMenu->show();
     ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
     setPicture(ui->Board, BOARD_2);
@@ -213,7 +224,8 @@ void Widget::on_Load_Button_clicked()
 void Widget::on_Online_Button_clicked()
 {
     hall = new WaitingRoom();
-    connect(hall, SIGNAL(createGame(int,int,QString)), this, SLOT(createGame(int,int,QString)));
+    connect(hall, SIGNAL(createGame(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
+
     hall->exec();
 }
 

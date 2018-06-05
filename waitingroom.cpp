@@ -19,10 +19,10 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     ui->rButton->setChecked(true); ui->black->setChecked(true);
     requestCurrentGames();
 
-//    QListWidgetItem *aItem = new QListWidgetItem;
-//    aItem->setSizeHint(QSize(0,80));
-//    ui->List->addItem(aItem);
-//    ui->List->setItemWidget(aItem,new MyItem(0, QString("hello"), QString("hell")));
+    QListWidgetItem *aItem = new QListWidgetItem;
+    aItem->setSizeHint(QSize(0,80));
+    ui->List->addItem(aItem);
+    ui->List->setItemWidget(aItem,new MyItem(0, QString("hello"), QString("")));
 }
 
 void WaitingRoom::requestCurrentGames(){
@@ -37,22 +37,38 @@ WaitingRoom::~WaitingRoom()
 void WaitingRoom::readData()
 {
     char type;
-    auto content = socket->readAll().data();
-    sscanf(content, "%c",&type);
+    auto _content = socket->readAll();//.data();
+    auto content = _content.data();
+    sscanf(content, "%c", &type);
     switch (type){
     //gameList received
     case 'g':
+        //int n;
+        int next;
+        sscanf(content + 1, "%d", &next);
+        qDebug() << next;
         break;
-    //opponent ready
+        //opponent ready
     case 'r':
+        emit opponentReady();
         break;
-    //opponent put
+        //opponent put
     case 'p':
+        char x, y;
+        sscanf(content + 1, "%c%c", &x, &y);
+        emit opponentPut(x - '0', y - '0');
         break;
-    //opponent left
+        //opponent entered
     case 'e':
+        char name[10];
+        sscanf(content + 1, "%s", name);
+        emit opponentEntered(name);
         break;
-    //TODO: opponent surrendered? other functions?
+        //opponent left
+    case 'l':
+        emit opponentLeft();
+        break;
+        //TODO: opponent surrendered? other functions?
     default:
         qDebug() << "unknown command received!";
         break;
@@ -63,6 +79,10 @@ void WaitingRoom::sendMove(int x, int y){
     QByteArray tmp;
     tmp.append('p').append(x + '0').append(y + '0');
     socket->write(tmp);
+}
+
+void WaitingRoom::sendReady(){
+    socket->write("r");
 }
 
 void WaitingRoom::on_Create_Button_clicked()
@@ -77,8 +97,26 @@ void WaitingRoom::on_Join_Button_clicked()
     QListWidgetItem* selected = ui->List->currentItem();
     QWidget* _item = ui->List->itemWidget(selected);
     MyItem* item = dynamic_cast<MyItem*>(_item);
-    qDebug() << item->nameb;
-    hide();
+    int tmpSide = 0;
+    QString tmpName;
+    if (item->nameb.size() == 0){
+        tmpSide = 1;
+        tmpName = item->namew;
+    }
+    if (item->namew.size() == 0){
+        tmpSide = 0;
+        tmpName = item->nameb;
+    }
+    //found a vacant seat
+    if (tmpName.size()){
+        QByteArray tmp;
+        char _uid[5];
+        itoa(item->uid, _uid, 10);
+        tmp.append('j').append(_uid);
+        socket->write(tmp);
+        createGame(item->type, tmpSide, playerName, tmpName);
+        hide();
+    }
 }
 
 void WaitingRoom::on_Leave_Button_clicked(){close();}
@@ -104,12 +142,19 @@ void WaitingRoom::on_OK_Button_clicked()
     else tmpType = 2;
     tmpSide = ui->white->isChecked();
 
-    emit createGame(tmpType, tmpSide, ui->lineEdit->text());
+    emit createGame(tmpType, tmpSide, playerName);
 }
 
 void WaitingRoom::on_lineEdit_editingFinished()
 {
-    qDebug() << ui->lineEdit->text();
+    QString tmp = ui->lineEdit->text();
+    if (tmp.size() > 10){
+        qDebug() << "max playerName length == 10!";
+        ui->lineEdit->setText(playerName);
+    }
+    else{
+        playerName = tmp;
+    }
 }
 
 void WaitingRoom::on_Refresh_Button_clicked()
