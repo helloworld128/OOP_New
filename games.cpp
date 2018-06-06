@@ -72,6 +72,10 @@ void Game::click(int x, int y)
 
 void Game::put(int xpos, int ypos)
 {
+    QMediaPlayer* sound = new QMediaPlayer();
+    sound->setMedia(QUrl::fromLocalFile("./sounds/sound.mp3"));
+    sound->setVolume(50);
+    sound->play();
     if (isOnlineGame) emit sendPut(xpos, ypos);
     drawChess(xpos,ypos,activePlayer);
 }

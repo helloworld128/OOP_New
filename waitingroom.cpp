@@ -95,6 +95,7 @@ void WaitingRoom::on_Create_Button_clicked()
 void WaitingRoom::on_Join_Button_clicked()
 {
     QListWidgetItem* selected = ui->List->currentItem();
+    if (selected == nullptr) return;
     QWidget* _item = ui->List->itemWidget(selected);
     MyItem* item = dynamic_cast<MyItem*>(_item);
     int tmpSide = 0;
@@ -159,5 +160,5 @@ void WaitingRoom::on_lineEdit_editingFinished()
 
 void WaitingRoom::on_Refresh_Button_clicked()
 {
-
+    socket->write("g");
 }

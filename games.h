@@ -3,6 +3,7 @@
 #include <QPoint>
 #include <QLabel>
 #include <QLCDNumber>
+#include <QMediaPlayer>
 
 class Game:public QObject
 {

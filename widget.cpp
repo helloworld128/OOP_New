@@ -1,19 +1,20 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include "ai.h"
-#include "util.h"
 #include <games.h>
 #include <QDebug>
 #include <QFileDialog>
 #include <QMouseEvent>
 #include <QTextStream>
+#include <QPropertyAnimation>
 //#include <QFileDialog>
+#include <QGraphicsOpacityEffect>
 #include "waitingroom.h"
 
 
 namespace Ui
 {
-    class Widget;
+class Widget;
 }
 
 Widget::Widget(QWidget *parent) :
@@ -115,6 +116,14 @@ void Widget::on_Reversi_Button_clicked()
         ui->BAI->hide(); ui->BPlayer->hide(); ui->WAI->hide(); ui->WPlayer->hide();
     }
 
+    notice = new Notice(this);
+//    QPropertyAnimation *animation = new QPropertyAnimation(ui->Label, "windowOpacity");
+//    auto effect = new QGraphicsOpacityEffect(ui->Label);
+//    effect->setOpacity(0.5);
+//    animation->setDuration(2000);
+//    animation->setStartValue(0);
+//    animation->setEndValue(1);
+//    animation->start();
 }
 
 void Widget::on_FIR_Button_clicked()
@@ -174,32 +183,33 @@ void Widget::on_Menu_Button_clicked()
     ui->Board->hide();
     ui->Border->hide();
     ui->CurrentPlayerPict->hide();
+    delete notice;
     delete game;
 }
 
 void Widget::on_Save_Button_clicked()
 {
-     QString fileName(tr("game.txt"));
-     QString dir = QFileDialog::getExistingDirectory
-             (this,tr("Open Directory"),"/home", QFileDialog::ShowDirsOnly
-                                                     | QFileDialog::DontResolveSymlinks);
-     QDir d;
-     QFile file(dir+"/"+fileName);
-     file.open(QIODevice::ReadWrite);
-     QTextStream stream(&file);
-     stream << game->moveCount << endl;
-     stream << game->activePlayer << endl;
-     for (int t = 0 ; t <= game->moveCount; t++)
-         for (int i = 0; i < 9; i++)
-         {
-             for (int j = 0; j < 9; j++)
-             {
-                 int x = game->previousMove[t][i][j];
-                 stream << x << "  ";
-             }
-             stream << endl;
-         }
-     file.close();
+    QString fileName(tr("game.txt"));
+    QString dir = QFileDialog::getExistingDirectory
+            (this,tr("Open Directory"),"/home", QFileDialog::ShowDirsOnly
+             | QFileDialog::DontResolveSymlinks);
+    QDir d;
+    QFile file(dir+"/"+fileName);
+    file.open(QIODevice::ReadWrite);
+    QTextStream stream(&file);
+    stream << game->moveCount << endl;
+    stream << game->activePlayer << endl;
+    for (int t = 0 ; t <= game->moveCount; t++)
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                int x = game->previousMove[t][i][j];
+                stream << x << "  ";
+            }
+            stream << endl;
+        }
+    file.close();
 }
 
 void Widget::on_Load_Button_clicked()
@@ -207,7 +217,7 @@ void Widget::on_Load_Button_clicked()
     QString fileName("game.txt");
     QString dir = QFileDialog::getExistingDirectory
             (this,tr("Open Directory"),"/home", QFileDialog::ShowDirsOnly
-                                                    | QFileDialog::DontResolveSymlinks);
+             | QFileDialog::DontResolveSymlinks);
     QDir d;
     QFile file(dir+"/"+fileName);
     file.open(QIODevice::ReadWrite);

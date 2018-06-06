@@ -7,6 +7,7 @@
 #include <QButtonGroup>
 #include "games.h"
 #include "waitingroom.h"
+#include "util.h"
 
 namespace Ui {
 class Widget;
@@ -23,6 +24,7 @@ public:
     ~Widget();
 
     Game* game;
+    Notice* notice;
     WaitingRoom* hall = nullptr;
 
 protected:
