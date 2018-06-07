@@ -24,7 +24,7 @@ public:
     ~Widget();
 
     Game* game;
-    Notice* notice;
+    Notice* notice = nullptr;
     WaitingRoom* hall = nullptr;
 
 protected:
@@ -34,9 +34,13 @@ private:
     QButtonGroup selectBPlayer,selectWPlayer;
     void changeOnlineUI();
 
+signals:
+    void sendReady();
+
 private slots:
 
     void createGame(int type, int side, QString localName, QString otherName);
+    void setOpponentName(QString name);
     void on_Start_Button_clicked();
     void on_Reversi_Button_clicked();
     void on_FIR_Button_clicked();
@@ -50,6 +54,8 @@ private slots:
     void on_Back_Button_clicked();
     void on_GiveUp_Button_clicked();
     void on_StopOnce_Button_clicked();
+    void on_Quit_Button_clicked();
+    void on_Ready_Button_clicked();
 };
 
 #endif // WIDGET_H

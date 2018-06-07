@@ -27,6 +27,7 @@ Widget::Widget(QWidget *parent) :
     ui->Board->hide();
     ui->Border->hide();
     ui->MainMenu->hide();
+    ui->OnlineGameMenu->hide();
     selectBPlayer.addButton(ui->BPlayer); selectBPlayer.addButton(ui->BAI);
     selectWPlayer.addButton(ui->WPlayer); selectWPlayer.addButton(ui->WAI);
     ui->BPlayer->setChecked(true); ui->WPlayer->setChecked(true);
@@ -63,30 +64,62 @@ void Widget::mousePressEvent(QMouseEvent *qme)
 void Widget::createGame(int type, int side, QString localName, QString otherName){
     switch(type){
     case 0:
-        on_Reversi_Button_clicked();
+        game = new Reversi(this,
+                           ui->Board->pos(),
+                           ui->BCount_LCD_2, ui->WCount_LCD_2,
+                           ui->CurrentPlayerPict);
+        ui->MainMenu->hide();
+        ui->Menu->hide();
+        ui->OnlineGameMenu->show();
+        setPicture(ui->Board, BOARD_1);
+        ui->StopOnce_Button_2->hide();
+        ui->GiveUp_Button_2->hide();
+        ui->BCount_LCD_2->show(); ui->WCount_LCD_2->show();
         break;
     case 1:
-        on_FIR_Button_clicked();
+        game = new FIR(this, ui->Board->pos(), ui->CurrentPlayerPict);
+        ui->MainMenu->hide();
+        ui->Menu->hide();
+        ui->OnlineGameMenu->show();
+        setPicture(ui->Board, BOARD_2);
+        setPicture(ui->Border, BORDER);
+        ui->StopOnce_Button_2->hide();
+        ui->GiveUp_Button_2->hide();
+        ui->BCount_LCD_2->hide(); ui->WCount_LCD_2->hide();
         break;
     case 2:
-        on_Go_Button_clicked();
+        game = new Go(this, ui->Board->pos(), ui->CurrentPlayerPict);
+        ui->MainMenu->hide();
+        ui->Menu->hide();
+        ui->OnlineGameMenu->show();
+        setPicture(ui->Board, BOARD_2);
+        setPicture(ui->Border, BORDER);
+        ui->StopOnce_Button_2->show();
+        ui->GiveUp_Button_2->show();
+        ui->BCount_LCD_2->hide(); ui->WCount_LCD_2->hide();
         break;
     }
+    ui->bName_2->setText(side == 0? localName : otherName);
+    ui->wName_2->setText(side == 1? localName : otherName);
+    game->setPlayerType(side);
     game->isOnlineGame = true;
-    changeOnlineUI();
     connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
-    connect(hall, SIGNAL(opponentReady()), game, SLOT(opponentReady()));
-    connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(click(int,int)));
-    connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
-    //connect(game, SIGNAL(on_Ready_Button_Clicked), hall, SLOT(sendReady()));
-    //connect(hall, SIGNAL(receiveMove(int,int), game, SLOT(opponentPut(int,int)));
+    connect(hall, SIGNAL(opponentEntered(QString)), this, SLOT(setOpponentName(QString)));
+    //connect(hall, SIGNAL(opponentReady()), game, SLOT(opponentReady()));
+    connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(opponentPut(int,int)));
+    connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
+    connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
+    //connect(this, SIGNAL(sendReady()), game, SLOT(Ready()));
     hall->close();
+    setFixedWidth(1000);
 }
 
-void Widget::changeOnlineUI(){
-
+void Widget::setOpponentName(QString name){
+    if (ui->bName_2->text().size() == 0)
+        ui->bName_2->setText(name);
+    else
+        ui->wName_2->setText(name);
 }
-
 
 void Widget::on_Start_Button_clicked()
 {
@@ -108,22 +141,8 @@ void Widget::on_Reversi_Button_clicked()
     ui->StopOnce_Button->hide();
     ui->GiveUp_Button->hide();
     ui->BCount_LCD->show(); ui->WCount_LCD->show();
-    if (hall != nullptr){
-        ui->Save_Button->hide(); ui->Load_Button->hide(); ui->Undo_Button->hide();
-        ui->bName->setText("payer1");
-        ui->wName->setText("plaer2");
-        ui->Start_Button->setText("Ready");
-        ui->BAI->hide(); ui->BPlayer->hide(); ui->WAI->hide(); ui->WPlayer->hide();
-    }
 
     notice = new Notice(this);
-//    QPropertyAnimation *animation = new QPropertyAnimation(ui->Label, "windowOpacity");
-//    auto effect = new QGraphicsOpacityEffect(ui->Label);
-//    effect->setOpacity(0.5);
-//    animation->setDuration(2000);
-//    animation->setStartValue(0);
-//    animation->setEndValue(1);
-//    animation->start();
 }
 
 void Widget::on_FIR_Button_clicked()
@@ -141,14 +160,8 @@ void Widget::on_FIR_Button_clicked()
     setPicture(ui->Border, BORDER);
     ui->StopOnce_Button->hide();
     ui->GiveUp_Button->hide();
-    if (hall != nullptr){
-        ui->Save_Button->hide(); ui->Load_Button->hide(); ui->Undo_Button->hide();
-        ui->bName->setText("payer1");
-        ui->wName->setText("plaer2");
-        ui->Start_Button->setText("Ready");
-        ui->BAI->hide(); ui->BPlayer->hide(); ui->WAI->hide(); ui->WPlayer->hide();
-    }
 }
+
 void Widget::on_Go_Button_clicked()
 {
     game = new Go(this,
@@ -162,13 +175,6 @@ void Widget::on_Go_Button_clicked()
     setPicture(ui->Border, BORDER);
     ui->StopOnce_Button->show();
     ui->GiveUp_Button->show();
-    if (hall != nullptr){
-        ui->Save_Button->hide(); ui->Load_Button->hide(); ui->Undo_Button->hide();
-        ui->bName->setText("payer1");
-        ui->wName->setText("plaer2");
-        ui->Start_Button->setText("Ready");
-        ui->BAI->hide(); ui->BPlayer->hide(); ui->WAI->hide(); ui->WPlayer->hide();
-    }
 }
 
 void Widget::on_Undo_Button_clicked()
@@ -183,7 +189,7 @@ void Widget::on_Menu_Button_clicked()
     ui->Board->hide();
     ui->Border->hide();
     ui->CurrentPlayerPict->hide();
-    delete notice;
+    if(notice != nullptr) delete notice;
     delete game;
 }
 
@@ -259,4 +265,23 @@ void Widget::on_GiveUp_Button_clicked()
 void Widget::on_StopOnce_Button_clicked()
 {
     game->nextPlayer();
+}
+
+void Widget::on_Quit_Button_clicked()
+{
+    ui->Menu->show();
+    ui->OnlineGameMenu->hide();
+    ui->Board->hide();
+    ui->Border->hide();
+    ui->CurrentPlayerPict->hide();
+    ui->Ready_Button->setDisabled(false);
+    hall->show();
+    delete game;
+}
+
+void Widget::on_Ready_Button_clicked()
+{
+    emit sendReady();
+    ui->Ready_Button->setDisabled(true);
+
 }

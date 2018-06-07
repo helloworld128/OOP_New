@@ -60,19 +60,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>250</y>
-     <width>71</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
-  </widget>
   <widget class="QWidget" name="ChooseGame" native="true">
    <property name="geometry">
     <rect>
@@ -219,12 +206,35 @@
    </layout>
    <zorder>List</zorder>
    <zorder>CurrentGames</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>0</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Server IP(test):</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="IP">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>0</y>
+     <width>131</width>
+     <height>20</height>
+    </rect>
+   </property>
   </widget>
   <zorder>Buttons</zorder>
-  <zorder>label</zorder>
   <zorder>Display</zorder>
   <zorder>ChooseGame</zorder>
+  <zorder>label</zorder>
+  <zorder>IP</zorder>
  </widget>
  <resources/>
  <connections/>

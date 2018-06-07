@@ -4,6 +4,7 @@
 #include <QHostInfo>
 #include <QNetworkInterface>
 #include <QListWidgetItem>
+#include <QTime>
 
 WaitingRoom::WaitingRoom(QWidget *parent) :
     QDialog(parent),
@@ -15,18 +16,23 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     ui->setupUi(this);
     ui->ChooseGame->hide();
     games.addButton(ui->rButton); games.addButton(ui->fButton); games.addButton(ui->gButton);
-    role.addButton(ui->black); games.addButton(ui->white);
+    role.addButton(ui->black); role.addButton(ui->white);
     ui->rButton->setChecked(true); ui->black->setChecked(true);
-    requestCurrentGames();
 
-    QListWidgetItem *aItem = new QListWidgetItem;
-    aItem->setSizeHint(QSize(0,80));
-    ui->List->addItem(aItem);
-    ui->List->setItemWidget(aItem,new MyItem(0, QString("hello"), QString("")));
+    //generate a random player name
+    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+    int rnd = qrand() % 9000 + 1000;
+    playerName = "Guest#" + QString::number(rnd);
+    ui->lineEdit->setText(playerName);
+
+    requestCurrentGames();
 }
 
 void WaitingRoom::requestCurrentGames(){
-    socket->write("g");
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('g');
+    socket->write(ba);
 }
 
 WaitingRoom::~WaitingRoom()
@@ -34,55 +40,110 @@ WaitingRoom::~WaitingRoom()
     delete ui;
 }
 
-void WaitingRoom::readData()
-{
-    char type;
-    auto _content = socket->readAll();//.data();
-    auto content = _content.data();
-    sscanf(content, "%c", &type);
+void WaitingRoom::addGame(int type, QString nameb, QString namew, int uid){
+    QListWidgetItem *aItem = new QListWidgetItem;
+    aItem->setSizeHint(QSize(0,80));
+    ui->List->addItem(aItem);
+    ui->List->setItemWidget(aItem,new MyItem(type, nameb, namew, uid));
+}
+
+void WaitingRoom::readData(){
+    QByteArray ba = socket->readAll();
+    QDataStream in(&ba, QIODevice::ReadOnly);
+    QChar t; in >> t;
+    char type = t.toLatin1();
     switch (type){
-    //gameList received
     case 'g':
-        //int n;
-        int next;
-        sscanf(content + 1, "%d", &next);
-        qDebug() << next;
+    {
+        int n;
+        in >> n;
+        int t, id; QString b, w;
+        for (int i = 0; i < n; i++){
+            in >> t >> id >> b >> w;
+            addGame(t, b, w, id);
+        }
         break;
-        //opponent ready
-    case 'r':
-        emit opponentReady();
-        break;
-        //opponent put
+    }
     case 'p':
-        char x, y;
-        sscanf(content + 1, "%c%c", &x, &y);
-        emit opponentPut(x - '0', y - '0');
+    {
+        int x, y;
+        in >> x >> y;
+        emit opponentPut(x, y);
         break;
-        //opponent entered
-    case 'e':
-        char name[10];
-        sscanf(content + 1, "%s", name);
-        emit opponentEntered(name);
-        break;
-        //opponent left
+    }
     case 'l':
         emit opponentLeft();
         break;
-        //TODO: opponent surrendered? other functions?
+    case 'e':
+    {
+        QString name;
+        in >> name;
+        emit opponentEntered(name);
+        break;
+    }
+    case 's':
+        emit startGame();
+        break;
     default:
-        qDebug() << "unknown command received!";
+        qDebug() << "unknown command!";
         break;
     }
 }
 
+//void WaitingRoom::readData()
+//{
+//    char type;
+//    auto _content = socket->readAll();
+//    auto content = _content.data();
+//    sscanf(content, "%c", &type);
+//    switch (type){
+//    //gameList received
+//    case 'g':
+//        ui->List->clear();
+//        //int n = _content.size() - 1;
+//        int gameType, side, uid;
+//        char tmpName[11];
+//        //sscanf(content + i, "%d%d%d%s",&gameType, &side, &uid, tmpName);
+//        break;
+//        //opponent ready
+//    case 'r':
+//        emit opponentReady();
+//        break;
+//        //opponent put
+//    case 'p':
+//        char x, y;
+//        sscanf(content + 1, "%c%c", &x, &y);
+//        emit opponentPut(x - '0', y - '0');
+//        break;
+//        //opponent entered
+//    case 'e':
+//        char name[11];
+//        sscanf(content + 1, "%s", name);
+//        emit opponentEntered(name);
+//        break;
+//        //opponent left
+//    case 'l':
+//        emit opponentLeft();
+//        break;
+//        //TODO: opponent surrendered? other functions?
+//    default:
+//        qDebug() << "unknown command received!";
+//        break;
+//    }
+//}
+
 void WaitingRoom::sendMove(int x, int y){
-    QByteArray tmp;
-    tmp.append('p').append(x + '0').append(y + '0');
-    socket->write(tmp);
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('p') << x << y;
+    socket->write(ba);
 }
 
 void WaitingRoom::sendReady(){
-    socket->write("r");
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('r');
+    socket->write(ba);
 }
 
 void WaitingRoom::on_Create_Button_clicked()
@@ -101,21 +162,20 @@ void WaitingRoom::on_Join_Button_clicked()
     int tmpSide = 0;
     QString tmpName;
     if (item->nameb.size() == 0){
-        tmpSide = 1;
+        tmpSide = 0;
         tmpName = item->namew;
     }
     if (item->namew.size() == 0){
-        tmpSide = 0;
+        tmpSide = 1;
         tmpName = item->nameb;
     }
     //found a vacant seat
     if (tmpName.size()){
-        QByteArray tmp;
-        char _uid[5];
-        itoa(item->uid, _uid, 10);
-        tmp.append('j').append(_uid);
-        socket->write(tmp);
-        createGame(item->type, tmpSide, playerName, tmpName);
+        QByteArray ba;
+        QDataStream out(&ba, QIODevice::WriteOnly);
+        out << QChar('j') << item->uid << tmpSide << playerName;
+        socket->write(ba);
+        emit createGame(item->type, tmpSide, playerName, tmpName);
         hide();
     }
 }
@@ -124,7 +184,10 @@ void WaitingRoom::on_Leave_Button_clicked(){close();}
 
 void WaitingRoom::on_Spectate_Button_clicked()
 {
-    socket->write(QByteArray::fromStdString("hello!!!"));
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QString("this is a test!") << 1833 << QChar('q');
+    socket->write(ba);
 }
 
 void WaitingRoom::on_Cancel_Button_clicked()
@@ -143,6 +206,11 @@ void WaitingRoom::on_OK_Button_clicked()
     else tmpType = 2;
     tmpSide = ui->white->isChecked();
 
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('c') << tmpType << tmpSide << playerName;
+    socket->write(ba);
+
     emit createGame(tmpType, tmpSide, playerName);
 }
 
@@ -160,5 +228,11 @@ void WaitingRoom::on_lineEdit_editingFinished()
 
 void WaitingRoom::on_Refresh_Button_clicked()
 {
-    socket->write("g");
+    requestCurrentGames();
+}
+
+void WaitingRoom::on_IP_editingFinished()
+{
+    socket->disconnectFromHost();
+    socket->connectToHost(QHostAddress(ui->IP->text()), 23333);
 }

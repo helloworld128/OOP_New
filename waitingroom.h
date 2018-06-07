@@ -19,10 +19,10 @@ public:
 
 signals:
     void createGame(int type, int side, QString localName, QString otherName = "");
-    void opponentReady();
     void opponentPut(int x, int y);
-    void opponentEntered(char* name);
+    void opponentEntered(QString name);
     void opponentLeft();
+    void startGame();
 
 private slots:
     void readData();
@@ -37,12 +37,16 @@ private slots:
     void on_lineEdit_editingFinished();
     void on_Refresh_Button_clicked();
 
+    void on_IP_editingFinished();
+
 private:
     void requestCurrentGames();
+    void addGame(int type, QString nameb, QString namew, int uid);
     Ui::WaitingRoom *ui;
     QTcpSocket* socket = nullptr;
     QButtonGroup games, role;
     QString playerName;
+    static const int dataSize = 17;
 };
 
 #endif // WAITINGROOM_H

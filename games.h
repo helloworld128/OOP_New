@@ -13,6 +13,8 @@ public:
     friend class ReversiAi;
     friend class FIRAi;
     void reStart();
+    void setPlayerType(int arg);
+    void click(int x, int y);
     virtual void undo();
     virtual void init(bool bIsHuman, bool wIsHuman);
     virtual void nextPlayer();
@@ -27,20 +29,20 @@ public:
     int activePlayer = 0;      //0-Black; 1-White
     int previousMove[100][9][9];
     int isOnlineGame = false;
+    bool ready[2] = {false, false};
 
 signals:
     void aiPlay();
     void sendPut(int x, int y);
 
-public slots:
-    void click(int x, int y);
-
 protected slots:
-    void opponentReady();
+    void startGame();
+    void opponentPut(int x, int y);
 
 protected:
     void drawChess(int x,int y, int player);
     void saveStatus();
+    void playSound();
     virtual void put(int xpos, int ypos);
     virtual bool canPut(int xpos, int ypos) = 0;
     virtual void calculatePossibleMoves();
@@ -56,6 +58,7 @@ protected:
     PLAYERTYPE playerType[2];
     int gridNum;
     QLabel* currentPlayerPict;
+    QMediaPlayer* soundPlayer;
 };
 
 class Reversi:public Game
@@ -91,14 +94,14 @@ private:
 class Go:public Game
 {
 public:
-        Go(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict);
-        bool canPut(int xpos, int ypos);
-        void put(int xpos, int ypos);
-        void showResult();
-        bool judgeRepeat(int xpos, int ypos, int** Board);
-        bool stillalive(int xpos, int ypos, int Player, int** _board);
-        void eliminate(int xpos, int ypos, int Player);
-        virtual ~Go();
+    Go(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict);
+    bool canPut(int xpos, int ypos);
+    void put(int xpos, int ypos);
+    void showResult();
+    bool judgeRepeat(int xpos, int ypos, int** Board);
+    bool stillalive(int xpos, int ypos, int Player, int** _board);
+    void eliminate(int xpos, int ypos, int Player);
+    virtual ~Go();
 };
 
 #endif // GAMES_H

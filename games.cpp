@@ -8,6 +8,7 @@ Game::Game(QLabel* _currentPlayerPict)
 {
     currentPlayerPict = _currentPlayerPict;
     gridSize = 60;
+    soundPlayer = new QMediaPlayer;
 }
 
 Game::~Game(){}
@@ -18,8 +19,25 @@ void Game::drawChess(int x,int y,int player)
     board[x][y] = player;
 }
 
-void Game::opponentReady(){
+void Game::setPlayerType(int arg){
+    playerType[arg] = HUMAN;
+    playerType[1 - arg] = ONLINE;
+}
 
+void Game::playSound(){
+    soundPlayer->setMedia(QUrl::fromLocalFile("./sounds/sound.mp3"));
+    soundPlayer->setVolume(50);
+    soundPlayer->play();
+}
+
+void Game::startGame(){
+    init(0, 0); //arguments(0,0) are useless
+}
+
+void Game::opponentPut(int x, int y){
+    if (playerType[activePlayer] == ONLINE)
+        click(x, y);
+    else qDebug() << "receiving opponentPut(int, int) but is not opponent's turn!";
 }
 
 void Game::nextPlayer()
@@ -72,11 +90,8 @@ void Game::click(int x, int y)
 
 void Game::put(int xpos, int ypos)
 {
-    QMediaPlayer* sound = new QMediaPlayer();
-    sound->setMedia(QUrl::fromLocalFile("./sounds/sound.mp3"));
-    sound->setVolume(50);
-    sound->play();
     if (isOnlineGame) emit sendPut(xpos, ypos);
+    playSound();
     drawChess(xpos,ypos,activePlayer);
 }
 
@@ -135,8 +150,10 @@ void Game::init(bool bIsHuman, bool wIsHuman)
             board[i][j] = -1;
             pictures[i][j]->hide();
         }
-    playerType[0] = bIsHuman ? HUMAN : AI;
-    playerType[1] = wIsHuman ? HUMAN : AI;
+    if (!isOnlineGame){
+        playerType[0] = bIsHuman ? HUMAN : AI;
+        playerType[1] = wIsHuman ? HUMAN : AI;
+    }
     gameover = false;
     waiting = false;
     moveCount = -1;
@@ -246,8 +263,10 @@ void Reversi::init(bool bIsHuman, bool wIsHuman)
             board[i][j] = -1;
             pictures[i][j]->hide();
         }
-    playerType[0] = bIsHuman ? HUMAN : AI;
-    playerType[1] = wIsHuman ? HUMAN : AI;
+    if (!isOnlineGame){
+        playerType[0] = bIsHuman ? HUMAN : AI;
+        playerType[1] = wIsHuman ? HUMAN : AI;
+    }
     gameover = false;
     waiting = false;
     moveCount = -1;
@@ -266,7 +285,7 @@ void Reversi::init(bool bIsHuman, bool wIsHuman)
     {
         emit aiPlay();
     }
-    else hint();
+    if(playerType[0] == HUMAN) hint();
 }
 
 bool Reversi::canPut(int xpos, int ypos)
@@ -311,7 +330,7 @@ void Reversi::calculateChessNum()
 
 void Reversi::put(int xpos, int ypos)
 {
-    Game::drawChess(xpos,ypos,activePlayer);
+    Game::put(xpos, ypos);
     int reverseList[10][2] = {0};
     int dir[8][2]={{1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,1},{0,1},{1,1}};
     for(int i = 0;i < 8;i++)
@@ -550,7 +569,7 @@ bool Go::canPut(int xpos, int ypos)
             flag = true;
     }
 
-   if (judgeRepeat(xpos, ypos, _board)) flag = false;
+    if (judgeRepeat(xpos, ypos, _board)) flag = false;
 
     for (int i = 0; i < 9 ; i++ ) delete[] _board[i];
     delete[] _board;
@@ -587,14 +606,14 @@ void Go::eliminate(int xpos, int ypos, int Player)
     for (int t = 0; t <= r; t++)
     {
         int xx = q[t][0], yy = q[t][1];
-         board[xx][yy] = -1;
-         pictures[xx][yy]->hide();
+        board[xx][yy] = -1;
+        pictures[xx][yy]->hide();
     }
 }
 
 void Go::put(int xpos, int ypos)
 {
-    Game::drawChess(xpos,ypos,activePlayer);
+    Game::put(xpos, ypos);
     int dir[4][2]={{1,0},{0,-1},{-1,0},{0,1}};
     for (int i = 0; i < 4; i++)
     {
