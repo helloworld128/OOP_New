@@ -7,7 +7,7 @@
 #include <QMouseEvent>
 #include <QTextStream>
 #include <QPropertyAnimation>
-//#include <QFileDialog>
+#include <QString>
 #include <QGraphicsOpacityEffect>
 #include "waitingroom.h"
 
@@ -204,7 +204,7 @@ void Widget::on_Save_Button_clicked()
     file.open(QIODevice::ReadWrite);
     QTextStream stream(&file);
     stream << game->moveCount << endl;
-    stream << game->activePlayer << endl;
+    stream << game->activePlayer << endl;    
     for (int t = 0 ; t <= game->moveCount; t++)
         for (int i = 0; i < 9; i++)
         {
@@ -220,20 +220,23 @@ void Widget::on_Save_Button_clicked()
 
 void Widget::on_Load_Button_clicked()
 {
-    QString fileName("game.txt");
-    QString dir = QFileDialog::getExistingDirectory
-            (this,tr("Open Directory"),"/home", QFileDialog::ShowDirsOnly
-             | QFileDialog::DontResolveSymlinks);
-    QDir d;
-    QFile file(dir+"/"+fileName);
+    QString fileName = QFileDialog::getOpenFileName
+            (this, tr("open file"), " ",  tr("Allfile(*.*);;txtfile(*.txt)"));
+    QFile file(fileName);
     file.open(QIODevice::ReadWrite);
+    int count, active, ***record;
+    record = new int**[10000];
     QTextStream stream(&file);
-    stream >> game->moveCount >> game->activePlayer;
-    for (int t = 0 ; t <= game->moveCount; t++)
-        for (int i = 0; i < 9; i++)
+    stream >> count >> active;
+    for (int t = 0 ; t <= count; t++){
+        record[t] = new int*[9];
+        for (int i = 0; i < 9; i++){
+            record[t][i] = new int[9];
             for (int j = 0; j < 9; j++)
-                stream >> game->previousMove[t][i][j];
-    game->reStart();
+                stream >> record[t][i][j];
+        }
+    }
+    game->reStart(count, active, record);
     file.close();
 }
 

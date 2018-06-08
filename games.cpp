@@ -142,6 +142,7 @@ void Game::saveStatus()
             previousMove[moveCount][i][j] = board[i][j];
         }
 }
+
 void Game::init(bool bIsHuman, bool wIsHuman)
 {
     for(int i = 0;i < 9;i++)
@@ -177,11 +178,31 @@ void Game::check()
 }
 
 
-void Game::reStart()
+void Game::reStart(int count, int active, int*** record)
 {
+    if (!isOnlineGame){
+        playerType[0] = HUMAN;
+        playerType[1] = HUMAN;
+    }
+    gameover = false;
+    waiting = false;
+    activePlayer = 1 - active;
+    moveCount = count;
+    previousPlayer[moveCount] = activePlayer;
+    for (int i = moveCount - 1; i >= 0; i--) previousPlayer[i] = 1 - previousPlayer[i+1];
+
+    if (activePlayer == 0)  setPicture(currentPlayerPict, BLACKCHESS);
+    else setPicture(currentPlayerPict, WHITECHESS);
+
+    for (int t = 0; t <= count; t++)
+        for (int x = 0; x < 9; x++)
+            for (int y = 0; y < 9; y++)
+                previousMove[t][x][y] = record[t][x][y];
+
     for (int x = 0; x < 9; x++)
         for (int y = 0; y < 9; y++)
         {
+            board[x][y] = previousMove[moveCount][x][y];
             if (previousMove[moveCount][x][y] == 0)
                 setPicture(pictures[x][y], BLACKCHESS);
             if (previousMove[moveCount][x][y] == 1)
@@ -190,6 +211,12 @@ void Game::reStart()
                 pictures[x][y]->hide();
         }
 
+    if(playerType[0] != HUMAN) waiting = true;
+    if(playerType[0] == AI)
+    {
+        calculatePossibleMoves();
+        emit aiPlay();
+    }
     nextPlayer();
 }
 
