@@ -57,6 +57,7 @@ private slots:
     void on_StopOnce_Button_clicked();
     void on_Quit_Button_clicked();
     void on_Ready_Button_clicked();
+    void on_pushButton_clicked();
 };
 
 #endif // WIDGET_H

@@ -3,11 +3,7 @@
 #include "ai.h"
 #include <QDebug>
 #include <QFileDialog>
-#include <QMouseEvent>
 #include <QTextStream>
-#include <QPropertyAnimation>
-#include <QGraphicsOpacityEffect>
-
 
 namespace Ui
 {
@@ -286,5 +282,10 @@ void Widget::on_Ready_Button_clicked()
 {
     emit sendReady();
     ui->Ready_Button->setDisabled(true);
+
+}
+
+void Widget::on_pushButton_clicked()
+{
 
 }
