@@ -49,5 +49,7 @@ FORMS += \
 
 DISTFILES +=
 
+TRANSLATIONS += zh_cn.ts
+
 RESOURCES += \
     res.qrc

@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Reversi</string>
+   <string>chesses</string>
   </property>
   <widget class="QWidget" name="MainMenu" native="true">
    <property name="geometry">
@@ -59,6 +59,9 @@ color:rgb(255, 170, 255)</string>
      <widget class="QPushButton" name="Reversi_Button">
       <property name="styleSheet">
        <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
+      </property>
+      <property name="locale">
+       <locale language="English" country="UnitedStates"/>
       </property>
       <property name="text">
        <string>Reversi</string>
@@ -709,6 +712,19 @@ color:rgb(255, 170, 255)</string>
     </item>
    </layout>
   </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>860</x>
+     <y>180</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Translate</string>
+   </property>
+  </widget>
   <zorder>Border</zorder>
   <zorder>Board</zorder>
   <zorder>GameMenu</zorder>
@@ -716,6 +732,7 @@ color:rgb(255, 170, 255)</string>
   <zorder>Menu</zorder>
   <zorder>MainMenu</zorder>
   <zorder>OnlineGameMenu</zorder>
+  <zorder>pushButton</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

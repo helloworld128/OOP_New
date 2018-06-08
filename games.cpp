@@ -11,7 +11,9 @@ Game::Game(QLabel* _currentPlayerPict)
     soundPlayer = new QMediaPlayer;
 }
 
-Game::~Game(){}
+Game::~Game(){
+    delete soundPlayer;
+}
 
 void Game::drawChess(int x,int y,int player)
 {
@@ -258,6 +260,7 @@ void Reversi::showResult()
     dialog->setText(s);
     gameover = true;
     dialog->exec();
+    delete dialog;
 }
 
 Reversi::Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w, QLabel* _currentPlayerPict)
@@ -417,6 +420,7 @@ void FIR::showResult()
     }
     gameover = true;
     dialog->exec();
+    delete dialog;
 }
 
 void FIR::check(int xpos, int ypos)
@@ -656,4 +660,5 @@ void Go::showResult()
     dialog->setText(s);
     gameover = true;
     dialog->exec();
+    delete dialog;
 }

@@ -1,16 +1,9 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include "ai.h"
-#include <games.h>
 #include <QDebug>
 #include <QFileDialog>
-#include <QMouseEvent>
 #include <QTextStream>
-#include <QPropertyAnimation>
-#include <QString>
-#include <QGraphicsOpacityEffect>
-#include "waitingroom.h"
-
 
 namespace Ui
 {
@@ -21,7 +14,7 @@ Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
 {
-    game = nullptr;
+    notice = new Notice(this);
     ui->setupUi(this);
     ui->GameMenu->hide();
     ui->Board->hide();
@@ -37,6 +30,45 @@ Widget::Widget(QWidget *parent) :
 Widget::~Widget()
 {
     delete ui;
+}
+
+void Widget::setGameUI(int isOnline, int gameType){
+    ui->MainMenu->hide();
+    ui->Menu->hide();
+    if (gameType == 0) setPicture(ui->Board, BOARD_1);
+    else {
+        setPicture(ui->Board, BOARD_2); setPicture(ui->Border, BORDER);
+    }
+    if (isOnline){
+        ui->OnlineGameMenu->show();
+        if (gameType == 0) {
+            ui->BCount_LCD_2->show(); ui->WCount_LCD_2->show();
+        }
+        else {
+            ui->BCount_LCD_2->hide(); ui->WCount_LCD_2->hide();
+        }
+        if (gameType == 2){
+            ui->StopOnce_Button_2->show(); ui->GiveUp_Button_2->show();
+        }
+        else {
+            ui->StopOnce_Button_2->hide(); ui->GiveUp_Button_2->hide();
+        }
+    }
+    else {
+        ui->GameMenu->show();
+        if (gameType == 0) {
+            ui->BCount_LCD->show(); ui->WCount_LCD->show();
+        }
+        else {
+            ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
+        }
+        if (gameType == 2){
+            ui->StopOnce_Button->show(); ui->GiveUp_Button->show();
+        }
+        else {
+            ui->StopOnce_Button->hide(); ui->GiveUp_Button->hide();
+        }
+    }
 }
 
 bool operator <(const QPoint& left,const QPoint& right)
@@ -68,35 +100,15 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
                            ui->Board->pos(),
                            ui->BCount_LCD_2, ui->WCount_LCD_2,
                            ui->CurrentPlayerPict);
-        ui->MainMenu->hide();
-        ui->Menu->hide();
-        ui->OnlineGameMenu->show();
-        setPicture(ui->Board, BOARD_1);
-        ui->StopOnce_Button_2->hide();
-        ui->GiveUp_Button_2->hide();
-        ui->BCount_LCD_2->show(); ui->WCount_LCD_2->show();
+        setGameUI(1, 0);
         break;
     case 1:
         game = new FIR(this, ui->Board->pos(), ui->CurrentPlayerPict);
-        ui->MainMenu->hide();
-        ui->Menu->hide();
-        ui->OnlineGameMenu->show();
-        setPicture(ui->Board, BOARD_2);
-        setPicture(ui->Border, BORDER);
-        ui->StopOnce_Button_2->hide();
-        ui->GiveUp_Button_2->hide();
-        ui->BCount_LCD_2->hide(); ui->WCount_LCD_2->hide();
+        setGameUI(1, 1);
         break;
     case 2:
         game = new Go(this, ui->Board->pos(), ui->CurrentPlayerPict);
-        ui->MainMenu->hide();
-        ui->Menu->hide();
-        ui->OnlineGameMenu->show();
-        setPicture(ui->Board, BOARD_2);
-        setPicture(ui->Border, BORDER);
-        ui->StopOnce_Button_2->show();
-        ui->GiveUp_Button_2->show();
-        ui->BCount_LCD_2->hide(); ui->WCount_LCD_2->hide();
+        setGameUI(1, 2);
         break;
     }
     ui->bName_2->setText(side == 0? localName : otherName);
@@ -105,11 +117,10 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     game->isOnlineGame = true;
     connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
     connect(hall, SIGNAL(opponentEntered(QString)), this, SLOT(setOpponentName(QString)));
-    //connect(hall, SIGNAL(opponentReady()), game, SLOT(opponentReady()));
     connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(opponentPut(int,int)));
     connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
     connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
-    //connect(this, SIGNAL(sendReady()), game, SLOT(Ready()));
+    //connect(hall, SIGNAL(opponentLeft()), game, SLOT());
     hall->close();
     setFixedWidth(1000);
 }
@@ -133,16 +144,10 @@ void Widget::on_Reversi_Button_clicked()
                        ui->BCount_LCD, ui->WCount_LCD,
                        ui->CurrentPlayerPict);
     Ai* ai = new ReversiAi(game);
+    ai->setParent(game);
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
-    ui->MainMenu->hide();
-    ui->Menu->hide();
-    ui->GameMenu->show();
-    setPicture(ui->Board, BOARD_1);
-    ui->StopOnce_Button->hide();
-    ui->GiveUp_Button->hide();
-    ui->BCount_LCD->show(); ui->WCount_LCD->show();
-
-    notice = new Notice(this);
+    setGameUI(0, 0);
+    notice->display(QString("你好"));
 }
 
 void Widget::on_FIR_Button_clicked()
@@ -151,15 +156,9 @@ void Widget::on_FIR_Button_clicked()
                    ui->Board->pos(),
                    ui->CurrentPlayerPict);
     Ai* ai = new FIRAi(game);
+    ai->setParent(game);
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
-    ui->MainMenu->hide();
-    ui->Menu->hide();
-    ui->GameMenu->show();
-    ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
-    setPicture(ui->Board, BOARD_2);
-    setPicture(ui->Border, BORDER);
-    ui->StopOnce_Button->hide();
-    ui->GiveUp_Button->hide();
+    setGameUI(0, 1);
 }
 
 void Widget::on_Go_Button_clicked()
@@ -167,18 +166,10 @@ void Widget::on_Go_Button_clicked()
     game = new Go(this,
                   ui->Board->pos(),
                   ui->CurrentPlayerPict);
-    ui->MainMenu->hide();
-    ui->Menu->hide();
-    ui->GameMenu->show();
-    ui->BCount_LCD->hide(); ui->WCount_LCD->hide();
-    setPicture(ui->Board, BOARD_2);
-    setPicture(ui->Border, BORDER);
-    ui->StopOnce_Button->show();
-    ui->GiveUp_Button->show();
+    setGameUI(0, 2);
 }
 
-void Widget::on_Undo_Button_clicked()
-{
+void Widget::on_Undo_Button_clicked(){
     game->undo();
 }
 
@@ -189,7 +180,10 @@ void Widget::on_Menu_Button_clicked()
     ui->Board->hide();
     ui->Border->hide();
     ui->CurrentPlayerPict->hide();
-    if(notice != nullptr) delete notice;
+    if(notice != nullptr) {
+        delete notice;
+        notice = nullptr;
+    }
     delete game;
 }
 
@@ -242,10 +236,15 @@ void Widget::on_Load_Button_clicked()
 
 void Widget::on_Online_Button_clicked()
 {
-    hall = new WaitingRoom();
-    connect(hall, SIGNAL(createGame(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
+    if (hall == nullptr){
+        hall = new WaitingRoom();
+        connect(hall, SIGNAL(createGame(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
 
-    hall->exec();
+        hall->exec();
+    }
+    else{
+        hall->show();
+    }
 }
 
 void Widget::on_Local_Button_clicked()
@@ -286,5 +285,10 @@ void Widget::on_Ready_Button_clicked()
 {
     emit sendReady();
     ui->Ready_Button->setDisabled(true);
+
+}
+
+void Widget::on_pushButton_clicked()
+{
 
 }
