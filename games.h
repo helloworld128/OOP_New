@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QLCDNumber>
 #include <QMediaPlayer>
+#include <QMovie>
 
 class Game:public QObject
 {

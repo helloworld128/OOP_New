@@ -56,6 +56,7 @@ void WaitingRoom::readData(){
     switch (type){
     case 'g':
     {
+        ui->List->clear();
         int n;
         in >> n;
         int t, id; QString b, w;
@@ -72,7 +73,7 @@ void WaitingRoom::readData(){
         emit opponentPut(x, y);
         break;
     }
-    case 'l':
+    case 'q':
         emit opponentLeft();
         break;
     case 'e':
@@ -102,6 +103,13 @@ void WaitingRoom::sendReady(){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('r');
+    socket->write(ba);
+}
+
+void WaitingRoom::sendQuit(){
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('q');
     socket->write(ba);
 }
 

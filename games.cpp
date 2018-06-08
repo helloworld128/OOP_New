@@ -101,6 +101,9 @@ void Game::put(int xpos, int ypos)
     if (isOnlineGame) emit sendPut(xpos, ypos);
     playSound();
     drawChess(xpos,ypos,activePlayer);
+    QMovie* movie = new QMovie("./images/change.gif");
+    pictures[xpos][ypos]->setMovie(movie);
+    movie->start();
 }
 
 void Game::calculatePossibleMoves()

@@ -37,6 +37,7 @@ private:
 
 signals:
     void sendReady();
+    void sendQuit();
 
 private slots:
     void createGame(int type, int side, QString localName, QString otherName);
@@ -58,7 +59,6 @@ private slots:
     void on_StopOnce_Button_clicked();
     void on_Quit_Button_clicked();
     void on_Ready_Button_clicked();
-    void on_pushButton_clicked();
 };
 
 #endif // WIDGET_H

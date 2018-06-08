@@ -37,6 +37,7 @@ void Widget::displayNotice(const QString &text){
 }
 
 void Widget::setGameUI(int isOnline, int gameType){
+    connect(game, SIGNAL(sendNotice(QString)), this, SLOT(displayNotice(QString)));
     ui->MainMenu->hide();
     ui->Menu->hide();
     if (gameType == 0) setPicture(ui->Board, BOARD_1);
@@ -125,6 +126,7 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
     connect(hall, SIGNAL(opponentLeft()), game, SLOT(opponentLeft()));
     connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
+    connect(this, SIGNAL(sendQuit()), hall, SLOT(sendQuit()));
     hall->close();
     setFixedWidth(1000);
 }
@@ -152,7 +154,6 @@ void Widget::on_Reversi_Button_clicked()
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     setGameUI(0, 0);
     notice->display(QString("你好"));
-    connect(game, SIGNAL(sendNotice(QString)), this, SLOT(displayNotice(QString)));
 }
 
 void Widget::on_FIR_Button_clicked()
@@ -278,6 +279,7 @@ void Widget::on_Quit_Button_clicked()
                                      QMessageBox::Cancel, QMessageBox::Yes);
     switch (reply){
     case QMessageBox::Yes:
+        emit sendQuit();
         ui->Menu->show();
         ui->OnlineGameMenu->hide();
         ui->Board->hide();
@@ -297,10 +299,5 @@ void Widget::on_Ready_Button_clicked()
 {
     emit sendReady();
     ui->Ready_Button->setDisabled(true);
-
-}
-
-void Widget::on_pushButton_clicked()
-{
 
 }
