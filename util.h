@@ -22,6 +22,7 @@ public:
     Notice(QWidget* parent);
     QGraphicsOpacityEffect* effect;
     QLabel* label;
+    ~Notice();
 };
 
 

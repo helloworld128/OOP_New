@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Reversi</string>
+   <string>chesses</string>
   </property>
   <widget class="QWidget" name="MainMenu" native="true">
    <property name="geometry">

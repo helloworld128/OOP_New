@@ -184,10 +184,29 @@ void WaitingRoom::on_Leave_Button_clicked(){close();}
 
 void WaitingRoom::on_Spectate_Button_clicked()
 {
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out << QString("this is a test!") << 1833 << QChar('q');
-    socket->write(ba);
+    QListWidgetItem* selected = ui->List->currentItem();
+    if (selected == nullptr) return;
+    QWidget* _item = ui->List->itemWidget(selected);
+    MyItem* item = dynamic_cast<MyItem*>(_item);
+    int tmpSide = 0;
+    QString tmpName;
+    if (item->nameb.size() == 0){
+        tmpSide = 0;
+        tmpName = item->namew;
+    }
+    if (item->namew.size() == 0){
+        tmpSide = 1;
+        tmpName = item->nameb;
+    }
+    //found a vacant seat
+    if (tmpName.size()){
+        QByteArray ba;
+        QDataStream out(&ba, QIODevice::WriteOnly);
+        out << QChar('j') << item->uid << tmpSide << playerName;
+        socket->write(ba);
+        emit createGame(item->type, tmpSide, playerName, tmpName);
+        hide();
+    }
 }
 
 void WaitingRoom::on_Cancel_Button_clicked()
