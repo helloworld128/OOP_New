@@ -6,9 +6,13 @@
 
 class MyItem : public QWidget{
     QGridLayout layout;
-    QLabel type, black, bName, white, wName;
+    QLabel Type, black, bName, white, wName;
 public:
-    MyItem(int _type, QString _bName, QString _wName);
+    MyItem(int _type, QString _bName, QString _wName, int _uid);
+    int type;
+    //uid is a 4-digit int used to uniquely identify a game.
+    int uid;
+    QString nameb, namew;
 };
 
 #endif // MYITEM_H

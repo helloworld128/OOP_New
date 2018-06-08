@@ -5,7 +5,7 @@
 
 void Ai::aiPlay()
 {
-    QTime target = QTime::currentTime().addMSecs(256);
+    QTime target = QTime::currentTime().addMSecs(250);
     while(QTime::currentTime() < target)
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents,100);

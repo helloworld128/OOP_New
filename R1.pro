@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,23 +29,27 @@ SOURCES += \
     games.cpp \
     dialog.cpp \
     ai.cpp \
-    udptest.cpp \
-    myitem.cpp
+    myitem.cpp \
+    waitingroom.cpp \
+    util.cpp
 
 HEADERS += \
         widget.h \
         games.h \
     dialog.h \
     ai.h \
-    udptest.h \
-    myitem.h
+    myitem.h \
+    waitingroom.h \
+    util.h
 
 FORMS += \
         widget.ui \
     dialog.ui \
-    udptest.ui
+    waitingroom.ui
 
 DISTFILES +=
+
+TRANSLATIONS += zh_cn.ts
 
 RESOURCES += \
     res.qrc
