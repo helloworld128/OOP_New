@@ -59,6 +59,9 @@ private slots:
     void on_StopOnce_Button_clicked();
     void on_Quit_Button_clicked();
     void on_Ready_Button_clicked();
+    void on_Chatting_Button_clicked();
+    void on_SendText_Button_clicked();
+    void on_Close_Chatting_Button_clicked();
 };
 
 #endif // WIDGET_H

@@ -541,6 +541,15 @@ color:rgb(255, 170, 255)</string>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="midLineWidth">
+       <number>0</number>
+      </property>
       <property name="digitCount">
        <number>2</number>
       </property>
@@ -712,6 +721,90 @@ color:rgb(255, 170, 255)</string>
     </item>
    </layout>
   </widget>
+  <widget class="QTextBrowser" name="chatText">
+   <property name="geometry">
+    <rect>
+     <x>810</x>
+     <y>100</y>
+     <width>181</width>
+     <height>361</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="chatLabel">
+   <property name="geometry">
+    <rect>
+     <x>810</x>
+     <y>40</y>
+     <width>181</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 15pt &quot;Adobe Arabic&quot;;</string>
+   </property>
+   <property name="text">
+    <string>chatting room</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Chatting_Button">
+   <property name="geometry">
+    <rect>
+     <x>700</x>
+     <y>10</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
+   </property>
+   <property name="text">
+    <string>Chatting</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="SendText_Button">
+   <property name="geometry">
+    <rect>
+     <x>900</x>
+     <y>530</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
+   </property>
+   <property name="text">
+    <string>Send</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="textEdit">
+   <property name="geometry">
+    <rect>
+     <x>810</x>
+     <y>470</y>
+     <width>181</width>
+     <height>51</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Close_Chatting_Button">
+   <property name="geometry">
+    <rect>
+     <x>890</x>
+     <y>10</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </widget>
   <zorder>Border</zorder>
   <zorder>Board</zorder>
   <zorder>GameMenu</zorder>
@@ -719,6 +812,12 @@ color:rgb(255, 170, 255)</string>
   <zorder>Menu</zorder>
   <zorder>MainMenu</zorder>
   <zorder>OnlineGameMenu</zorder>
+  <zorder>chatText</zorder>
+  <zorder>chatLabel</zorder>
+  <zorder>Chatting_Button</zorder>
+  <zorder>SendText_Button</zorder>
+  <zorder>textEdit</zorder>
+  <zorder>Close_Chatting_Button</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

@@ -21,6 +21,9 @@ Widget::Widget(QWidget *parent) :
     ui->Border->hide();
     ui->MainMenu->hide();
     ui->OnlineGameMenu->hide();
+    ui->Chatting_Button->hide();
+    ui->chatText->hide(); ui->chatLabel->hide(); ui->SendText_Button->hide(); ui->textEdit->hide(); ui->Close_Chatting_Button->hide();
+    setFixedSize(800, 600);
     selectBPlayer.addButton(ui->BPlayer); selectBPlayer.addButton(ui->BAI);
     selectWPlayer.addButton(ui->WPlayer); selectWPlayer.addButton(ui->WAI);
     ui->BPlayer->setChecked(true); ui->WPlayer->setChecked(true);
@@ -46,8 +49,12 @@ void Widget::setGameUI(int isOnline, int gameType){
     }
     if (isOnline){
         ui->OnlineGameMenu->show();
+        ui->Chatting_Button->show();
+
         if (gameType == 0) {
             ui->BCount_LCD_2->show(); ui->WCount_LCD_2->show();
+            ui->BCount_LCD_2->setFixedSize(103, 68);
+            ui->WCount_LCD_2->setFixedSize(103, 68);
         }
         else {
             ui->BCount_LCD_2->hide(); ui->WCount_LCD_2->hide();
@@ -128,7 +135,7 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
     connect(this, SIGNAL(sendQuit()), hall, SLOT(sendQuit()));
     hall->close();
-    setFixedWidth(1000);
+  //  setFixedWidth(1000);
 }
 
 void Widget::setOpponentName(QString name){
@@ -287,6 +294,7 @@ void Widget::on_Quit_Button_clicked()
         ui->CurrentPlayerPict->hide();
         ui->Ready_Button->setDisabled(false);
         notice->hide();
+        setFixedSize(800, 600);
         hall->show();
         delete game;
         break;
@@ -299,5 +307,31 @@ void Widget::on_Ready_Button_clicked()
 {
     emit sendReady();
     ui->Ready_Button->setDisabled(true);
+}
 
+void Widget::on_Chatting_Button_clicked(){
+    ui->chatLabel->show();
+    ui->chatText->show();
+    ui->SendText_Button->show();
+    ui->textEdit->show();
+    ui->Close_Chatting_Button->show();
+    ui->Chatting_Button->hide();
+    setFixedSize(1000, 600);
+}
+
+void Widget::on_SendText_Button_clicked(){
+    QString ss = ui->textEdit->toPlainText();
+    //add player name?
+    ui->chatText->append(ss);
+    ui->textEdit->clear();
+}
+
+void Widget::on_Close_Chatting_Button_clicked(){
+    ui->chatLabel->hide();
+    ui->chatText->hide();
+    ui->SendText_Button->hide();
+    ui->textEdit->hide();
+    ui->Close_Chatting_Button->hide();
+    ui->Chatting_Button->show();
+    setFixedSize(800, 600);
 }
