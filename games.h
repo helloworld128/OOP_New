@@ -12,7 +12,7 @@ public:
     Game(QLabel* _currentPlayerPict);
     friend class ReversiAi;
     friend class FIRAi;
-    void reStart();
+    void reStart(int count, int active, int*** record);
     void setPlayerType(int arg);
     void click(int x, int y);
     virtual void undo();
@@ -34,10 +34,12 @@ public:
 signals:
     void aiPlay();
     void sendPut(int x, int y);
+    void sendNotice(const QString& text);
 
 protected slots:
     void startGame();
     void opponentPut(int x, int y);
+    void opponentLeft();
 
 protected:
     void drawChess(int x,int y, int player);
@@ -53,9 +55,9 @@ protected:
     enum PLAYERTYPE{AI,HUMAN,ONLINE};
     QLabel* pictures[9][9];
     int board[9][9];
-    int previousPlayer[100];
     std::vector<QPoint> possibleMoves;
     PLAYERTYPE playerType[2];
+    int previousPlayer[100];
     int gridNum;
     QLabel* currentPlayerPict;
     QMediaPlayer* soundPlayer;

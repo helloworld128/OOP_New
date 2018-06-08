@@ -32,6 +32,10 @@ Widget::~Widget()
     delete ui;
 }
 
+void Widget::displayNotice(const QString &text){
+    notice->display(text);
+}
+
 void Widget::setGameUI(int isOnline, int gameType){
     ui->MainMenu->hide();
     ui->Menu->hide();
@@ -119,8 +123,8 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     connect(hall, SIGNAL(opponentEntered(QString)), this, SLOT(setOpponentName(QString)));
     connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(opponentPut(int,int)));
     connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
+    connect(hall, SIGNAL(opponentLeft()), game, SLOT(opponentLeft()));
     connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
-    //connect(hall, SIGNAL(opponentLeft()), game, SLOT());
     hall->close();
     setFixedWidth(1000);
 }
@@ -148,6 +152,7 @@ void Widget::on_Reversi_Button_clicked()
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     setGameUI(0, 0);
     notice->display(QString("你好"));
+    connect(game, SIGNAL(sendNotice(QString)), this, SLOT(displayNotice(QString)));
 }
 
 void Widget::on_FIR_Button_clicked()
@@ -180,10 +185,7 @@ void Widget::on_Menu_Button_clicked()
     ui->Board->hide();
     ui->Border->hide();
     ui->CurrentPlayerPict->hide();
-    if(notice != nullptr) {
-        delete notice;
-        notice = nullptr;
-    }
+    notice->hide();
     delete game;
 }
 
@@ -198,7 +200,7 @@ void Widget::on_Save_Button_clicked()
     file.open(QIODevice::ReadWrite);
     QTextStream stream(&file);
     stream << game->moveCount << endl;
-    stream << game->activePlayer << endl;
+    stream << game->activePlayer << endl;    
     for (int t = 0 ; t <= game->moveCount; t++)
         for (int i = 0; i < 9; i++)
         {
@@ -214,20 +216,23 @@ void Widget::on_Save_Button_clicked()
 
 void Widget::on_Load_Button_clicked()
 {
-    QString fileName("game.txt");
-    QString dir = QFileDialog::getExistingDirectory
-            (this,tr("Open Directory"),"/home", QFileDialog::ShowDirsOnly
-             | QFileDialog::DontResolveSymlinks);
-    QDir d;
-    QFile file(dir+"/"+fileName);
+    QString fileName = QFileDialog::getOpenFileName
+            (this, tr("open file"), " ",  tr("Allfile(*.*);;txtfile(*.txt)"));
+    QFile file(fileName);
     file.open(QIODevice::ReadWrite);
+    int count, active, ***record;
+    record = new int**[10000];
     QTextStream stream(&file);
-    stream >> game->moveCount >> game->activePlayer;
-    for (int t = 0 ; t <= game->moveCount; t++)
-        for (int i = 0; i < 9; i++)
+    stream >> count >> active;
+    for (int t = 0 ; t <= count; t++){
+        record[t] = new int*[9];
+        for (int i = 0; i < 9; i++){
+            record[t][i] = new int[9];
             for (int j = 0; j < 9; j++)
-                stream >> game->previousMove[t][i][j];
-    game->reStart();
+                stream >> record[t][i][j];
+        }
+    }
+    game->reStart(count, active, record);
     file.close();
 }
 
@@ -268,14 +273,24 @@ void Widget::on_StopOnce_Button_clicked()
 
 void Widget::on_Quit_Button_clicked()
 {
-    ui->Menu->show();
-    ui->OnlineGameMenu->hide();
-    ui->Board->hide();
-    ui->Border->hide();
-    ui->CurrentPlayerPict->hide();
-    ui->Ready_Button->setDisabled(false);
-    hall->show();
-    delete game;
+    int reply = QMessageBox::warning(this, tr("Confirm Quitting"),
+                                     tr("Do you really want to quit?"),
+                                     QMessageBox::Cancel, QMessageBox::Yes);
+    switch (reply){
+    case QMessageBox::Yes:
+        ui->Menu->show();
+        ui->OnlineGameMenu->hide();
+        ui->Board->hide();
+        ui->Border->hide();
+        ui->CurrentPlayerPict->hide();
+        ui->Ready_Button->setDisabled(false);
+        notice->hide();
+        hall->show();
+        delete game;
+        break;
+    default:
+        break;
+    }
 }
 
 void Widget::on_Ready_Button_clicked()

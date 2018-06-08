@@ -8,6 +8,7 @@
 #include "games.h"
 #include "waitingroom.h"
 #include "util.h"
+#include <QMessageBox>
 
 namespace Ui {
 class Widget;
@@ -38,10 +39,10 @@ signals:
     void sendReady();
 
 private slots:
-
     void createGame(int type, int side, QString localName, QString otherName);
     void setGameUI(int isOnline, int gameType);
     void setOpponentName(QString name);
+    void displayNotice(const QString& text);
     void on_Start_Button_clicked();
     void on_Reversi_Button_clicked();
     void on_FIR_Button_clicked();
