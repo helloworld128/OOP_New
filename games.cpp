@@ -42,6 +42,10 @@ void Game::opponentPut(int x, int y){
     else qDebug() << "receiving opponentPut(int, int) but is not opponent's turn!";
 }
 
+void Game::opponentLeft(){
+    emit sendNotice(QString("Your opponent has left."));
+}
+
 void Game::nextPlayer()
 {
     if(gameover) return;
@@ -58,7 +62,9 @@ void Game::nextPlayer()
     calculatePossibleMoves();
     if(possibleMoves.empty())
     {
-        qDebug() << "this player cannot move: Player " + QString::number(activePlayer);
+        QString noticeString = "this player cannot move: Player " + QString::number(activePlayer);
+        qDebug() << noticeString;
+        emit sendNotice(noticeString);
         if(cantmove[1 - activePlayer])
         {
             showResult();

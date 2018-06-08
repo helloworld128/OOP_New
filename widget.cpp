@@ -32,6 +32,10 @@ Widget::~Widget()
     delete ui;
 }
 
+void Widget::displayNotice(const QString &text){
+    notice->display(text);
+}
+
 void Widget::setGameUI(int isOnline, int gameType){
     ui->MainMenu->hide();
     ui->Menu->hide();
@@ -119,8 +123,8 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     connect(hall, SIGNAL(opponentEntered(QString)), this, SLOT(setOpponentName(QString)));
     connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(opponentPut(int,int)));
     connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
+    connect(hall, SIGNAL(opponentLeft()), game, SLOT(opponentLeft()));
     connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
-    //connect(hall, SIGNAL(opponentLeft()), game, SLOT());
     hall->close();
     setFixedWidth(1000);
 }
@@ -148,6 +152,7 @@ void Widget::on_Reversi_Button_clicked()
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     setGameUI(0, 0);
     notice->display(QString("你好"));
+    connect(game, SIGNAL(sendNotice(QString)), this, SLOT(displayNotice(QString)));
 }
 
 void Widget::on_FIR_Button_clicked()
@@ -180,10 +185,7 @@ void Widget::on_Menu_Button_clicked()
     ui->Board->hide();
     ui->Border->hide();
     ui->CurrentPlayerPict->hide();
-    if(notice != nullptr) {
-        delete notice;
-        notice = nullptr;
-    }
+    notice->hide();
     delete game;
 }
 
@@ -271,14 +273,24 @@ void Widget::on_StopOnce_Button_clicked()
 
 void Widget::on_Quit_Button_clicked()
 {
-    ui->Menu->show();
-    ui->OnlineGameMenu->hide();
-    ui->Board->hide();
-    ui->Border->hide();
-    ui->CurrentPlayerPict->hide();
-    ui->Ready_Button->setDisabled(false);
-    hall->show();
-    delete game;
+    int reply = QMessageBox::warning(this, tr("Confirm Quitting"),
+                                     tr("Do you really want to quit?"),
+                                     QMessageBox::Cancel, QMessageBox::Yes);
+    switch (reply){
+    case QMessageBox::Yes:
+        ui->Menu->show();
+        ui->OnlineGameMenu->hide();
+        ui->Board->hide();
+        ui->Border->hide();
+        ui->CurrentPlayerPict->hide();
+        ui->Ready_Button->setDisabled(false);
+        notice->hide();
+        hall->show();
+        delete game;
+        break;
+    default:
+        break;
+    }
 }
 
 void Widget::on_Ready_Button_clicked()

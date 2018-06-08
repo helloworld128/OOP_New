@@ -34,10 +34,12 @@ public:
 signals:
     void aiPlay();
     void sendPut(int x, int y);
+    void sendNotice(const QString& text);
 
 protected slots:
     void startGame();
     void opponentPut(int x, int y);
+    void opponentLeft();
 
 protected:
     void drawChess(int x,int y, int player);
