@@ -60,6 +60,9 @@ color:rgb(255, 170, 255)</string>
       <property name="styleSheet">
        <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
       </property>
+      <property name="locale">
+       <locale language="English" country="UnitedStates"/>
+      </property>
       <property name="text">
        <string>Reversi</string>
       </property>

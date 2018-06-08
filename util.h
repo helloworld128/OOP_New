@@ -3,6 +3,7 @@
 #include <QLabel>
 #include <QWidget>
 #include <QGraphicsOpacityEffect>
+#include <QPropertyAnimation>
 
 /************************ constants *******************/
 
@@ -17,13 +18,15 @@ const char BORDER[] = "./images/border.png";
 
 void setPicture(QLabel* label, const char dir[]);
 
-class Notice:public QWidget{
-
+class Notice:public QWidget {
 public:
     Notice(QWidget* parent);
-    QGraphicsOpacityEffect* effect;
-    QLabel* label;
+    void display(const QString& text);
     ~Notice();
+private:
+    QGraphicsOpacityEffect* effect;
+    QPropertyAnimation *animation;
+    QLabel* label;
 };
 
 

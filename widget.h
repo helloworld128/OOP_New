@@ -23,7 +23,7 @@ public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 
-    Game* game;
+    Game* game = nullptr;
     Notice* notice = nullptr;
     WaitingRoom* hall = nullptr;
 

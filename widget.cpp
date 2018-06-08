@@ -1,15 +1,12 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include "ai.h"
-#include <games.h>
 #include <QDebug>
 #include <QFileDialog>
 #include <QMouseEvent>
 #include <QTextStream>
 #include <QPropertyAnimation>
-//#include <QFileDialog>
 #include <QGraphicsOpacityEffect>
-#include "waitingroom.h"
 
 
 namespace Ui
@@ -21,7 +18,7 @@ Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
 {
-    game = nullptr;
+    notice = new Notice(this);
     ui->setupUi(this);
     ui->GameMenu->hide();
     ui->Board->hide();
@@ -154,7 +151,7 @@ void Widget::on_Reversi_Button_clicked()
     ai->setParent(game);
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     setGameUI(0, 0);
-    notice = new Notice(this);
+    notice->display(QString("你好"));
 }
 
 void Widget::on_FIR_Button_clicked()

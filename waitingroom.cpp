@@ -91,48 +91,6 @@ void WaitingRoom::readData(){
     }
 }
 
-//void WaitingRoom::readData()
-//{
-//    char type;
-//    auto _content = socket->readAll();
-//    auto content = _content.data();
-//    sscanf(content, "%c", &type);
-//    switch (type){
-//    //gameList received
-//    case 'g':
-//        ui->List->clear();
-//        //int n = _content.size() - 1;
-//        int gameType, side, uid;
-//        char tmpName[11];
-//        //sscanf(content + i, "%d%d%d%s",&gameType, &side, &uid, tmpName);
-//        break;
-//        //opponent ready
-//    case 'r':
-//        emit opponentReady();
-//        break;
-//        //opponent put
-//    case 'p':
-//        char x, y;
-//        sscanf(content + 1, "%c%c", &x, &y);
-//        emit opponentPut(x - '0', y - '0');
-//        break;
-//        //opponent entered
-//    case 'e':
-//        char name[11];
-//        sscanf(content + 1, "%s", name);
-//        emit opponentEntered(name);
-//        break;
-//        //opponent left
-//    case 'l':
-//        emit opponentLeft();
-//        break;
-//        //TODO: opponent surrendered? other functions?
-//    default:
-//        qDebug() << "unknown command received!";
-//        break;
-//    }
-//}
-
 void WaitingRoom::sendMove(int x, int y){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
