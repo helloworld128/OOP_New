@@ -51,6 +51,7 @@ void WaitingRoom::readData(){
     QByteArray ba = socket->readAll();
     QDataStream in(&ba, QIODevice::ReadOnly);
     QChar t; in >> t;
+    //convert QChar to char
     char type = t.toLatin1();
     switch (type){
     case 'g':

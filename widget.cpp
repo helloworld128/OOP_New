@@ -240,10 +240,15 @@ void Widget::on_Load_Button_clicked()
 
 void Widget::on_Online_Button_clicked()
 {
-    hall = new WaitingRoom();
-    connect(hall, SIGNAL(createGame(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
+    if (hall == nullptr){
+        hall = new WaitingRoom();
+        connect(hall, SIGNAL(createGame(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
 
-    hall->exec();
+        hall->exec();
+    }
+    else{
+        hall->show();
+    }
 }
 
 void Widget::on_Local_Button_clicked()
