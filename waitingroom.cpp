@@ -11,7 +11,7 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     ui(new Ui::WaitingRoom)
 {
     socket = new QTcpSocket(this);
-    socket->connectToHost(QHostAddress::LocalHost,23333);
+    socket->connectToHost(QHostAddress("45.76.194.97"),23333);
     connect(socket, SIGNAL(readyRead()), this, SLOT(readData()));
     //connect(socket, SIGNAL(connected()), this, SLOT(connected()));
     ui->setupUi(this);
