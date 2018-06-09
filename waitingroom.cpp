@@ -141,7 +141,7 @@ void WaitingRoom::sendQuit(){
     out << QChar('q');
     socket->write(ba);
 }
-void WaitingRoom::sendText(QString text){
+void WaitingRoom::sendText(const QString& text){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('t') << text;

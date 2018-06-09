@@ -38,13 +38,13 @@ private:
 signals:
     void sendReady();
     void sendQuit();
-    void sendText(QString text);
+    void sendText(const QString& text);
 
 private slots:
     void createGame(int type, int side, QString localName, QString otherName);
     void setGameUI(int isOnline, int gameType);
     void setOpponentName(QString name);
-    void opponentChat(QString text);
+    void opponentChat(const QString& text);
     void displayNotice(const QString& text);
     void on_Start_Button_clicked();
     void on_Reversi_Button_clicked();

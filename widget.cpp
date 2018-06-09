@@ -51,6 +51,7 @@ void Widget::setGameUI(int isOnline, int gameType){
     if (isOnline){
         ui->OnlineGameMenu->show();
         ui->Chatting_Button->show();
+        ui->chatText->append("Welcome!");
 
         if (gameType == 0) {
             ui->BCount_LCD_2->show(); ui->WCount_LCD_2->show();
@@ -133,10 +134,10 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(opponentPut(int,int)));
     connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
     connect(hall, SIGNAL(opponentLeft()), game, SLOT(opponentLeft()));
-    connect(hall, SIGNAL(opponentChat(QString)), game, SLOT(opponentChat(QString)));
+    connect(hall, SIGNAL(opponentChat(QString)), this, SLOT(opponentChat(QString)));
     connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
-    connect(this, SIGNAL(sendQuit()), hall, SLOT(sendQuit()));
     connect(this, SIGNAL(sendText(QString)), hall, SLOT(sendText(QString)));
+    connect(this, SIGNAL(sendQuit()), hall, SLOT(sendQuit()));
     hall->close();
   //  setFixedWidth(1000);
 }
@@ -148,7 +149,7 @@ void Widget::setOpponentName(QString name){
         ui->wName_2->setText(name);
 }
 
-void Widget::opponentChat(QString text){
+void Widget::opponentChat(const QString& text){
     ui->chatText->append(text);
 }
 
@@ -299,6 +300,8 @@ void Widget::on_Quit_Button_clicked()
         ui->Board->hide();
         ui->Border->hide();
         ui->CurrentPlayerPict->hide();
+        ui->Chatting_Button->hide();
+        ui->chatText->clear();
         ui->Ready_Button->setDisabled(false);
         notice->hide();
         setFixedSize(800, 600);
@@ -325,7 +328,6 @@ void Widget::on_Chatting_Button_clicked(){
     ui->Close_Chatting_Button->show();
     ui->Chatting_Button->hide();
     setFixedSize(1000, 600);
-    ui->chatText->append("Welcome!");
 }
 
 void Widget::on_SendText_Button_clicked(){
