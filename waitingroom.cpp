@@ -108,6 +108,13 @@ void WaitingRoom::readData(){
     case 's':
         emit startGame();
         break;
+    case 't':
+    {
+        QString text;
+        in >> text;
+        emit opponentChat(playerName + ":" + text);
+        break;
+    }
     default:
         qDebug() << "unknown command!";
         break;
@@ -132,6 +139,12 @@ void WaitingRoom::sendQuit(){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('q');
+    socket->write(ba);
+}
+void WaitingRoom::sendText(QString text){
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('t') << text;
     socket->write(ba);
 }
 

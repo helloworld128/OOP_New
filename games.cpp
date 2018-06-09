@@ -46,6 +46,10 @@ void Game::opponentLeft(){
     emit sendNotice(QString("Your opponent has left."));
 }
 
+void Game::opponentChat(QString text){
+
+}
+
 void Game::nextPlayer()
 {
     if(gameover) return;

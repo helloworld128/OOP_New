@@ -783,7 +783,7 @@ color:rgb(255, 170, 255)</string>
     <item row="3" column="0" colspan="2">
      <widget class="QLabel" name="chatLabel">
       <property name="styleSheet">
-       <string notr="true">font: 15pt &quot;Adobe Arabic&quot;;</string>
+       <string notr="true">font: 13pt &quot;Adobe Arabic&quot;;</string>
       </property>
       <property name="text">
        <string>chatting room</string>

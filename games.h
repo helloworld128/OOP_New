@@ -43,6 +43,7 @@ protected slots:
     void startGame();
     void opponentPut(int x, int y);
     void opponentLeft();
+    void opponentChat(QString text);
 
 protected:
     void drawChess(int x,int y, int player);

@@ -133,8 +133,10 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(opponentPut(int,int)));
     connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
     connect(hall, SIGNAL(opponentLeft()), game, SLOT(opponentLeft()));
+    connect(hall, SIGNAL(opponentChat(QString)), game, SLOT(opponentChat(QString)));
     connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
     connect(this, SIGNAL(sendQuit()), hall, SLOT(sendQuit()));
+    connect(this, SIGNAL(sendText(QString)), hall, SLOT(sendText(QString)));
     hall->close();
   //  setFixedWidth(1000);
 }
@@ -144,6 +146,10 @@ void Widget::setOpponentName(QString name){
         ui->bName_2->setText(name);
     else
         ui->wName_2->setText(name);
+}
+
+void Widget::opponentChat(QString text){
+    ui->chatText->append(text);
 }
 
 void Widget::on_Start_Button_clicked()
@@ -319,13 +325,15 @@ void Widget::on_Chatting_Button_clicked(){
     ui->Close_Chatting_Button->show();
     ui->Chatting_Button->hide();
     setFixedSize(1000, 600);
+    ui->chatText->append("Welcome!");
 }
 
 void Widget::on_SendText_Button_clicked(){
     QString ss = ui->textEdit->toPlainText();
     //add player name?
-    ui->chatText->append(ss);
+    ui->chatText->append("Me:" + ss);
     ui->textEdit->clear();
+    emit sendText(ss);
 }
 
 void Widget::on_Close_Chatting_Button_clicked(){
