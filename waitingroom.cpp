@@ -92,6 +92,7 @@ void WaitingRoom::readData(){
     {
         int x, y;
         in >> x >> y;
+        qDebug() << x << y;
         emit opponentPut(x, y);
         break;
     }
@@ -112,6 +113,7 @@ void WaitingRoom::readData(){
     {
         QString text;
         in >> text;
+        qDebug() << "text = " << text;
         emit opponentChat(playerName + ":" + text);
         break;
     }
@@ -141,9 +143,10 @@ void WaitingRoom::sendQuit(){
     out << QChar('q');
     socket->write(ba);
 }
-void WaitingRoom::sendText(const QString& text){
+void WaitingRoom::sendText(QString text){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
+    qDebug() << "in waitingroom, sendtext = " << text;
     out << QChar('t') << text;
     socket->write(ba);
 }
