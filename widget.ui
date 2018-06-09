@@ -721,32 +721,6 @@ color:rgb(255, 170, 255)</string>
     </item>
    </layout>
   </widget>
-  <widget class="QTextBrowser" name="chatText">
-   <property name="geometry">
-    <rect>
-     <x>810</x>
-     <y>100</y>
-     <width>181</width>
-     <height>361</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="chatLabel">
-   <property name="geometry">
-    <rect>
-     <x>810</x>
-     <y>40</y>
-     <width>181</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">font: 15pt &quot;Adobe Arabic&quot;;</string>
-   </property>
-   <property name="text">
-    <string>chatting room</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="Chatting_Button">
    <property name="geometry">
     <rect>
@@ -763,47 +737,60 @@ color:rgb(255, 170, 255)</string>
     <string>Chatting</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="SendText_Button">
+  <widget class="QWidget" name="Chat" native="true">
    <property name="geometry">
     <rect>
-     <x>900</x>
-     <y>530</y>
-     <width>93</width>
-     <height>28</height>
+     <x>820</x>
+     <y>20</y>
+     <width>169</width>
+     <height>561</height>
     </rect>
    </property>
-   <property name="styleSheet">
-    <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
-   </property>
-   <property name="text">
-    <string>Send</string>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="textEdit">
-   <property name="geometry">
-    <rect>
-     <x>810</x>
-     <y>470</y>
-     <width>181</width>
-     <height>51</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="Close_Chatting_Button">
-   <property name="geometry">
-    <rect>
-     <x>890</x>
-     <y>10</y>
-     <width>93</width>
-     <height>28</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
-   </property>
-   <property name="text">
-    <string>Close</string>
-   </property>
+   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,1,1,11,3,1">
+    <item row="2" column="1">
+     <widget class="QPushButton" name="Close_Chatting_Button">
+      <property name="styleSheet">
+       <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
+      </property>
+      <property name="text">
+       <string>Close</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="PlaceHolder">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0" colspan="2">
+     <widget class="QTextEdit" name="textEdit"/>
+    </item>
+    <item row="4" column="0" colspan="2">
+     <widget class="QTextBrowser" name="chatText"/>
+    </item>
+    <item row="6" column="1">
+     <widget class="QPushButton" name="SendText_Button">
+      <property name="styleSheet">
+       <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
+      </property>
+      <property name="text">
+       <string>Send</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="2">
+     <widget class="QLabel" name="chatLabel">
+      <property name="styleSheet">
+       <string notr="true">font: 15pt &quot;Adobe Arabic&quot;;</string>
+      </property>
+      <property name="text">
+       <string>chatting room</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <zorder>Border</zorder>
   <zorder>Board</zorder>
@@ -812,12 +799,8 @@ color:rgb(255, 170, 255)</string>
   <zorder>Menu</zorder>
   <zorder>MainMenu</zorder>
   <zorder>OnlineGameMenu</zorder>
-  <zorder>chatText</zorder>
-  <zorder>chatLabel</zorder>
   <zorder>Chatting_Button</zorder>
-  <zorder>SendText_Button</zorder>
-  <zorder>textEdit</zorder>
-  <zorder>Close_Chatting_Button</zorder>
+  <zorder>Chat</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
