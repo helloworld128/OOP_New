@@ -13,6 +13,7 @@ const char HINT[] = "./images/hint.png";
 const char BOARD_1[] = "./images/chessboard.png";
 const char BOARD_2[] = "./images/board2.png";
 const char BORDER[] = "./images/border.png";
+const char LASTMOVE[] = "./images/lastmove.png";
 //enum TYPE{REVERSI, FIR, GO};
 /******************************************************/
 

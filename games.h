@@ -5,6 +5,7 @@
 #include <QLCDNumber>
 #include <QMediaPlayer>
 #include <QMovie>
+#include <QVector>
 
 class Game:public QObject
 {
@@ -29,6 +30,7 @@ public:
     int moveCount = -1;
     int activePlayer = 0;      //0-Black; 1-White
     int previousMove[100][9][9];
+    QPoint previousMovePoint[100];
     int isOnlineGame = false;
     bool ready[2] = {false, false};
 
@@ -55,6 +57,7 @@ protected:
     bool gameover = false;
     enum PLAYERTYPE{AI,HUMAN,ONLINE};
     QLabel* pictures[9][9];
+    QLabel* lastMoveHint[9][9];
     int board[9][9];
     std::vector<QPoint> possibleMoves;
     PLAYERTYPE playerType[2];
@@ -80,6 +83,7 @@ public:
 
 private:
     QLCDNumber *black, *white;
+    QVector<QMovie*> movies;
 };
 
 class FIR:public Game

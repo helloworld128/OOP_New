@@ -25,6 +25,7 @@ Widget::Widget(QWidget *parent) :
     selectWPlayer.addButton(ui->WPlayer); selectWPlayer.addButton(ui->WAI);
     ui->BPlayer->setChecked(true); ui->WPlayer->setChecked(true);
     setWindowIcon(QIcon(QString("./images/logo.png")));
+    setFixedWidth(800);
 }
 
 Widget::~Widget()
@@ -242,12 +243,12 @@ void Widget::on_Online_Button_clicked()
     if (hall == nullptr){
         hall = new WaitingRoom();
         connect(hall, SIGNAL(createGame(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
-
         hall->exec();
     }
     else{
         hall->show();
     }
+    //hall->tryToConnect();
 }
 
 void Widget::on_Local_Button_clicked()
@@ -288,6 +289,7 @@ void Widget::on_Quit_Button_clicked()
         ui->Ready_Button->setDisabled(false);
         notice->hide();
         hall->show();
+        setFixedWidth(800);
         delete game;
         break;
     default:

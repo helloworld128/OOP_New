@@ -13,6 +13,7 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     socket = new QTcpSocket(this);
     socket->connectToHost(QHostAddress::LocalHost,23333);
     connect(socket, SIGNAL(readyRead()), this, SLOT(readData()));
+    //connect(socket, SIGNAL(connected()), this, SLOT(connected()));
     ui->setupUi(this);
     ui->ChooseGame->hide();
     games.addButton(ui->rButton); games.addButton(ui->fButton); games.addButton(ui->gButton);
@@ -24,9 +25,30 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     int rnd = qrand() % 9000 + 1000;
     playerName = "Guest#" + QString::number(rnd);
     ui->lineEdit->setText(playerName);
-
-    requestCurrentGames();
+    //tryToConnect();
 }
+
+//void WaitingRoom::tryToConnect(){
+//    if (b_connected) return;
+//    socket->connectToHost(QHostAddress::LocalHost,23333);
+//    QDialog* dialog = new QDialog(this);
+//    QLabel* label = new QLabel("connecting...", dialog);
+//    label->setGeometry(20,20,150,50);
+//    QPushButton* button = new QPushButton("Close", dialog);
+//    button->setGeometry(20,120,80,30);
+//    dialog->show();
+//    dialog->move(pos());
+//    dialog->setFixedHeight(200);
+//    dialog->setFixedWidth(200);
+//    connect(button, SIGNAL(clicked(bool)), dialog, SLOT(hide()));
+//    connect(socket, SIGNAL(connected()), dialog, SLOT(hide()));
+//    connect(button, SIGNAL(clicked(bool)), this, SLOT(close()));
+//}
+
+//void WaitingRoom::connected(){
+//    b_connected = true;
+//    requestCurrentGames();
+//}
 
 void WaitingRoom::requestCurrentGames(){
     QByteArray ba;

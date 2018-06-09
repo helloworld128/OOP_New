@@ -15,6 +15,7 @@ class WaitingRoom : public QDialog
 
 public:
     explicit WaitingRoom(QWidget *parent = 0);
+    //void tryToConnect();
     ~WaitingRoom();
 
 signals:
@@ -25,6 +26,7 @@ signals:
     void startGame();
 
 private slots:
+    //void connected();
     void readData();
     void sendMove(int x, int y);
     void sendReady();
@@ -47,7 +49,7 @@ private:
     QTcpSocket* socket = nullptr;
     QButtonGroup games, role;
     QString playerName;
-    static const int dataSize = 17;
+    bool b_connected = false;
 };
 
 #endif // WAITINGROOM_H
