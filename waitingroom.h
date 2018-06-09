@@ -24,7 +24,7 @@ signals:
     void opponentEntered(QString name);
     void opponentLeft();
     void startGame();
-    void opponentChat(const QString& text);
+    void opponentChat(QString text);
 
 private slots:
     //void connected();
@@ -32,7 +32,7 @@ private slots:
     void sendMove(int x, int y);
     void sendReady();
     void sendQuit();
-    void sendText(const QString& text);
+    void sendText(QString text);
     void on_Create_Button_clicked();
     void on_Join_Button_clicked();
     void on_Leave_Button_clicked();

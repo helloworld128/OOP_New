@@ -44,7 +44,7 @@ private slots:
     void createGame(int type, int side, QString localName, QString otherName);
     void setGameUI(int isOnline, int gameType);
     void setOpponentName(QString name);
-    void opponentChat(const QString& text);
+    void opponentChat(QString text);
     void displayNotice(const QString& text);
     void on_Start_Button_clicked();
     void on_Reversi_Button_clicked();

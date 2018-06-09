@@ -149,7 +149,8 @@ void Widget::setOpponentName(QString name){
         ui->wName_2->setText(name);
 }
 
-void Widget::opponentChat(const QString& text){
+void Widget::opponentChat(QString text){
+    qDebug() << "in Widget opponentChat, text = " << text;
     ui->chatText->append(text);
 }
 
