@@ -38,7 +38,7 @@ private:
 signals:
     void sendReady();
     void sendQuit();
-    void sendText(const QString& text);
+    void sendText(QString text);
 
 private slots:
     void createGame(int type, int side, QString localName, QString otherName);

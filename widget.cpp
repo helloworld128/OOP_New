@@ -334,7 +334,7 @@ void Widget::on_Chatting_Button_clicked(){
 void Widget::on_SendText_Button_clicked(){
     QString ss = ui->textEdit->toPlainText();
     //add player name?
-    ui->chatText->append("Me:" + ss);
+ //   ui->chatText->append("Me:" + ss);
     ui->textEdit->clear();
     emit sendText(ss);
 }
