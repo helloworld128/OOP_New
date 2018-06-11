@@ -69,6 +69,16 @@ void WaitingRoom::addGame(int type, QString nameb, QString namew, int uid){
     ui->List->setItemWidget(aItem,new MyItem(type, nameb, namew, uid));
 }
 
+void WaitingRoom::sendGameFinished(){
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('f');
+    qDebug() << "f sent";
+    socket->waitForBytesWritten();
+    socket->write(ba);
+}
+
+//used characters: g(request game list), p(put), q(quit), e(enter), s(start), t(chat)
 void WaitingRoom::readData(){
     QByteArray ba = socket->readAll();
     QDataStream in(&ba, QIODevice::ReadOnly);
@@ -92,7 +102,6 @@ void WaitingRoom::readData(){
     {
         int x, y;
         in >> x >> y;
-        qDebug() << x << y;
         emit opponentPut(x, y);
         break;
     }
@@ -111,10 +120,9 @@ void WaitingRoom::readData(){
         break;
     case 't':
     {
-        QString text;
-        in >> text;
-        qDebug() << "text = " << text;
-        emit opponentChat(playerName + ":" + text);
+        QString name, text;
+        in >> name >> text;
+        emit opponentChat(name + ":" + text);
         break;
     }
     default:
@@ -146,7 +154,7 @@ void WaitingRoom::sendQuit(){
 void WaitingRoom::sendText(QString text){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
-    out << QChar('t') << text;
+    out << QChar('t') << playerName << text;
     socket->write(ba);
 }
 

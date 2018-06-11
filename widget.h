@@ -33,7 +33,6 @@ protected:
 
 private:
     QButtonGroup selectBPlayer,selectWPlayer;
-    void changeOnlineUI();
 
 signals:
     void sendReady();
@@ -46,6 +45,7 @@ private slots:
     void setOpponentName(QString name);
     void opponentChat(QString text);
     void displayNotice(const QString& text);
+    void resetReady();
     void on_Start_Button_clicked();
     void on_Reversi_Button_clicked();
     void on_FIR_Button_clicked();

@@ -15,7 +15,6 @@ class WaitingRoom : public QDialog
 
 public:
     explicit WaitingRoom(QWidget *parent = 0);
-    //void tryToConnect();
     ~WaitingRoom();
 
 signals:
@@ -28,6 +27,7 @@ signals:
 
 private slots:
     //void connected();
+    void sendGameFinished();
     void readData();
     void sendMove(int x, int y);
     void sendReady();

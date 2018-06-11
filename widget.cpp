@@ -130,16 +130,22 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     game->setPlayerType(side);
     game->isOnlineGame = true;
     connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
+    connect(game, SIGNAL(resetReady()), this, SLOT(resetReady()));
+    connect(game, SIGNAL(resetReady()), hall, SLOT(sendGameFinished()));
     connect(hall, SIGNAL(opponentEntered(QString)), this, SLOT(setOpponentName(QString)));
     connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(opponentPut(int,int)));
     connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
     connect(hall, SIGNAL(opponentLeft()), game, SLOT(opponentLeft()));
-    connect(hall, SIGNAL(opponentChat(QString)), this, SLOT(opponentChat(QString)));
+    connect(hall, SIGNAL(opponentChat(QString)), this, SLOT(opponentChat(QString)),Qt::UniqueConnection);
     connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
-    connect(this, SIGNAL(sendText(QString)), hall, SLOT(sendText(QString)));
+    connect(this, SIGNAL(sendText(QString)), hall, SLOT(sendText(QString)),Qt::UniqueConnection);
     connect(this, SIGNAL(sendQuit()), hall, SLOT(sendQuit()));
     hall->close();
   //  setFixedWidth(1000);
+}
+
+void Widget::resetReady(){
+    ui->Ready_Button->setEnabled(true);
 }
 
 void Widget::setOpponentName(QString name){
@@ -216,7 +222,11 @@ void Widget::on_Save_Button_clicked()
     QFile file(dir+"/"+fileName);
     file.open(QIODevice::ReadWrite);
     QTextStream stream(&file);
+    stream << int(game->playerType[0]) << ' ' << int(game->playerType[1]) << endl;
     stream << game->moveCount << endl;
+    for (int i = 1; i <= game->moveCount; ++i){
+        stream << game->previousMovePoint[i].x() << ' ' << game->previousMovePoint[i].y() << ' ';
+    }
     stream << game->activePlayer << endl;    
     for (int t = 0 ; t <= game->moveCount; t++)
         for (int i = 0; i < 9; i++)
@@ -236,11 +246,21 @@ void Widget::on_Load_Button_clicked()
     QString fileName = QFileDialog::getOpenFileName
             (this, tr("open file"), " ",  tr("Allfile(*.*);;txtfile(*.txt)"));
     QFile file(fileName);
-    file.open(QIODevice::ReadWrite);
+    if (!file.open(QIODevice::ReadWrite)) return;
     int count, active, ***record;
     record = new int**[10000];
     QTextStream stream(&file);
-    stream >> count >> active;
+    int tmp1, tmp2;
+    stream >> tmp1 >> tmp2;
+    game->playerType[0] = Game::PLAYERTYPE(tmp1); game->playerType[1] = Game::PLAYERTYPE(tmp2);
+    stream >> count;
+    QPoint* previousMovePoint = new QPoint[count + 1];
+    for (int i = 1; i <= count; ++i){
+        int x, y;
+        stream >> x >> y;
+        previousMovePoint[i] = QPoint(x,y);
+    }
+    stream >> active;
     for (int t = 0 ; t <= count; t++){
         record[t] = new int*[9];
         for (int i = 0; i < 9; i++){
@@ -249,7 +269,7 @@ void Widget::on_Load_Button_clicked()
                 stream >> record[t][i][j];
         }
     }
-    game->reStart(count, active, record);
+    game->reStart(count, active, record, previousMovePoint);
     file.close();
 }
 
@@ -334,7 +354,7 @@ void Widget::on_Chatting_Button_clicked(){
 void Widget::on_SendText_Button_clicked(){
     QString ss = ui->textEdit->toPlainText();
     //add player name?
- //   ui->chatText->append("Me:" + ss);
+    ui->chatText->append("Me:" + ss);
     ui->textEdit->clear();
     emit sendText(ss);
 }
