@@ -16,6 +16,8 @@ Widget::Widget(QWidget *parent) :
 {
     notice = new Notice(this);
     ui->setupUi(this);
+    setPicture(ui->bg, "./images/bg.png");
+    ui->Language_Button->hide();
     ui->GameMenu->hide();
     ui->Board->hide();
     ui->Border->hide();
@@ -276,7 +278,7 @@ void Widget::on_Load_Button_clicked()
 void Widget::on_Online_Button_clicked()
 {
     if (hall == nullptr){
-        hall = new WaitingRoom();
+        hall = new WaitingRoom(this);
         connect(hall, SIGNAL(createGame(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
         hall->exec();
     }
@@ -367,4 +369,14 @@ void Widget::on_Close_Chatting_Button_clicked(){
     ui->Close_Chatting_Button->hide();
     ui->Chatting_Button->show();
     setFixedSize(800, 600);
+}
+
+void Widget::on_Language_Button_clicked()
+{
+    QTranslator* translator = new QTranslator;
+    translator->load("./translations/zh_cn.qm");
+    qApp->installTranslator(translator);
+    ui->retranslateUi(this);
+    if (hall != nullptr)
+        ui->retranslateUi(hall);
 }

@@ -137,7 +137,7 @@ color:rgb(255, 170, 255)</string>
      <height>541</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="Gamemenu" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0" columnstretch="1,0">
+   <layout class="QGridLayout" name="Gamemenu" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0" columnstretch="1,1">
     <property name="verticalSpacing">
      <number>15</number>
     </property>
@@ -184,6 +184,9 @@ color:rgb(255, 170, 255)</string>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QRadioButton" name="BPlayer">
+        <property name="styleSheet">
+         <string notr="true">color:rgb(247, 238, 160)</string>
+        </property>
         <property name="text">
          <string>Human</string>
         </property>
@@ -191,6 +194,9 @@ color:rgb(255, 170, 255)</string>
       </item>
       <item>
        <widget class="QRadioButton" name="BAI">
+        <property name="styleSheet">
+         <string notr="true">color:rgb(247, 238, 160)</string>
+        </property>
         <property name="text">
          <string>AI</string>
         </property>
@@ -202,6 +208,9 @@ color:rgb(255, 170, 255)</string>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QRadioButton" name="WPlayer">
+        <property name="styleSheet">
+         <string notr="true">color:rgb(247, 238, 160)</string>
+        </property>
         <property name="text">
          <string>Human</string>
         </property>
@@ -209,6 +218,9 @@ color:rgb(255, 170, 255)</string>
       </item>
       <item>
        <widget class="QRadioButton" name="WAI">
+        <property name="styleSheet">
+         <string notr="true">color:rgb(247, 238, 160)</string>
+        </property>
         <property name="text">
          <string>AI</string>
         </property>
@@ -219,7 +231,7 @@ color:rgb(255, 170, 255)</string>
     <item row="0" column="0">
      <widget class="QLabel" name="CurrentPlayer_Label">
       <property name="styleSheet">
-       <string notr="true">font: 18pt &quot;Adobe Arabic&quot;;</string>
+       <string notr="true">font: 18pt &quot;Adobe Arabic&quot;;color:rgb(247, 238, 160)</string>
       </property>
       <property name="text">
        <string>CurrentPlayer</string>
@@ -443,9 +455,9 @@ color:rgb(255, 170, 255)</string>
    <property name="geometry">
     <rect>
      <x>300</x>
-     <y>200</y>
+     <y>150</y>
      <width>200</width>
-     <height>200</height>
+     <height>281</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="_Menu">
@@ -492,6 +504,22 @@ color:rgb(255, 170, 255)</string>
       </property>
       <property name="text">
        <string>Online</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="Language_Button">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
+      </property>
+      <property name="text">
+       <string>Language</string>
       </property>
      </widget>
     </item>
@@ -558,7 +586,7 @@ color:rgb(255, 170, 255)</string>
     <item row="0" column="0">
      <widget class="QLabel" name="CurrentPlayer_Label_2">
       <property name="styleSheet">
-       <string notr="true">font: 18pt &quot;Adobe Arabic&quot;;</string>
+       <string notr="true">font: 18pt &quot;Adobe Arabic&quot;;color:rgb(247, 238, 160)</string>
       </property>
       <property name="text">
        <string>CurrentPlayer</string>
@@ -783,7 +811,8 @@ color:rgb(255, 170, 255)</string>
     <item row="3" column="0" colspan="2">
      <widget class="QLabel" name="chatLabel">
       <property name="styleSheet">
-       <string notr="true">font: 13pt &quot;Adobe Arabic&quot;;</string>
+       <string notr="true">color:rgb(247, 238, 160);
+font:13pt &quot;Adobe Arabic&quot;;</string>
       </property>
       <property name="text">
        <string>chatting room</string>
@@ -792,15 +821,29 @@ color:rgb(255, 170, 255)</string>
     </item>
    </layout>
   </widget>
+  <widget class="QLabel" name="bg">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1000</width>
+     <height>600</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <zorder>bg</zorder>
   <zorder>Border</zorder>
   <zorder>Board</zorder>
   <zorder>GameMenu</zorder>
   <zorder>CurrentPlayerPict</zorder>
-  <zorder>Menu</zorder>
   <zorder>MainMenu</zorder>
   <zorder>OnlineGameMenu</zorder>
   <zorder>Chatting_Button</zorder>
   <zorder>Chat</zorder>
+  <zorder>Menu</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

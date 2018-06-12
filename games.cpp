@@ -43,7 +43,7 @@ void Game::opponentPut(int x, int y){
 }
 
 void Game::opponentLeft(){
-    emit sendNotice(QString("Your opponent has left."));
+    emit sendNotice(tr("Your opponent has left."));
     waiting = true;
 }
 
@@ -72,7 +72,7 @@ void Game::nextPlayer()
     calculatePossibleMoves();
     if(possibleMoves.empty())
     {
-        QString noticeString = "this player cannot move: Player " + QString::number(activePlayer);
+        QString noticeString = tr("this player cannot move: Player ") + QString::number(activePlayer);
         qDebug() << noticeString;
         emit sendNotice(noticeString);
         if(cantmove[1 - activePlayer])

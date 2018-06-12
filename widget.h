@@ -9,6 +9,7 @@
 #include "waitingroom.h"
 #include "util.h"
 #include <QMessageBox>
+#include <QTranslator>
 
 namespace Ui {
 class Widget;
@@ -23,7 +24,6 @@ class Widget : public QWidget
 public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
-
     Game* game = nullptr;
     Notice* notice = nullptr;
     WaitingRoom* hall = nullptr;
@@ -64,6 +64,7 @@ private slots:
     void on_Chatting_Button_clicked();
     void on_SendText_Button_clicked();
     void on_Close_Chatting_Button_clicked();
+    void on_Language_Button_clicked();
 };
 
 #endif // WIDGET_H

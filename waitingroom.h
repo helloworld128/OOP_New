@@ -26,7 +26,7 @@ signals:
     void opponentChat(QString text);
 
 private slots:
-    //void connected();
+    void connected();
     void sendGameFinished();
     void readData();
     void sendMove(int x, int y);

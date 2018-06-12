@@ -11,11 +11,13 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     ui(new Ui::WaitingRoom)
 {
     socket = new QTcpSocket(this);
-    socket->connectToHost(QHostAddress("45.76.194.97"),23333);
     connect(socket, SIGNAL(readyRead()), this, SLOT(readData()));
-    //connect(socket, SIGNAL(connected()), this, SLOT(connected()));
+    connect(socket, SIGNAL(connected()), this, SLOT(connected()));
+    socket->connectToHost(QHostAddress("45.76.194.97"),23333);
     ui->setupUi(this);
     ui->ChooseGame->hide();
+    ui->Display->hide();
+    ui->Buttons->hide();
     games.addButton(ui->rButton); games.addButton(ui->fButton); games.addButton(ui->gButton);
     role.addButton(ui->black); role.addButton(ui->white);
     ui->rButton->setChecked(true); ui->black->setChecked(true);
@@ -25,7 +27,6 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     int rnd = qrand() % 9000 + 1000;
     playerName = "Guest#" + QString::number(rnd);
     ui->lineEdit->setText(playerName);
-    //tryToConnect();
 }
 
 //void WaitingRoom::tryToConnect(){
@@ -45,10 +46,15 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
 //    connect(button, SIGNAL(clicked(bool)), this, SLOT(close()));
 //}
 
-//void WaitingRoom::connected(){
-//    b_connected = true;
-//    requestCurrentGames();
-//}
+void WaitingRoom::connected(){
+    b_connected = true;
+    QTime t; t.start();
+    while (t.elapsed() < 1000) QCoreApplication::processEvents();
+    ui->Display->show();
+    ui->Buttons->show();
+    ui->Connecting->hide();
+    requestCurrentGames();
+}
 
 void WaitingRoom::requestCurrentGames(){
     QByteArray ba;
@@ -264,6 +270,9 @@ void WaitingRoom::on_Refresh_Button_clicked()
 
 void WaitingRoom::on_IP_editingFinished()
 {
+    static QString previous = "";
+    if (previous == ui->IP->text()) return;
+    previous = ui->IP->text();
     socket->disconnectFromHost();
     socket->connectToHost(QHostAddress(ui->IP->text()), 23333);
 }
