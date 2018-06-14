@@ -32,6 +32,7 @@ public:
     int previousMove[100][9][9];
     QPoint previousMovePoint[100];
     int isOnlineGame = false;
+    int hasWatcher = false;
     bool ready[2] = {false, false};
     enum PLAYERTYPE{AI,HUMAN,ONLINE};
     PLAYERTYPE playerType[2];
@@ -39,12 +40,14 @@ public:
 signals:
     void aiPlay();
     void sendPut(int x, int y);
+    void sendWatchPut(int x, int y);
     void sendNotice(const QString& text);
     void resetReady();
 
 protected slots:
     void startGame();
     void opponentPut(int x, int y);
+    void watchPut(int x, int y);
     void opponentLeft();
 
 protected:

@@ -42,6 +42,10 @@ void Game::opponentPut(int x, int y){
     else qDebug() << "receiving opponentPut(int, int) but is not opponent's turn!";
 }
 
+void Game::watchPut(int x, int y){
+        click(x, y);
+}
+
 void Game::opponentLeft(){
     emit sendNotice(tr("Your opponent has left."));
     waiting = true;
@@ -109,6 +113,7 @@ void Game::click(int x, int y)
 void Game::put(int xpos, int ypos)
 {
     if (isOnlineGame) emit sendPut(xpos, ypos);
+    if (hasWatcher) emit sendWatchPut(xpos, ypos);
     playSound();
     drawChess(xpos,ypos,activePlayer);
     previousMovePoint[moveCount + 1] = QPoint(xpos, ypos);

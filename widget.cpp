@@ -72,6 +72,7 @@ void Widget::setGameUI(int isOnline, int gameType){
     }
     else {
         ui->GameMenu->show();
+        ui->BPlayer->setChecked(true); ui->WPlayer->setChecked(true);
         if (gameType == 0) {
             ui->BCount_LCD->show(); ui->WCount_LCD->show();
         }
@@ -80,9 +81,11 @@ void Widget::setGameUI(int isOnline, int gameType){
         }
         if (gameType == 2){
             ui->StopOnce_Button->show(); ui->GiveUp_Button->show();
+            ui->WAI->hide(); ui->BAI->hide();
         }
         else {
             ui->StopOnce_Button->hide(); ui->GiveUp_Button->hide();
+            ui->WAI->show(); ui->BAI->show();
         }
     }
 }
@@ -131,11 +134,14 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     ui->wName_2->setText(side == 1? localName : otherName);
     game->setPlayerType(side);
     game->isOnlineGame = true;
+    game->hasWatcher = true;
     connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
     connect(game, SIGNAL(resetReady()), this, SLOT(resetReady()));
     connect(game, SIGNAL(resetReady()), hall, SLOT(sendGameFinished()));
     connect(hall, SIGNAL(opponentEntered(QString)), this, SLOT(setOpponentName(QString)));
     connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(opponentPut(int,int)));
+    connect(game, SIGNAL(sendWatchPut(int,int)), hall, SLOT(watchMove(int,int)));
+    connect(hall, SIGNAL(watchPut(int,int)), game, SLOT(watchPut(int,int)));
     connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
     connect(hall, SIGNAL(opponentLeft()), game, SLOT(opponentLeft()));
     connect(hall, SIGNAL(opponentChat(QString)), this, SLOT(opponentChat(QString)),Qt::UniqueConnection);
@@ -158,7 +164,6 @@ void Widget::setOpponentName(QString name){
 }
 
 void Widget::opponentChat(QString text){
-    qDebug() << "in Widget opponentChat, text = " << text;
     ui->chatText->append(text);
 }
 

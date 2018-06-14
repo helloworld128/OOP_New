@@ -84,7 +84,7 @@ void WaitingRoom::sendGameFinished(){
     socket->write(ba);
 }
 
-//used characters: g(request game list), p(put), q(quit), e(enter), s(start), t(chat)
+//used characters: g(request game list), p(put), q(quit), e(enter), s(start), t(chat), w(spectate)
 void WaitingRoom::readData(){
     QByteArray ba = socket->readAll();
     QDataStream in(&ba, QIODevice::ReadOnly);
@@ -109,6 +109,13 @@ void WaitingRoom::readData(){
         int x, y;
         in >> x >> y;
         emit opponentPut(x, y);
+        break;
+    }
+    case 'w':
+    {
+        int x, y;
+        in >> x >> y;
+        emit watchPut(x, y);
         break;
     }
     case 'q':
@@ -141,6 +148,13 @@ void WaitingRoom::sendMove(int x, int y){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('p') << x << y;
+    socket->write(ba);
+}
+
+void WaitingRoom::watchMove(int x, int y){
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('w') << x << y;
     socket->write(ba);
 }
 
@@ -205,26 +219,29 @@ void WaitingRoom::on_Spectate_Button_clicked()
     QListWidgetItem* selected = ui->List->currentItem();
     if (selected == nullptr) return;
     QWidget* _item = ui->List->itemWidget(selected);
-    MyItem* item = dynamic_cast<MyItem*>(_item);
-    int tmpSide = 0;
-    QString tmpName;
-    if (item->nameb.size() == 0){
-        tmpSide = 0;
-        tmpName = item->namew;
-    }
-    if (item->namew.size() == 0){
-        tmpSide = 1;
-        tmpName = item->nameb;
-    }
-    //found a vacant seat
-    if (tmpName.size()){
-        QByteArray ba;
-        QDataStream out(&ba, QIODevice::WriteOnly);
-        out << QChar('j') << item->uid << tmpSide << playerName;
-        socket->write(ba);
-        emit createGame(item->type, tmpSide, playerName, tmpName);
-        hide();
-    }
+
+
+    hide();
+//    MyItem* item = dynamic_cast<MyItem*>(_item);
+//    int tmpSide = 0;
+//    QString tmpName;
+//    if (item->nameb.size() == 0){
+//        tmpSide = 0;
+//        tmpName = item->namew;
+//    }
+//    if (item->namew.size() == 0){
+//        tmpSide = 1;
+//        tmpName = item->nameb;
+//    }
+//    //found a vacant seat
+//    if (tmpName.size()){
+//        QByteArray ba;
+//        QDataStream out(&ba, QIODevice::WriteOnly);
+//        out << QChar('j') << item->uid << tmpSide << playerName;
+//        socket->write(ba);
+//        emit createGame(item->type, tmpSide, playerName, tmpName);
+//        hide();
+//    }
 }
 
 void WaitingRoom::on_Cancel_Button_clicked()

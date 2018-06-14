@@ -20,6 +20,7 @@ public:
 signals:
     void createGame(int type, int side, QString localName, QString otherName = "");
     void opponentPut(int x, int y);
+    void watchPut(int x, int y);
     void opponentEntered(QString name);
     void opponentLeft();
     void startGame();
@@ -30,6 +31,7 @@ private slots:
     void sendGameFinished();
     void readData();
     void sendMove(int x, int y);
+    void watchMove(int x, int y);
     void sendReady();
     void sendQuit();
     void sendText(QString text);
