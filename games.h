@@ -49,6 +49,7 @@ protected slots:
     void opponentPut(int x, int y);
     void watchPut(int x, int y);
     void opponentLeft();
+    void Watcher();
 
 protected:
     void drawChess(int x,int y, int player);

@@ -51,6 +51,10 @@ void Game::opponentLeft(){
     waiting = true;
 }
 
+void Game::Watcher(){
+    hasWatcher = true;
+}
+
 void Game::showResult(){
     if (isOnlineGame) emit resetReady();
     Dialog* dialog = new Dialog;

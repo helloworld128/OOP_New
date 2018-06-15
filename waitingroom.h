@@ -25,6 +25,7 @@ signals:
     void opponentLeft();
     void startGame();
     void opponentChat(QString text);
+    void hasWatcher();
 
 private slots:
     void connected();

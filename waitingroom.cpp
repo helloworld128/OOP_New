@@ -218,9 +218,8 @@ void WaitingRoom::on_Spectate_Button_clicked()
 {
     QListWidgetItem* selected = ui->List->currentItem();
     if (selected == nullptr) return;
-    QWidget* _item = ui->List->itemWidget(selected);
-
-
+   // QWidget* _item = ui->List->itemWidget(selected);
+    emit hasWatcher();
     hide();
 //    MyItem* item = dynamic_cast<MyItem*>(_item);
 //    int tmpSide = 0;

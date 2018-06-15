@@ -134,20 +134,21 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     ui->wName_2->setText(side == 1? localName : otherName);
     game->setPlayerType(side);
     game->isOnlineGame = true;
-    game->hasWatcher = true;
+    //game->hasWatcher = true;
     connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
     connect(game, SIGNAL(resetReady()), this, SLOT(resetReady()));
     connect(game, SIGNAL(resetReady()), hall, SLOT(sendGameFinished()));
     connect(hall, SIGNAL(opponentEntered(QString)), this, SLOT(setOpponentName(QString)));
     connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(opponentPut(int,int)));
-    connect(game, SIGNAL(sendWatchPut(int,int)), hall, SLOT(watchMove(int,int)));
-    connect(hall, SIGNAL(watchPut(int,int)), game, SLOT(watchPut(int,int)));
     connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
     connect(hall, SIGNAL(opponentLeft()), game, SLOT(opponentLeft()));
     connect(hall, SIGNAL(opponentChat(QString)), this, SLOT(opponentChat(QString)),Qt::UniqueConnection);
     connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
     connect(this, SIGNAL(sendText(QString)), hall, SLOT(sendText(QString)),Qt::UniqueConnection);
     connect(this, SIGNAL(sendQuit()), hall, SLOT(sendQuit()));
+    connect(game, SIGNAL(sendWatchPut(int,int)), hall, SLOT(watchMove(int,int)));
+    connect(hall, SIGNAL(watchPut(int,int)), game, SLOT(watchPut(int,int)));
+    connect(hall, SIGNAL(hasWatcher()), game, SLOT(Watcher()));
     hall->close();
   //  setFixedWidth(1000);
 }
