@@ -13,7 +13,7 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     socket = new QTcpSocket(this);
     connect(socket, SIGNAL(readyRead()), this, SLOT(readData()));
     connect(socket, SIGNAL(connected()), this, SLOT(connected()));
-    socket->connectToHost(QHostAddress("45.76.194.97"),23333);
+    socket->connectToHost(QHostAddress::LocalHost/*("45.76.194.97")*/,23333);
     ui->setupUi(this);
     ui->ChooseGame->hide();
     ui->Display->hide();
@@ -111,13 +111,6 @@ void WaitingRoom::readData(){
         emit opponentPut(x, y);
         break;
     }
-    case 'w':
-    {
-        int x, y;
-        in >> x >> y;
-        emit watchPut(x, y);
-        break;
-    }
     case 'q':
         emit opponentLeft();
         break;
@@ -128,6 +121,13 @@ void WaitingRoom::readData(){
         emit opponentEntered(name);
         break;
     }
+//    case 'w':
+//    {
+//        QString name;
+//        in >> name;
+//        emit someoneWatching(name);
+//        break;
+//    }
     case 's':
         emit startGame();
         break;
@@ -136,6 +136,21 @@ void WaitingRoom::readData(){
         QString name, text;
         in >> name >> text;
         emit opponentChat(name + ":" + text);
+        break;
+    }
+    case 'z':
+    {
+        if (isWatching)
+        {
+            int tmpBoard[9][9];
+            for (int i = 0; i < 9; ++i){
+                for (int j = 0; j < 9; ++j){
+                    in >> tmpBoard[i][j];
+                }
+            }
+            emit sendBoard(tmpBoard);
+        }
+        else emit requestBoard();
         break;
     }
     default:
@@ -148,13 +163,6 @@ void WaitingRoom::sendMove(int x, int y){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('p') << x << y;
-    socket->write(ba);
-}
-
-void WaitingRoom::watchMove(int x, int y){
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out << QChar('w') << x << y;
     socket->write(ba);
 }
 
@@ -175,6 +183,17 @@ void WaitingRoom::sendText(QString text){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('t') << playerName << text;
+    socket->write(ba);
+}
+
+void WaitingRoom::receiveBoard(int **board){
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('z');
+    for (int i = 0; i < 9; i++)
+        for (int j = 0; j < 9; j++){
+            out << board[i][j];
+        }
     socket->write(ba);
 }
 
@@ -218,29 +237,15 @@ void WaitingRoom::on_Spectate_Button_clicked()
 {
     QListWidgetItem* selected = ui->List->currentItem();
     if (selected == nullptr) return;
-   // QWidget* _item = ui->List->itemWidget(selected);
-    emit hasWatcher();
+    QWidget* _item = ui->List->itemWidget(selected);
+    MyItem* item = dynamic_cast<MyItem*>(_item);
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('w') << item->uid;
+    socket->write(ba);
+    emit spectate(item->type, 0, item->nameb, item->namew);
+    isWatching = true;
     hide();
-//    MyItem* item = dynamic_cast<MyItem*>(_item);
-//    int tmpSide = 0;
-//    QString tmpName;
-//    if (item->nameb.size() == 0){
-//        tmpSide = 0;
-//        tmpName = item->namew;
-//    }
-//    if (item->namew.size() == 0){
-//        tmpSide = 1;
-//        tmpName = item->nameb;
-//    }
-//    //found a vacant seat
-//    if (tmpName.size()){
-//        QByteArray ba;
-//        QDataStream out(&ba, QIODevice::WriteOnly);
-//        out << QChar('j') << item->uid << tmpSide << playerName;
-//        socket->write(ba);
-//        emit createGame(item->type, tmpSide, playerName, tmpName);
-//        hide();
-//    }
 }
 
 void WaitingRoom::on_Cancel_Button_clicked()
@@ -288,6 +293,7 @@ void WaitingRoom::on_IP_editingFinished()
 {
     static QString previous = "";
     if (previous == ui->IP->text()) return;
+    qDebug() << ui->IP->text();
     previous = ui->IP->text();
     socket->disconnectFromHost();
     socket->connectToHost(QHostAddress(ui->IP->text()), 23333);

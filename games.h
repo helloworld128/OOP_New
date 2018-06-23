@@ -40,16 +40,16 @@ public:
 signals:
     void aiPlay();
     void sendPut(int x, int y);
-    void sendWatchPut(int x, int y);
     void sendNotice(const QString& text);
     void resetReady();
+    void replyRequestBoard(int** board);
 
 protected slots:
     void startGame();
     void opponentPut(int x, int y);
-    void watchPut(int x, int y);
     void opponentLeft();
-    void Watcher();
+    void receiveRequestBoard();
+    void receiveBoard(int _board[9][9]);
 
 protected:
     void drawChess(int x,int y, int player);

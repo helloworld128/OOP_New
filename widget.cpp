@@ -134,7 +134,6 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     ui->wName_2->setText(side == 1? localName : otherName);
     game->setPlayerType(side);
     game->isOnlineGame = true;
-    //game->hasWatcher = true;
     connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
     connect(game, SIGNAL(resetReady()), this, SLOT(resetReady()));
     connect(game, SIGNAL(resetReady()), hall, SLOT(sendGameFinished()));
@@ -146,9 +145,10 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
     connect(this, SIGNAL(sendText(QString)), hall, SLOT(sendText(QString)),Qt::UniqueConnection);
     connect(this, SIGNAL(sendQuit()), hall, SLOT(sendQuit()));
-    connect(game, SIGNAL(sendWatchPut(int,int)), hall, SLOT(watchMove(int,int)));
-    connect(hall, SIGNAL(watchPut(int,int)), game, SLOT(watchPut(int,int)));
-    connect(hall, SIGNAL(hasWatcher()), game, SLOT(Watcher()));
+    connect(hall, SIGNAL(requestBoard()), game, SLOT(receiveRequestBoard()));
+    connect(game, SIGNAL(replyRequestBoard(int**)), hall, SLOT(receiveBoard(int**)));
+    connect(hall, SIGNAL(sendBoard(int[][])), game, SLOT(receiveBoard(int[][])));
+
     hall->close();
   //  setFixedWidth(1000);
 }
@@ -286,6 +286,7 @@ void Widget::on_Online_Button_clicked()
     if (hall == nullptr){
         hall = new WaitingRoom(this);
         connect(hall, SIGNAL(createGame(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
+        connect(hall, SIGNAL(spectate(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
         hall->exec();
     }
     else{

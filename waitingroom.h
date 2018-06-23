@@ -20,19 +20,19 @@ public:
 signals:
     void createGame(int type, int side, QString localName, QString otherName = "");
     void opponentPut(int x, int y);
-    void watchPut(int x, int y);
     void opponentEntered(QString name);
     void opponentLeft();
     void startGame();
     void opponentChat(QString text);
-    void hasWatcher();
+    void spectate(int type, int side, QString nameb, QString namew);
+    void requestBoard();
+    void sendBoard(int board[9][9]);
 
 private slots:
     void connected();
     void sendGameFinished();
     void readData();
     void sendMove(int x, int y);
-    void watchMove(int x, int y);
     void sendReady();
     void sendQuit();
     void sendText(QString text);
@@ -44,6 +44,7 @@ private slots:
     void on_OK_Button_clicked();
     void on_lineEdit_editingFinished();
     void on_Refresh_Button_clicked();
+    void receiveBoard(int** board);
 
     void on_IP_editingFinished();
 
@@ -55,6 +56,7 @@ private:
     QButtonGroup games, role;
     QString playerName;
     bool b_connected = false;
+    bool isWatching = false;
 };
 
 #endif // WAITINGROOM_H
