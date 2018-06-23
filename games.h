@@ -32,7 +32,7 @@ public:
     int previousMove[100][9][9];
     QPoint previousMovePoint[100];
     int isOnlineGame = false;
-    int hasWatcher = false;
+    int isWatcher = false;
     bool ready[2] = {false, false};
     enum PLAYERTYPE{AI,HUMAN,ONLINE};
     PLAYERTYPE playerType[2];
@@ -42,14 +42,15 @@ signals:
     void sendPut(int x, int y);
     void sendNotice(const QString& text);
     void resetReady();
-    void replyRequestBoard(int** board);
+    void replyRequestBoard(int** board, int currentPlayer);
 
 protected slots:
     void startGame();
     void opponentPut(int x, int y);
+    void watchPut(int x, int y);
     void opponentLeft();
     void receiveRequestBoard();
-    void receiveBoard(int _board[9][9]);
+    void receiveBoard(int **_board, int currentPlayer);
 
 protected:
     void drawChess(int x,int y, int player);
@@ -84,10 +85,10 @@ public:
     void hint();
     void hideHint();
     virtual ~Reversi();
+    QLCDNumber *black, *white;
 
 private:
     QString generateResultStr();
-    QLCDNumber *black, *white;
     QVector<QMovie*> movies;
 };
 

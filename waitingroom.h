@@ -20,13 +20,14 @@ public:
 signals:
     void createGame(int type, int side, QString localName, QString otherName = "");
     void opponentPut(int x, int y);
+    void watchPut(int x, int y);
     void opponentEntered(QString name);
     void opponentLeft();
     void startGame();
     void opponentChat(QString text);
     void spectate(int type, int side, QString nameb, QString namew);
     void requestBoard();
-    void sendBoard(int board[9][9]);
+    void sendBoard(int **board, int currentPlayer);
 
 private slots:
     void connected();
@@ -44,7 +45,7 @@ private slots:
     void on_OK_Button_clicked();
     void on_lineEdit_editingFinished();
     void on_Refresh_Button_clicked();
-    void receiveBoard(int** board);
+    void receiveBoard(int** board, int currentPlayer);
 
     void on_IP_editingFinished();
 

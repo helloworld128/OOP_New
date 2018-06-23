@@ -37,9 +37,16 @@ void Game::startGame(){
 }
 
 void Game::opponentPut(int x, int y){
+    // isWatcher = false;
     if (playerType[activePlayer] == ONLINE)
         click(x, y);
     else qDebug() << "receiving opponentPut(int, int) but is not opponent's turn!";
+}
+
+
+void Game::watchPut(int x, int y){
+    isWatcher = true;
+    click(x, y);
 }
 
 void Game::opponentLeft(){
@@ -47,13 +54,26 @@ void Game::opponentLeft(){
     waiting = true;
 }
 
-void Game::receiveBoard(int _board[9][9]){
+void Game::receiveBoard(int **_board, int currentPlayer){
+    int bcount = 0, wcount = 0;
     for(int i = 0; i < 9; ++i)
         for(int j = 0; j < 9; ++j){
             board[i][j] = _board[i][j];
-            if (board[i][j] == 0) setPicture(pictures[i][j], BLACKCHESS);
-            if (board[i][j] == 1) setPicture(pictures[i][j], WHITECHESS);
+            if (board[i][j] == 0) {
+                setPicture(pictures[i][j], BLACKCHESS);
+                bcount++;
+            }
+            if (board[i][j] == 1){
+                setPicture(pictures[i][j], WHITECHESS);
+                wcount++;
+            }
+            auto ptr = dynamic_cast<Reversi*>(this);
+            if(ptr){
+                ptr->black->display(bcount);
+                ptr->white->display(wcount);
+            }
         }
+    activePlayer = currentPlayer;
 }
 
 void Game::receiveRequestBoard(){
@@ -65,7 +85,7 @@ void Game::receiveRequestBoard(){
         for (int j = 0; j < 9; j++){
             _board[i][j] = board[i][j];
         }
-    emit replyRequestBoard(_board);
+    emit replyRequestBoard(_board, activePlayer);
     for (int i = 0; i < 9; i++)
         delete[] _board[i];
     delete _board;
@@ -112,7 +132,7 @@ void Game::nextPlayer()
         cantmove[activePlayer] = false;
         if(playerType[activePlayer] == AI) emit aiPlay();
 
-        if(ptr && playerType[activePlayer] == HUMAN) ptr->hint();
+        if(ptr && playerType[activePlayer] == HUMAN && !isWatcher) ptr->hint();
     }
 }
 
@@ -133,14 +153,14 @@ void Game::click(int x, int y)
 void Game::put(int xpos, int ypos)
 {
     if (isOnlineGame) emit sendPut(xpos, ypos);
-    //if (hasWatcher) emit sendWatchPut(xpos, ypos);
     playSound();
     drawChess(xpos,ypos,activePlayer);
     previousMovePoint[moveCount + 1] = QPoint(xpos, ypos);
     setPicture(lastMoveHint[xpos][ypos], LASTMOVE);
     lastMoveHint[xpos][ypos]->show();
-    if (moveCount){
+    if (moveCount && !isWatcher){
         QPoint p = previousMovePoint[moveCount];
+        if(p.x() > 0 && p.y() > 0)
         lastMoveHint[p.x()][p.y()]->hide();
     }
 }

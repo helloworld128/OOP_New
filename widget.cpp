@@ -146,11 +146,11 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     connect(this, SIGNAL(sendText(QString)), hall, SLOT(sendText(QString)),Qt::UniqueConnection);
     connect(this, SIGNAL(sendQuit()), hall, SLOT(sendQuit()));
     connect(hall, SIGNAL(requestBoard()), game, SLOT(receiveRequestBoard()));
-    connect(game, SIGNAL(replyRequestBoard(int**)), hall, SLOT(receiveBoard(int**)));
-    connect(hall, SIGNAL(sendBoard(int[][])), game, SLOT(receiveBoard(int[][])));
-
+    connect(game, SIGNAL(replyRequestBoard(int**, int)), hall, SLOT(receiveBoard(int**, int)));
+    connect(hall, SIGNAL(sendBoard(int**, int)), game, SLOT(receiveBoard(int**, int)));
+    connect(hall, SIGNAL(watchPut(int,int)), game, SLOT(watchPut(int,int)));
     hall->close();
-  //  setFixedWidth(1000);
+    //  setFixedWidth(1000);
 }
 
 void Widget::resetReady(){
@@ -235,7 +235,7 @@ void Widget::on_Save_Button_clicked()
     for (int i = 1; i <= game->moveCount; ++i){
         stream << game->previousMovePoint[i].x() << ' ' << game->previousMovePoint[i].y() << ' ';
     }
-    stream << game->activePlayer << endl;    
+    stream << game->activePlayer << endl;
     for (int t = 0 ; t <= game->moveCount; t++)
         for (int i = 0; i < 9; i++)
         {

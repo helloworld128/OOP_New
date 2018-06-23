@@ -109,6 +109,7 @@ void WaitingRoom::readData(){
         int x, y;
         in >> x >> y;
         emit opponentPut(x, y);
+        if (isWatching) emit watchPut(x, y);
         break;
     }
     case 'q':
@@ -121,13 +122,6 @@ void WaitingRoom::readData(){
         emit opponentEntered(name);
         break;
     }
-//    case 'w':
-//    {
-//        QString name;
-//        in >> name;
-//        emit someoneWatching(name);
-//        break;
-//    }
     case 's':
         emit startGame();
         break;
@@ -142,13 +136,22 @@ void WaitingRoom::readData(){
     {
         if (isWatching)
         {
-            int tmpBoard[9][9];
+            int **tmpBoard;
+            int currentPlayer;
+            tmpBoard = new int*[9];
+            for (int i = 0; i < 9; ++i){
+                tmpBoard[i] = new int[9];
+            }
             for (int i = 0; i < 9; ++i){
                 for (int j = 0; j < 9; ++j){
                     in >> tmpBoard[i][j];
                 }
             }
-            emit sendBoard(tmpBoard);
+            in >> currentPlayer;
+            emit sendBoard(tmpBoard, currentPlayer);
+            for (int i = 0; i < 9; ++i)
+                delete[] tmpBoard[i];
+            delete tmpBoard;
         }
         else emit requestBoard();
         break;
@@ -186,7 +189,7 @@ void WaitingRoom::sendText(QString text){
     socket->write(ba);
 }
 
-void WaitingRoom::receiveBoard(int **board){
+void WaitingRoom::receiveBoard(int **board, int currentPlayer){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('z');
@@ -194,6 +197,7 @@ void WaitingRoom::receiveBoard(int **board){
         for (int j = 0; j < 9; j++){
             out << board[i][j];
         }
+    out << currentPlayer;
     socket->write(ba);
 }
 
