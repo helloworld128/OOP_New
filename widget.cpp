@@ -46,10 +46,23 @@ void Widget::setGameUI(int isOnline, int gameType){
     connect(game, SIGNAL(sendNotice(QString)), this, SLOT(displayNotice(QString)));
     ui->MainMenu->hide();
     ui->Menu->hide();
+
     if (gameType == 0) setPicture(ui->Board, BOARD_1);
     else {
         setPicture(ui->Board, BOARD_2); setPicture(ui->Border, BORDER);
     }
+
+    if (hall && hall->isWatching) {
+        ui->Ready_Button->hide();
+        ui->StopOnce_Button_2->hide();
+        ui->GiveUp_Button_2->hide();
+    }
+    else{
+        ui->Ready_Button->show();
+        ui->StopOnce_Button_2->show();
+        ui->GiveUp_Button_2->show();
+    }
+
     if (isOnline){
         ui->OnlineGameMenu->show();
         ui->Chatting_Button->show();
@@ -130,31 +143,40 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
         setGameUI(1, 2);
         break;
     }
-    ui->bName_2->setText(side == 0? localName : otherName);
-    ui->wName_2->setText(side == 1? localName : otherName);
+
+    if (side == 2){
+        ui->bName_2->setText(localName);
+        ui->wName_2->setText(otherName);
+    }
+    else{
+        ui->bName_2->setText(side == 0? localName : otherName);
+        ui->wName_2->setText(side == 1? localName : otherName);
+    }
     game->setPlayerType(side);
     game->isOnlineGame = true;
-    connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
-    connect(game, SIGNAL(resetReady()), this, SLOT(resetReady()));
-    connect(game, SIGNAL(resetReady()), hall, SLOT(sendGameFinished()));
+
     connect(hall, SIGNAL(opponentEntered(QString)), this, SLOT(setOpponentName(QString)));
     connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(opponentPut(int,int)));
     connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
-    connect(hall, SIGNAL(opponentLeft()), game, SLOT(opponentLeft()));
+    connect(hall, SIGNAL(opponentLeft(bool)), game, SLOT(opponentLeft(bool)));
     connect(hall, SIGNAL(opponentChat(QString)), this, SLOT(opponentChat(QString)),Qt::UniqueConnection);
-    connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
     connect(this, SIGNAL(sendText(QString)), hall, SLOT(sendText(QString)),Qt::UniqueConnection);
     connect(this, SIGNAL(sendQuit()), hall, SLOT(sendQuit()));
     connect(hall, SIGNAL(requestBoard()), game, SLOT(receiveRequestBoard()));
     connect(game, SIGNAL(replyRequestBoard(int**, int)), hall, SLOT(receiveBoard(int**, int)));
     connect(hall, SIGNAL(sendBoard(int**, int)), game, SLOT(receiveBoard(int**, int)));
-    connect(hall, SIGNAL(watchPut(int,int)), game, SLOT(watchPut(int,int)));
     connect(this, SIGNAL(sendGiveUp()), hall, SLOT(sendGiveUp()));
     connect(hall, SIGNAL(opponentGiveUp()), game, SLOT(opponentGiveUp()));
     connect(this, SIGNAL(sendStopOnce()), hall, SLOT(sendStopOnce()));
     connect(hall, SIGNAL(opponentStopOnce()), game, SLOT(opponentStopOnce()));
+
+    if (!hall->isWatching){
+        connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
+        connect(game, SIGNAL(resetReady()), this, SLOT(resetReady()));
+        connect(game, SIGNAL(resetReady()), hall, SLOT(sendGameFinished()));
+        connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
+    }
     hall->close();
-    //  setFixedWidth(1000);
 }
 
 void Widget::resetReady(){
@@ -187,7 +209,7 @@ void Widget::on_Reversi_Button_clicked()
     ai->setParent(game);
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     setGameUI(0, 0);
-    notice->display(QString("你好"));
+    //notice->display(QString("你好"));
 }
 
 void Widget::on_FIR_Button_clicked()
@@ -352,6 +374,7 @@ void Widget::on_Quit_Button_clicked()
         hall->show();
         setFixedWidth(800);
         delete game;
+        hall->isWatching = false;
         break;
     default:
         break;

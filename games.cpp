@@ -22,8 +22,13 @@ void Game::drawChess(int x,int y,int player)
 }
 
 void Game::setPlayerType(int arg){
-    playerType[arg] = HUMAN;
-    playerType[1 - arg] = ONLINE;
+    if (arg == 2){
+        playerType[0] = playerType[1] = ONLINE;
+    }
+    else{
+        playerType[arg] = HUMAN;
+        playerType[1 - arg] = ONLINE;
+    }
 }
 
 void Game::playSound(){
@@ -33,24 +38,19 @@ void Game::playSound(){
 }
 
 void Game::startGame(){
-    init(0, 0); //arguments(0,0) are useless
+    init(0, 0);
+    sendNotice("Game Start");
 }
 
 void Game::opponentPut(int x, int y){
-    // isWatcher = false;
     if (playerType[activePlayer] == ONLINE)
         click(x, y);
     else qDebug() << "receiving opponentPut(int, int) but is not opponent's turn!";
 }
 
-
-void Game::watchPut(int x, int y){
-    isWatcher = true;
-    click(x, y);
-}
-
-void Game::opponentLeft(){
-    emit sendNotice(tr("Your opponent has left."));
+void Game::opponentLeft(bool isWatching){
+    if (!isWatching) emit sendNotice(tr("Your opponent has left."));
+    else emit sendNotice(tr("A player has left.\nThe game has ended."));
     waiting = true;
 }
 
@@ -142,7 +142,7 @@ void Game::nextPlayer()
         cantmove[activePlayer] = false;
         if(playerType[activePlayer] == AI) emit aiPlay();
 
-        if(ptr && playerType[activePlayer] == HUMAN && !isWatcher) ptr->hint();
+        if(ptr && playerType[activePlayer] == HUMAN /*&& !isWatcher*/) ptr->hint();
     }
 }
 
@@ -162,16 +162,16 @@ void Game::click(int x, int y)
 
 void Game::put(int xpos, int ypos)
 {
-    if (isOnlineGame) emit sendPut(xpos, ypos);
+    if (isOnlineGame && playerType[activePlayer] == HUMAN) emit sendPut(xpos, ypos);
     playSound();
     drawChess(xpos,ypos,activePlayer);
     previousMovePoint[moveCount + 1] = QPoint(xpos, ypos);
     setPicture(lastMoveHint[xpos][ypos], LASTMOVE);
     lastMoveHint[xpos][ypos]->show();
-    if (moveCount && !isWatcher){
+    if (moveCount >= 0){
         QPoint p = previousMovePoint[moveCount];
-        if(p.x() > 0 && p.y() > 0)
-        lastMoveHint[p.x()][p.y()]->hide();
+        if(p.x() >= 0 && p.y() >= 0)
+            lastMoveHint[p.x()][p.y()]->hide();
     }
 }
 
