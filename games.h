@@ -49,6 +49,8 @@ protected slots:
     void opponentPut(int x, int y);
     void watchPut(int x, int y);
     void opponentLeft();
+    void opponentGiveUp();
+    void opponentStopOnce();
     void receiveRequestBoard();
     void receiveBoard(int **_board, int currentPlayer);
 

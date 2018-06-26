@@ -37,6 +37,8 @@ private:
 signals:
     void sendReady();
     void sendQuit();
+    void sendGiveUp();
+    void sendStopOnce();
     void sendText(QString text);
 
 private slots:
@@ -58,7 +60,9 @@ private slots:
     void on_Local_Button_clicked();
     void on_Back_Button_clicked();
     void on_GiveUp_Button_clicked();
+    void on_GiveUp_Button_2_clicked();
     void on_StopOnce_Button_clicked();
+    void on_StopOnce_Button_2_clicked();
     void on_Quit_Button_clicked();
     void on_Ready_Button_clicked();
     void on_Chatting_Button_clicked();

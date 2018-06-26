@@ -149,6 +149,10 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
     connect(game, SIGNAL(replyRequestBoard(int**, int)), hall, SLOT(receiveBoard(int**, int)));
     connect(hall, SIGNAL(sendBoard(int**, int)), game, SLOT(receiveBoard(int**, int)));
     connect(hall, SIGNAL(watchPut(int,int)), game, SLOT(watchPut(int,int)));
+    connect(this, SIGNAL(sendGiveUp()), hall, SLOT(sendGiveUp()));
+    connect(hall, SIGNAL(opponentGiveUp()), game, SLOT(opponentGiveUp()));
+    connect(this, SIGNAL(sendStopOnce()), hall, SLOT(sendStopOnce()));
+    connect(hall, SIGNAL(opponentStopOnce()), game, SLOT(opponentStopOnce()));
     hall->close();
     //  setFixedWidth(1000);
 }
@@ -312,8 +316,18 @@ void Widget::on_GiveUp_Button_clicked()
     game->showResult();
 }
 
+void Widget::on_GiveUp_Button_2_clicked(){
+    emit sendGiveUp();
+    game->showResult();
+}
+
 void Widget::on_StopOnce_Button_clicked()
 {
+    game->nextPlayer();
+}
+
+void Widget::on_StopOnce_Button_2_clicked(){
+    emit sendStopOnce();
     game->nextPlayer();
 }
 

@@ -54,6 +54,16 @@ void Game::opponentLeft(){
     waiting = true;
 }
 
+void Game::opponentGiveUp(){
+    emit sendNotice(tr("Your opponent has given up."));
+    showResult();
+}
+
+void Game::opponentStopOnce(){
+    emit sendNotice(tr("Your opponent has stopped once."));
+    nextPlayer();
+}
+
 void Game::receiveBoard(int **_board, int currentPlayer){
     int bcount = 0, wcount = 0;
     for(int i = 0; i < 9; ++i)

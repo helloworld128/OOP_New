@@ -125,6 +125,16 @@ void WaitingRoom::readData(){
     case 's':
         emit startGame();
         break;
+    case 'u':
+    {
+        emit opponentGiveUp();
+        break;
+    }
+    case 'o':
+    {
+        emit opponentStopOnce();
+        break;
+    }
     case 't':
     {
         QString name, text;
@@ -182,6 +192,21 @@ void WaitingRoom::sendQuit(){
     out << QChar('q');
     socket->write(ba);
 }
+
+void WaitingRoom::sendGiveUp(){
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('u');
+    socket->write(ba);
+}
+
+void WaitingRoom::sendStopOnce(){
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << QChar('o');
+    socket->write(ba);
+}
+
 void WaitingRoom::sendText(QString text){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);

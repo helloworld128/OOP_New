@@ -23,6 +23,8 @@ signals:
     void watchPut(int x, int y);
     void opponentEntered(QString name);
     void opponentLeft();
+    void opponentGiveUp();
+    void opponentStopOnce();
     void startGame();
     void opponentChat(QString text);
     void spectate(int type, int side, QString nameb, QString namew);
@@ -36,6 +38,8 @@ private slots:
     void sendMove(int x, int y);
     void sendReady();
     void sendQuit();
+    void sendGiveUp();
+    void sendStopOnce();
     void sendText(QString text);
     void on_Create_Button_clicked();
     void on_Join_Button_clicked();
