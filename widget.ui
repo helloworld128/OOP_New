@@ -185,7 +185,8 @@ color:rgb(255, 170, 255)</string>
       <item>
        <widget class="QRadioButton" name="BPlayer">
         <property name="styleSheet">
-         <string notr="true">color:rgb(247, 238, 160)</string>
+         <string notr="true">color:rgb(247, 238, 160);
+font: 12pt &quot;Adobe Arabic&quot;;</string>
         </property>
         <property name="text">
          <string>Human</string>
@@ -195,7 +196,8 @@ color:rgb(255, 170, 255)</string>
       <item>
        <widget class="QRadioButton" name="BAI">
         <property name="styleSheet">
-         <string notr="true">color:rgb(247, 238, 160)</string>
+         <string notr="true">color:rgb(247, 238, 160);
+font: 12pt &quot;Adobe Arabic&quot;;</string>
         </property>
         <property name="text">
          <string>AI</string>
@@ -209,7 +211,8 @@ color:rgb(255, 170, 255)</string>
       <item>
        <widget class="QRadioButton" name="WPlayer">
         <property name="styleSheet">
-         <string notr="true">color:rgb(247, 238, 160)</string>
+         <string notr="true">color:rgb(247, 238, 160);
+font: 12pt &quot;Adobe Arabic&quot;;</string>
         </property>
         <property name="text">
          <string>Human</string>
@@ -219,7 +222,9 @@ color:rgb(255, 170, 255)</string>
       <item>
        <widget class="QRadioButton" name="WAI">
         <property name="styleSheet">
-         <string notr="true">color:rgb(247, 238, 160)</string>
+         <string notr="true">color:rgb(247, 238, 160);
+font: 12pt &quot;Adobe Arabic&quot;;
+</string>
         </property>
         <property name="text">
          <string>AI</string>

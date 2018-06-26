@@ -1,5 +1,6 @@
 #include "waitingroom.h"
 #include "myitem.h"
+#include "util.h"
 #include "ui_waitingroom.h"
 #include <QHostInfo>
 #include <QNetworkInterface>
@@ -13,7 +14,7 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     socket = new QTcpSocket(this);
     connect(socket, SIGNAL(readyRead()), this, SLOT(readData()));
     connect(socket, SIGNAL(connected()), this, SLOT(connected()));
-    socket->connectToHost(QHostAddress::LocalHost/*("45.76.194.97")*/,23333);
+    socket->connectToHost(QHostAddress(SERVER_IP),23333);
     ui->setupUi(this);
     ui->ChooseGame->hide();
     ui->Display->hide();
@@ -27,24 +28,10 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     int rnd = qrand() % 9000 + 1000;
     playerName = "Guest#" + QString::number(rnd);
     ui->lineEdit->setText(playerName);
-}
 
-//void WaitingRoom::tryToConnect(){
-//    if (b_connected) return;
-//    socket->connectToHost(QHostAddress::LocalHost,23333);
-//    QDialog* dialog = new QDialog(this);
-//    QLabel* label = new QLabel("connecting...", dialog);
-//    label->setGeometry(20,20,150,50);
-//    QPushButton* button = new QPushButton("Close", dialog);
-//    button->setGeometry(20,120,80,30);
-//    dialog->show();
-//    dialog->move(pos());
-//    dialog->setFixedHeight(200);
-//    dialog->setFixedWidth(200);
-//    connect(button, SIGNAL(clicked(bool)), dialog, SLOT(hide()));
-//    connect(socket, SIGNAL(connected()), dialog, SLOT(hide()));
-//    connect(button, SIGNAL(clicked(bool)), this, SLOT(close()));
-//}
+    ui->IP->hide();
+    ui->label->hide();
+}
 
 void WaitingRoom::connected(){
     b_connected = true;
@@ -109,11 +96,11 @@ void WaitingRoom::readData(){
         int x, y;
         in >> x >> y;
         emit opponentPut(x, y);
-        if (isWatching) emit watchPut(x, y);
+        //if (isWatching) emit watchPut(x, y);
         break;
     }
     case 'q':
-        emit opponentLeft();
+        emit opponentLeft(isWatching);
         break;
     case 'e':
     {
@@ -272,8 +259,10 @@ void WaitingRoom::on_Spectate_Button_clicked()
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('w') << item->uid;
     socket->write(ba);
-    emit spectate(item->type, 0, item->nameb, item->namew);
     isWatching = true;
+
+    //the value of 'side' for spectators is 2.
+    emit spectate(item->type, 2, item->nameb, item->namew);
     hide();
 }
 

@@ -15,16 +15,17 @@ class WaitingRoom : public QDialog
 
 public:
     explicit WaitingRoom(QWidget *parent = 0);
+    bool isWatching = false;
     ~WaitingRoom();
 
 signals:
     void createGame(int type, int side, QString localName, QString otherName = "");
     void opponentPut(int x, int y);
-    void watchPut(int x, int y);
+    //void watchPut(int x, int y);
     void opponentEntered(QString name);
-    void opponentLeft();
     void opponentGiveUp();
     void opponentStopOnce();
+    void opponentLeft(bool isWatching);
     void startGame();
     void opponentChat(QString text);
     void spectate(int type, int side, QString nameb, QString namew);
@@ -61,7 +62,6 @@ private:
     QButtonGroup games, role;
     QString playerName;
     bool b_connected = false;
-    bool isWatching = false;
 };
 
 #endif // WAITINGROOM_H
