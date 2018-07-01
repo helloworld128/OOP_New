@@ -197,6 +197,7 @@ void Widget::opponentChat(QString text){
 void Widget::on_Start_Button_clicked()
 {
     game->init(ui->BPlayer->isChecked(),ui->WPlayer->isChecked());
+    game->sendNotice("Game Start");
 }
 
 void Widget::on_Reversi_Button_clicked()
@@ -310,7 +311,7 @@ void Widget::on_Load_Button_clicked()
 void Widget::on_Online_Button_clicked()
 {
     if (hall == nullptr){
-        hall = new WaitingRoom(this);
+        hall = new OnlineModule(this);
         connect(hall, SIGNAL(createGame(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
         connect(hall, SIGNAL(spectate(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
         hall->exec();

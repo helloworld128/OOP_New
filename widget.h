@@ -6,7 +6,7 @@
 #include <QLCDNumber>
 #include <QButtonGroup>
 #include "games.h"
-#include "waitingroom.h"
+#include "onlinemodule.h"
 #include "util.h"
 #include <QMessageBox>
 #include <QTranslator>
@@ -20,19 +20,15 @@ class Widget : public QWidget
     Q_OBJECT
 
     Ui::Widget *ui;
+    Game* game = nullptr;
+    Notice* notice = nullptr;
+    OnlineModule* hall = nullptr;
+    void mousePressEvent(QMouseEvent *);
+    QButtonGroup selectBPlayer,selectWPlayer;
 
 public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
-    Game* game = nullptr;
-    Notice* notice = nullptr;
-    WaitingRoom* hall = nullptr;
-
-protected:
-    void mousePressEvent(QMouseEvent *);
-
-private:
-    QButtonGroup selectBPlayer,selectWPlayer;
 
 signals:
     void sendReady();

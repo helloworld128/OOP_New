@@ -1,27 +1,26 @@
-#ifndef WAITINGROOM_H
-#define WAITINGROOM_H
+#ifndef ONLINEMODULE_H
+#define ONLINEMODULE_H
 
 #include <QDialog>
 #include <QTcpSocket>
 #include <QButtonGroup>
 
 namespace Ui {
-class WaitingRoom;
+class OnlineModule;
 }
 
-class WaitingRoom : public QDialog
+class OnlineModule : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit WaitingRoom(QWidget *parent = 0);
+    explicit OnlineModule(QWidget *parent = 0);
     bool isWatching = false;
-    ~WaitingRoom();
+    ~OnlineModule();
 
 signals:
     void createGame(int type, int side, QString localName, QString otherName = "");
     void opponentPut(int x, int y);
-    //void watchPut(int x, int y);
     void opponentEntered(QString name);
     void opponentGiveUp();
     void opponentStopOnce();
@@ -57,11 +56,11 @@ private slots:
 private:
     void requestCurrentGames();
     void addGame(int type, QString nameb, QString namew, int uid);
-    Ui::WaitingRoom *ui;
+    Ui::OnlineModule *ui;
     QTcpSocket* socket = nullptr;
     QButtonGroup games, role;
     QString playerName;
     bool b_connected = false;
 };
 
-#endif // WAITINGROOM_H
+#endif // ONLINEMODULE_H

@@ -5,6 +5,7 @@
 
 void Ai::aiPlay()
 {
+    //sleep for 0.25s
     QTime target = QTime::currentTime().addMSecs(250);
     while(QTime::currentTime() < target)
     {

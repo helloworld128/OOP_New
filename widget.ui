@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>chesses</string>
+   <string>Chess</string>
   </property>
   <widget class="QWidget" name="MainMenu" native="true">
    <property name="geometry">
@@ -44,11 +44,11 @@
     <item>
      <widget class="QLabel" name="Title_Label">
       <property name="styleSheet">
-       <string notr="true">font: 40pt &quot;Adobe Arabic&quot;;
-color:rgb(255, 170, 255)</string>
+       <string notr="true">font: 30pt &quot;Adobe Arabic&quot;;
+color:rgb(247, 238, 160);</string>
       </property>
       <property name="text">
-       <string>^_^</string>
+       <string>Choose Game</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -163,7 +163,7 @@ color:rgb(255, 170, 255)</string>
        <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
       </property>
       <property name="text">
-       <string>StopOnce</string>
+       <string>Stop once</string>
       </property>
      </widget>
     </item>
@@ -362,7 +362,8 @@ font: 12pt &quot;Adobe Arabic&quot;;
       <item>
        <widget class="QLabel" name="wName">
         <property name="styleSheet">
-         <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
+         <string notr="true">color:rgb(247, 238, 160);
+font: 12pt &quot;Adobe Arabic&quot;;</string>
         </property>
         <property name="text">
          <string>White</string>
@@ -407,7 +408,8 @@ font: 12pt &quot;Adobe Arabic&quot;;
       <item>
        <widget class="QLabel" name="bName">
         <property name="styleSheet">
-         <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
+         <string notr="true">color:rgb(247, 238, 160);
+font: 12pt &quot;Adobe Arabic&quot;;</string>
         </property>
         <property name="text">
          <string>Black</string>
@@ -425,7 +427,7 @@ font: 12pt &quot;Adobe Arabic&quot;;
        <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
       </property>
       <property name="text">
-       <string>GiveUp</string>
+       <string>Surrender</string>
       </property>
      </widget>
     </item>
@@ -469,11 +471,11 @@ font: 12pt &quot;Adobe Arabic&quot;;
     <item>
      <widget class="QLabel" name="Title_Label_2">
       <property name="styleSheet">
-       <string notr="true">font: 40pt &quot;Adobe Arabic&quot;;
-color:rgb(255, 170, 255)</string>
+       <string notr="true">font: 30pt &quot;Adobe Arabic&quot;;
+color:rgb(247, 238, 160);</string>
       </property>
       <property name="text">
-       <string>^_^</string>
+       <string>Chess</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -562,7 +564,7 @@ color:rgb(255, 170, 255)</string>
        <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
       </property>
       <property name="text">
-       <string>StopOnce</string>
+       <string>Stop once</string>
       </property>
      </widget>
     </item>
@@ -669,7 +671,8 @@ color:rgb(255, 170, 255)</string>
       <item>
        <widget class="QLabel" name="wName_2">
         <property name="styleSheet">
-         <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
+         <string notr="true">color:rgb(247, 238, 160);
+font: 12pt &quot;Adobe Arabic&quot;;</string>
         </property>
         <property name="text">
          <string>White</string>
@@ -684,7 +687,7 @@ color:rgb(255, 170, 255)</string>
        <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;</string>
       </property>
       <property name="text">
-       <string>GiveUp</string>
+       <string>Surrender</string>
       </property>
      </widget>
     </item>
@@ -724,7 +727,8 @@ color:rgb(255, 170, 255)</string>
       <item>
        <widget class="QLabel" name="bName_2">
         <property name="styleSheet">
-         <string notr="true">font: 12pt &quot;Adobe Arabic&quot;;</string>
+         <string notr="true">color:rgb(247, 238, 160);
+font: 12pt &quot;Adobe Arabic&quot;;</string>
         </property>
         <property name="text">
          <string>Black</string>

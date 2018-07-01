@@ -1,15 +1,15 @@
-#include "waitingroom.h"
+#include "onlinemodule.h"
 #include "myitem.h"
 #include "util.h"
-#include "ui_waitingroom.h"
+#include "ui_onlinemodule.h"
 #include <QHostInfo>
 #include <QNetworkInterface>
 #include <QListWidgetItem>
 #include <QTime>
 
-WaitingRoom::WaitingRoom(QWidget *parent) :
+OnlineModule::OnlineModule(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::WaitingRoom)
+    ui(new Ui::OnlineModule)
 {
     socket = new QTcpSocket(this);
     connect(socket, SIGNAL(readyRead()), this, SLOT(readData()));
@@ -29,11 +29,11 @@ WaitingRoom::WaitingRoom(QWidget *parent) :
     playerName = "Guest#" + QString::number(rnd);
     ui->lineEdit->setText(playerName);
 
-    ui->IP->hide();
-    ui->label->hide();
+//    ui->IP->hide();
+//    ui->label->hide();
 }
 
-void WaitingRoom::connected(){
+void OnlineModule::connected(){
     b_connected = true;
     QTime t; t.start();
     while (t.elapsed() < 1000) QCoreApplication::processEvents();
@@ -43,26 +43,26 @@ void WaitingRoom::connected(){
     requestCurrentGames();
 }
 
-void WaitingRoom::requestCurrentGames(){
+void OnlineModule::requestCurrentGames(){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('g');
     socket->write(ba);
 }
 
-WaitingRoom::~WaitingRoom()
+OnlineModule::~OnlineModule()
 {
     delete ui;
 }
 
-void WaitingRoom::addGame(int type, QString nameb, QString namew, int uid){
+void OnlineModule::addGame(int type, QString nameb, QString namew, int uid){
     QListWidgetItem *aItem = new QListWidgetItem;
     aItem->setSizeHint(QSize(0,80));
     ui->List->addItem(aItem);
     ui->List->setItemWidget(aItem,new MyItem(type, nameb, namew, uid));
 }
 
-void WaitingRoom::sendGameFinished(){
+void OnlineModule::sendGameFinished(){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('f');
@@ -72,7 +72,7 @@ void WaitingRoom::sendGameFinished(){
 }
 
 //used characters: g(request game list), p(put), q(quit), e(enter), s(start), t(chat), w(spectate)
-void WaitingRoom::readData(){
+void OnlineModule::readData(){
     QByteArray ba = socket->readAll();
     QDataStream in(&ba, QIODevice::ReadOnly);
     QChar t; in >> t;
@@ -159,49 +159,49 @@ void WaitingRoom::readData(){
     }
 }
 
-void WaitingRoom::sendMove(int x, int y){
+void OnlineModule::sendMove(int x, int y){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('p') << x << y;
     socket->write(ba);
 }
 
-void WaitingRoom::sendReady(){
+void OnlineModule::sendReady(){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('r');
     socket->write(ba);
 }
 
-void WaitingRoom::sendQuit(){
+void OnlineModule::sendQuit(){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('q');
     socket->write(ba);
 }
 
-void WaitingRoom::sendGiveUp(){
+void OnlineModule::sendGiveUp(){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('u');
     socket->write(ba);
 }
 
-void WaitingRoom::sendStopOnce(){
+void OnlineModule::sendStopOnce(){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('o');
     socket->write(ba);
 }
 
-void WaitingRoom::sendText(QString text){
+void OnlineModule::sendText(QString text){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('t') << playerName << text;
     socket->write(ba);
 }
 
-void WaitingRoom::receiveBoard(int **board, int currentPlayer){
+void OnlineModule::receiveBoard(int **board, int currentPlayer){
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << QChar('z');
@@ -213,14 +213,14 @@ void WaitingRoom::receiveBoard(int **board, int currentPlayer){
     socket->write(ba);
 }
 
-void WaitingRoom::on_Create_Button_clicked()
+void OnlineModule::on_Create_Button_clicked()
 {
     ui->ChooseGame->show();
     ui->Buttons->hide();
     ui->Display->hide();
 }
 
-void WaitingRoom::on_Join_Button_clicked()
+void OnlineModule::on_Join_Button_clicked()
 {
     QListWidgetItem* selected = ui->List->currentItem();
     if (selected == nullptr) return;
@@ -247,9 +247,9 @@ void WaitingRoom::on_Join_Button_clicked()
     }
 }
 
-void WaitingRoom::on_Leave_Button_clicked(){close();}
+void OnlineModule::on_Leave_Button_clicked(){close();}
 
-void WaitingRoom::on_Spectate_Button_clicked()
+void OnlineModule::on_Spectate_Button_clicked()
 {
     QListWidgetItem* selected = ui->List->currentItem();
     if (selected == nullptr) return;
@@ -266,14 +266,14 @@ void WaitingRoom::on_Spectate_Button_clicked()
     hide();
 }
 
-void WaitingRoom::on_Cancel_Button_clicked()
+void OnlineModule::on_Cancel_Button_clicked()
 {
     ui->ChooseGame->hide();
     ui->Buttons->show();
     ui->Display->show();
 }
 
-void WaitingRoom::on_OK_Button_clicked()
+void OnlineModule::on_OK_Button_clicked()
 {
     int tmpType;
     int tmpSide;
@@ -290,7 +290,7 @@ void WaitingRoom::on_OK_Button_clicked()
     emit createGame(tmpType, tmpSide, playerName);
 }
 
-void WaitingRoom::on_lineEdit_editingFinished()
+void OnlineModule::on_lineEdit_editingFinished()
 {
     QString tmp = ui->lineEdit->text();
     if (tmp.size() > 10){
@@ -302,12 +302,12 @@ void WaitingRoom::on_lineEdit_editingFinished()
     }
 }
 
-void WaitingRoom::on_Refresh_Button_clicked()
+void OnlineModule::on_Refresh_Button_clicked()
 {
     requestCurrentGames();
 }
 
-void WaitingRoom::on_IP_editingFinished()
+void OnlineModule::on_IP_editingFinished()
 {
     static QString previous = "";
     if (previous == ui->IP->text()) return;

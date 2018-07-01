@@ -15,12 +15,12 @@ const char BOARD_2[] = "./images/board2.png";
 const char BORDER[] = "./images/border.png";
 const char LASTMOVE[] = "./images/lastmove.png";
 
-#define _MY_DEBUG
+//#define _MY_DEBUG
 
 #ifdef _MY_DEBUG
 const QString SERVER_IP = "127.0.0.1";
 #else
-const QString SERVER_IP = "45.76.194.97";
+const QString SERVER_IP = "149.28.93.3";
 #endif
 /******************************************************/
 
