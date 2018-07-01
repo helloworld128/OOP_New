@@ -22,8 +22,13 @@ void Game::drawChess(int x,int y,int player)
 }
 
 void Game::setPlayerType(int arg){
-    playerType[arg] = HUMAN;
-    playerType[1 - arg] = ONLINE;
+    if (arg == 2){
+        playerType[0] = playerType[1] = ONLINE;
+    }
+    else{
+        playerType[arg] = HUMAN;
+        playerType[1 - arg] = ONLINE;
+    }
 }
 
 void Game::playSound(){
@@ -33,7 +38,8 @@ void Game::playSound(){
 }
 
 void Game::startGame(){
-    init(0, 0); //arguments(0,0) are useless
+    init(0, 0);
+    sendNotice("Game Start");
 }
 
 void Game::opponentPut(int x, int y){
@@ -42,8 +48,66 @@ void Game::opponentPut(int x, int y){
     else qDebug() << "receiving opponentPut(int, int) but is not opponent's turn!";
 }
 
-void Game::opponentLeft(){
-    emit sendNotice(QString("Your opponent has left."));
+void Game::opponentLeft(bool isWatching){
+    if (!isWatching) emit sendNotice(tr("Your opponent has left."));
+    else emit sendNotice(tr("A player has left.\nThe game has ended."));
+    waiting = true;
+}
+
+void Game::opponentGiveUp(){
+    emit sendNotice(tr("Your opponent has given up."));
+    showResult();
+}
+
+void Game::opponentStopOnce(){
+    emit sendNotice(tr("Your opponent has stopped once."));
+    nextPlayer();
+}
+
+void Game::receiveBoard(int **_board, int currentPlayer){
+    int bcount = 0, wcount = 0;
+    for(int i = 0; i < 9; ++i)
+        for(int j = 0; j < 9; ++j){
+            board[i][j] = _board[i][j];
+            if (board[i][j] == 0) {
+                setPicture(pictures[i][j], BLACKCHESS);
+                bcount++;
+            }
+            if (board[i][j] == 1){
+                setPicture(pictures[i][j], WHITECHESS);
+                wcount++;
+            }
+            auto ptr = dynamic_cast<Reversi*>(this);
+            if(ptr){
+                ptr->black->display(bcount);
+                ptr->white->display(wcount);
+            }
+        }
+    activePlayer = currentPlayer;
+}
+
+void Game::receiveRequestBoard(){
+    int** _board = new int*[9];
+    for (int i = 0; i < 9; i++){
+        _board[i] = new int[9];
+    }
+    for (int i = 0; i < 9; i++)
+        for (int j = 0; j < 9; j++){
+            _board[i][j] = board[i][j];
+        }
+    emit replyRequestBoard(_board, activePlayer);
+    for (int i = 0; i < 9; i++)
+        delete[] _board[i];
+    delete _board;
+}
+
+void Game::showResult(){
+    if (isOnlineGame) emit resetReady();
+    Dialog* dialog = new Dialog;
+    dialog->setText(generateResultStr());
+    gameover = true;
+    dialog->exec();
+    delete dialog;
 }
 
 void Game::nextPlayer()
@@ -62,7 +126,7 @@ void Game::nextPlayer()
     calculatePossibleMoves();
     if(possibleMoves.empty())
     {
-        QString noticeString = "this player cannot move: Player " + QString::number(activePlayer);
+        QString noticeString = tr("this player cannot move: Player ") + QString::number(activePlayer);
         qDebug() << noticeString;
         emit sendNotice(noticeString);
         if(cantmove[1 - activePlayer])
@@ -78,7 +142,7 @@ void Game::nextPlayer()
         cantmove[activePlayer] = false;
         if(playerType[activePlayer] == AI) emit aiPlay();
 
-        if(ptr && playerType[activePlayer] == HUMAN) ptr->hint();
+        if(ptr && playerType[activePlayer] == HUMAN /*&& !isWatcher*/) ptr->hint();
     }
 }
 
@@ -98,9 +162,17 @@ void Game::click(int x, int y)
 
 void Game::put(int xpos, int ypos)
 {
-    if (isOnlineGame) emit sendPut(xpos, ypos);
+    if (isOnlineGame && playerType[activePlayer] == HUMAN) emit sendPut(xpos, ypos);
     playSound();
     drawChess(xpos,ypos,activePlayer);
+    previousMovePoint[moveCount + 1] = QPoint(xpos, ypos);
+    setPicture(lastMoveHint[xpos][ypos], LASTMOVE);
+    lastMoveHint[xpos][ypos]->show();
+    if (moveCount >= 0){
+        QPoint p = previousMovePoint[moveCount];
+        if(p.x() >= 0 && p.y() >= 0)
+            lastMoveHint[p.x()][p.y()]->hide();
+    }
 }
 
 void Game::calculatePossibleMoves()
@@ -125,6 +197,12 @@ void Game::undo()
     activePlayer = moveCount ? (1 - previousPlayer[moveCount]) : 0;
     gameover = false;
     setPicture(currentPlayerPict, activePlayer == 0 ? BLACKCHESS : WHITECHESS);
+    QPoint& p = previousMovePoint[recover];
+    lastMoveHint[p.x()][p.y()]->hide();
+    if (moveCount){
+        QPoint& p1 = previousMovePoint[moveCount];
+        setPicture(lastMoveHint[p1.x()][p1.y()], LASTMOVE);
+    }
     for(int i = 0;i < 9;i++)
     {
         for(int j = 0;j < 9;j++)
@@ -142,6 +220,7 @@ void Game::undo()
 
 void Game::saveStatus()
 {
+    //the initial value for moveCount is -1.
     moveCount++;
     previousPlayer[moveCount] = activePlayer;
     for(int i = 0;i < 9;i++)
@@ -158,6 +237,7 @@ void Game::init(bool bIsHuman, bool wIsHuman)
         {
             board[i][j] = -1;
             pictures[i][j]->hide();
+            lastMoveHint[i][j]->hide();
         }
     if (!isOnlineGame){
         playerType[0] = bIsHuman ? HUMAN : AI;
@@ -186,12 +266,8 @@ void Game::check()
 }
 
 
-void Game::reStart(int count, int active, int*** record)
+void Game::reStart(int count, int active, int*** record, QPoint* moves)
 {
-    if (!isOnlineGame){
-        playerType[0] = HUMAN;
-        playerType[1] = HUMAN;
-    }
     gameover = false;
     waiting = false;
     activePlayer = 1 - active;
@@ -202,6 +278,10 @@ void Game::reStart(int count, int active, int*** record)
     if (activePlayer == 0)  setPicture(currentPlayerPict, BLACKCHESS);
     else setPicture(currentPlayerPict, WHITECHESS);
 
+    for (int i = 1; i <= count; ++i){
+        previousMovePoint[i] = moves[i];
+    }
+
     for (int t = 0; t <= count; t++)
         for (int x = 0; x < 9; x++)
             for (int y = 0; y < 9; y++)
@@ -210,6 +290,7 @@ void Game::reStart(int count, int active, int*** record)
     for (int x = 0; x < 9; x++)
         for (int y = 0; y < 9; y++)
         {
+            lastMoveHint[x][y]->hide();
             board[x][y] = previousMove[moveCount][x][y];
             if (previousMove[moveCount][x][y] == 0)
                 setPicture(pictures[x][y], BLACKCHESS);
@@ -218,7 +299,10 @@ void Game::reStart(int count, int active, int*** record)
             if (previousMove[moveCount][x][y] == -1)
                 pictures[x][y]->hide();
         }
+    setPicture(lastMoveHint[previousMovePoint[moveCount].x()][previousMovePoint[moveCount].y()], LASTMOVE);
 
+    auto ptr = dynamic_cast<Reversi*>(this);
+    if (ptr) ptr->calculateChessNum();
     if(playerType[0] != HUMAN) waiting = true;
     if(playerType[0] == AI)
     {
@@ -256,17 +340,13 @@ void Reversi::undo()
     calculateChessNum();
 }
 
-void Reversi::showResult()
+QString Reversi::generateResultStr()
 {
-    Dialog* dialog = new Dialog;
     QString s(QString::number(black->intValue()) + " : " + QString::number(white->intValue()) + ", ");
     if(black->intValue() > white->intValue()) s += "Black wins!";
     else if(black->intValue() < white->intValue()) s += "White wins!";
     else s += "Draw!";
-    dialog->setText(s);
-    gameover = true;
-    dialog->exec();
-    delete dialog;
+    return s;
 }
 
 Reversi::Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w, QLabel* _currentPlayerPict)
@@ -279,7 +359,9 @@ Reversi::Reversi(QWidget* parent, QPoint vTL, QLCDNumber* b, QLCDNumber* w, QLab
         for(int j = 0;j < 9;j++)
         {
             pictures[i][j] = new QLabel(parent);
+            lastMoveHint[i][j] = new QLabel(parent);
             pictures[i][j]->move(vTopLeft.x() + i * gridSize, vTopLeft.y() + j * gridSize);
+            lastMoveHint[i][j]->move(vTopLeft.x() + i * gridSize, vTopLeft.y() + j * gridSize);
         }
 }
 
@@ -287,8 +369,12 @@ Reversi::~Reversi()
 {
     black->display(0); white->display(0);
     for(int i = 0;i < 9;i++)
-        for(int j = 0;j < 9;j++)
+        for(int j = 0;j < 9;j++){
             delete pictures[i][j];
+            delete lastMoveHint[i][j];
+        }
+    foreach (auto p, movies)
+        delete p;
 }
 
 void Reversi::init(bool bIsHuman, bool wIsHuman)
@@ -298,6 +384,7 @@ void Reversi::init(bool bIsHuman, bool wIsHuman)
         {
             board[i][j] = -1;
             pictures[i][j]->hide();
+            lastMoveHint[i][j]->hide();
         }
     if (!isOnlineGame){
         playerType[0] = bIsHuman ? HUMAN : AI;
@@ -386,8 +473,14 @@ void Reversi::put(int xpos, int ypos)
             reverseList[p][0] = x; reverseList[p][1] = y; p++;
         }
         if(valid)
-            for(int j = 0;j < p;j++)
-                drawChess(reverseList[j][0],reverseList[j][1],activePlayer);
+            for(int j = 0;j < p;j++){
+                QMovie* movie = activePlayer ? new QMovie("./images/changeToW.gif") : new QMovie("./images/changeToB.gif");
+                int x = reverseList[j][0], y = reverseList[j][1];
+                pictures[x][y]->setMovie(movie);
+                movie->start();
+                board[reverseList[j][0]][reverseList[j][1]] = activePlayer;
+                movies.push_back(movie);
+            }
     }
     calculateChessNum();
 }
@@ -402,7 +495,9 @@ FIR::FIR(QWidget* parent, QPoint vTL, QLabel *_currentPlayerPict) : Game(_curren
         for(int j = 0;j < 9;j++)
         {
             pictures[i][j] = new QLabel(parent);
+            lastMoveHint[i][j] = new QLabel(parent);
             pictures[i][j]->move(vTopLeft.x() + i * gridSize, vTopLeft.y() + j * gridSize);
+            lastMoveHint[i][j]->move(vTopLeft.x() + i * gridSize, vTopLeft.y() + j * gridSize);
         }
 }
 
@@ -412,21 +507,13 @@ bool FIR::canPut(int xpos, int ypos)
     else return false;
 }
 
-void FIR::showResult()
+QString FIR::generateResultStr()
 {
-    Dialog* dialog = new Dialog;
     if (!FullFlag){
         QString s(QString(activePlayer ? "White" : "Black") + QString(" wins!"));
-        dialog->setText(s);
+        return s;
     }
-
-    else {
-        QString s(QString("Draw!"));
-        dialog->setText(s);
-    }
-    gameover = true;
-    dialog->exec();
-    delete dialog;
+    else return QString("Draw!");
 }
 
 void FIR::check(int xpos, int ypos)
@@ -476,8 +563,10 @@ void FIR::check(int xpos, int ypos)
 FIR::~FIR()
 {
     for(int i = 0;i < 9;i++)
-        for(int j = 0;j < 9;j++)
+        for(int j = 0;j < 9;j++){
             delete pictures[i][j];
+            delete lastMoveHint[i][j];
+        }
 }
 
 
@@ -490,15 +579,19 @@ Go::Go(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict): Game(_currentPl
         for(int j = 0;j < 9;j++)
         {
             pictures[i][j] = new QLabel(parent);
+            lastMoveHint[i][j] = new QLabel(parent);
             pictures[i][j]->move(vTopLeft.x() + i * gridSize, vTopLeft.y() + j * gridSize);
+            lastMoveHint[i][j]->move(vTopLeft.x() + i * gridSize, vTopLeft.y() + j * gridSize);
         }
 }
 
 Go::~Go()
 {
     for(int i = 0;i < 9;i++)
-        for(int j = 0;j < 9;j++)
+        for(int j = 0;j < 9;j++){
             delete pictures[i][j];
+            delete lastMoveHint[i][j];
+        }
 }
 
 bool Go::judgeRepeat(int xpos, int ypos, int** _board)
@@ -659,12 +752,6 @@ void Go::put(int xpos, int ypos)
     }
 }
 
-void Go::showResult()
-{
-    Dialog* dialog = new Dialog;
-    QString s("Game Finished!");
-    dialog->setText(s);
-    gameover = true;
-    dialog->exec();
-    delete dialog;
+QString Go::generateResultStr(){
+    return QString("Game Finished!");
 }

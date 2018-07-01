@@ -16,15 +16,21 @@ Widget::Widget(QWidget *parent) :
 {
     notice = new Notice(this);
     ui->setupUi(this);
+    setPicture(ui->bg, "./images/bg.png");
+    ui->Language_Button->hide();
     ui->GameMenu->hide();
     ui->Board->hide();
     ui->Border->hide();
     ui->MainMenu->hide();
     ui->OnlineGameMenu->hide();
+    ui->Chatting_Button->hide();
+    ui->chatText->hide(); ui->chatLabel->hide(); ui->SendText_Button->hide(); ui->textEdit->hide(); ui->Close_Chatting_Button->hide();
+    setFixedSize(800, 600);
     selectBPlayer.addButton(ui->BPlayer); selectBPlayer.addButton(ui->BAI);
     selectWPlayer.addButton(ui->WPlayer); selectWPlayer.addButton(ui->WAI);
     ui->BPlayer->setChecked(true); ui->WPlayer->setChecked(true);
     setWindowIcon(QIcon(QString("./images/logo.png")));
+    setFixedWidth(800);
 }
 
 Widget::~Widget()
@@ -37,16 +43,35 @@ void Widget::displayNotice(const QString &text){
 }
 
 void Widget::setGameUI(int isOnline, int gameType){
+    connect(game, SIGNAL(sendNotice(QString)), this, SLOT(displayNotice(QString)));
     ui->MainMenu->hide();
     ui->Menu->hide();
+
     if (gameType == 0) setPicture(ui->Board, BOARD_1);
     else {
         setPicture(ui->Board, BOARD_2); setPicture(ui->Border, BORDER);
     }
+
+    if (hall && hall->isWatching) {
+        ui->Ready_Button->hide();
+        ui->StopOnce_Button_2->hide();
+        ui->GiveUp_Button_2->hide();
+    }
+    else{
+        ui->Ready_Button->show();
+        ui->StopOnce_Button_2->show();
+        ui->GiveUp_Button_2->show();
+    }
+
     if (isOnline){
         ui->OnlineGameMenu->show();
+        ui->Chatting_Button->show();
+        ui->chatText->append("Welcome!");
+
         if (gameType == 0) {
             ui->BCount_LCD_2->show(); ui->WCount_LCD_2->show();
+            ui->BCount_LCD_2->setFixedSize(103, 68);
+            ui->WCount_LCD_2->setFixedSize(103, 68);
         }
         else {
             ui->BCount_LCD_2->hide(); ui->WCount_LCD_2->hide();
@@ -60,6 +85,7 @@ void Widget::setGameUI(int isOnline, int gameType){
     }
     else {
         ui->GameMenu->show();
+        ui->BPlayer->setChecked(true); ui->WPlayer->setChecked(true);
         if (gameType == 0) {
             ui->BCount_LCD->show(); ui->WCount_LCD->show();
         }
@@ -68,9 +94,11 @@ void Widget::setGameUI(int isOnline, int gameType){
         }
         if (gameType == 2){
             ui->StopOnce_Button->show(); ui->GiveUp_Button->show();
+            ui->WAI->hide(); ui->BAI->hide();
         }
         else {
             ui->StopOnce_Button->hide(); ui->GiveUp_Button->hide();
+            ui->WAI->show(); ui->BAI->show();
         }
     }
 }
@@ -115,18 +143,44 @@ void Widget::createGame(int type, int side, QString localName, QString otherName
         setGameUI(1, 2);
         break;
     }
-    ui->bName_2->setText(side == 0? localName : otherName);
-    ui->wName_2->setText(side == 1? localName : otherName);
+
+    if (side == 2){
+        ui->bName_2->setText(localName);
+        ui->wName_2->setText(otherName);
+    }
+    else{
+        ui->bName_2->setText(side == 0? localName : otherName);
+        ui->wName_2->setText(side == 1? localName : otherName);
+    }
     game->setPlayerType(side);
     game->isOnlineGame = true;
-    connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
+
     connect(hall, SIGNAL(opponentEntered(QString)), this, SLOT(setOpponentName(QString)));
     connect(hall, SIGNAL(opponentPut(int,int)), game, SLOT(opponentPut(int,int)));
     connect(hall, SIGNAL(startGame()), game, SLOT(startGame()));
-    connect(hall, SIGNAL(opponentLeft()), game, SLOT(opponentLeft()));
-    connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
+    connect(hall, SIGNAL(opponentLeft(bool)), game, SLOT(opponentLeft(bool)));
+    connect(hall, SIGNAL(opponentChat(QString)), this, SLOT(opponentChat(QString)),Qt::UniqueConnection);
+    connect(this, SIGNAL(sendText(QString)), hall, SLOT(sendText(QString)),Qt::UniqueConnection);
+    connect(this, SIGNAL(sendQuit()), hall, SLOT(sendQuit()));
+    connect(hall, SIGNAL(requestBoard()), game, SLOT(receiveRequestBoard()));
+    connect(game, SIGNAL(replyRequestBoard(int**, int)), hall, SLOT(receiveBoard(int**, int)));
+    connect(hall, SIGNAL(sendBoard(int**, int)), game, SLOT(receiveBoard(int**, int)));
+    connect(this, SIGNAL(sendGiveUp()), hall, SLOT(sendGiveUp()));
+    connect(hall, SIGNAL(opponentGiveUp()), game, SLOT(opponentGiveUp()));
+    connect(this, SIGNAL(sendStopOnce()), hall, SLOT(sendStopOnce()));
+    connect(hall, SIGNAL(opponentStopOnce()), game, SLOT(opponentStopOnce()));
+
+    if (!hall->isWatching){
+        connect(game, SIGNAL(sendPut(int,int)), hall, SLOT(sendMove(int,int)));
+        connect(game, SIGNAL(resetReady()), this, SLOT(resetReady()));
+        connect(game, SIGNAL(resetReady()), hall, SLOT(sendGameFinished()));
+        connect(this, SIGNAL(sendReady()), hall, SLOT(sendReady()));
+    }
     hall->close();
-    setFixedWidth(1000);
+}
+
+void Widget::resetReady(){
+    ui->Ready_Button->setEnabled(true);
 }
 
 void Widget::setOpponentName(QString name){
@@ -136,9 +190,14 @@ void Widget::setOpponentName(QString name){
         ui->wName_2->setText(name);
 }
 
+void Widget::opponentChat(QString text){
+    ui->chatText->append(text);
+}
+
 void Widget::on_Start_Button_clicked()
 {
     game->init(ui->BPlayer->isChecked(),ui->WPlayer->isChecked());
+    game->sendNotice("Game Start");
 }
 
 void Widget::on_Reversi_Button_clicked()
@@ -151,8 +210,7 @@ void Widget::on_Reversi_Button_clicked()
     ai->setParent(game);
     QObject::connect(game,SIGNAL(aiPlay()),ai,SLOT(aiPlay()));
     setGameUI(0, 0);
-    notice->display(QString("你好"));
-    connect(game, SIGNAL(sendNotice(QString)), this, SLOT(displayNotice(QString)));
+    //notice->display(QString("你好"));
 }
 
 void Widget::on_FIR_Button_clicked()
@@ -199,8 +257,12 @@ void Widget::on_Save_Button_clicked()
     QFile file(dir+"/"+fileName);
     file.open(QIODevice::ReadWrite);
     QTextStream stream(&file);
+    stream << int(game->playerType[0]) << ' ' << int(game->playerType[1]) << endl;
     stream << game->moveCount << endl;
-    stream << game->activePlayer << endl;    
+    for (int i = 1; i <= game->moveCount; ++i){
+        stream << game->previousMovePoint[i].x() << ' ' << game->previousMovePoint[i].y() << ' ';
+    }
+    stream << game->activePlayer << endl;
     for (int t = 0 ; t <= game->moveCount; t++)
         for (int i = 0; i < 9; i++)
         {
@@ -219,11 +281,21 @@ void Widget::on_Load_Button_clicked()
     QString fileName = QFileDialog::getOpenFileName
             (this, tr("open file"), " ",  tr("Allfile(*.*);;txtfile(*.txt)"));
     QFile file(fileName);
-    file.open(QIODevice::ReadWrite);
+    if (!file.open(QIODevice::ReadWrite)) return;
     int count, active, ***record;
     record = new int**[10000];
     QTextStream stream(&file);
-    stream >> count >> active;
+    int tmp1, tmp2;
+    stream >> tmp1 >> tmp2;
+    game->playerType[0] = Game::PLAYERTYPE(tmp1); game->playerType[1] = Game::PLAYERTYPE(tmp2);
+    stream >> count;
+    QPoint* previousMovePoint = new QPoint[count + 1];
+    for (int i = 1; i <= count; ++i){
+        int x, y;
+        stream >> x >> y;
+        previousMovePoint[i] = QPoint(x,y);
+    }
+    stream >> active;
     for (int t = 0 ; t <= count; t++){
         record[t] = new int*[9];
         for (int i = 0; i < 9; i++){
@@ -232,21 +304,22 @@ void Widget::on_Load_Button_clicked()
                 stream >> record[t][i][j];
         }
     }
-    game->reStart(count, active, record);
+    game->reStart(count, active, record, previousMovePoint);
     file.close();
 }
 
 void Widget::on_Online_Button_clicked()
 {
     if (hall == nullptr){
-        hall = new WaitingRoom();
+        hall = new OnlineModule(this);
         connect(hall, SIGNAL(createGame(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
-
+        connect(hall, SIGNAL(spectate(int,int,QString,QString)), this, SLOT(createGame(int,int,QString,QString)));
         hall->exec();
     }
     else{
         hall->show();
     }
+    //hall->tryToConnect();
 }
 
 void Widget::on_Local_Button_clicked()
@@ -266,8 +339,18 @@ void Widget::on_GiveUp_Button_clicked()
     game->showResult();
 }
 
+void Widget::on_GiveUp_Button_2_clicked(){
+    emit sendGiveUp();
+    game->showResult();
+}
+
 void Widget::on_StopOnce_Button_clicked()
 {
+    game->nextPlayer();
+}
+
+void Widget::on_StopOnce_Button_2_clicked(){
+    emit sendStopOnce();
     game->nextPlayer();
 }
 
@@ -278,15 +361,21 @@ void Widget::on_Quit_Button_clicked()
                                      QMessageBox::Cancel, QMessageBox::Yes);
     switch (reply){
     case QMessageBox::Yes:
+        emit sendQuit();
         ui->Menu->show();
         ui->OnlineGameMenu->hide();
         ui->Board->hide();
         ui->Border->hide();
         ui->CurrentPlayerPict->hide();
+        ui->Chatting_Button->hide();
+        ui->chatText->clear();
         ui->Ready_Button->setDisabled(false);
         notice->hide();
+        setFixedSize(800, 600);
         hall->show();
+        setFixedWidth(800);
         delete game;
+        hall->isWatching = false;
         break;
     default:
         break;
@@ -297,10 +386,42 @@ void Widget::on_Ready_Button_clicked()
 {
     emit sendReady();
     ui->Ready_Button->setDisabled(true);
-
 }
 
-void Widget::on_pushButton_clicked()
-{
+void Widget::on_Chatting_Button_clicked(){
+    ui->chatLabel->show();
+    ui->chatText->show();
+    ui->SendText_Button->show();
+    ui->textEdit->show();
+    ui->Close_Chatting_Button->show();
+    ui->Chatting_Button->hide();
+    setFixedSize(1000, 600);
+}
 
+void Widget::on_SendText_Button_clicked(){
+    QString ss = ui->textEdit->toPlainText();
+    //add player name?
+    ui->chatText->append("Me:" + ss);
+    ui->textEdit->clear();
+    emit sendText(ss);
+}
+
+void Widget::on_Close_Chatting_Button_clicked(){
+    ui->chatLabel->hide();
+    ui->chatText->hide();
+    ui->SendText_Button->hide();
+    ui->textEdit->hide();
+    ui->Close_Chatting_Button->hide();
+    ui->Chatting_Button->show();
+    setFixedSize(800, 600);
+}
+
+void Widget::on_Language_Button_clicked()
+{
+    QTranslator* translator = new QTranslator;
+    translator->load("./translations/zh_cn.qm");
+    qApp->installTranslator(translator);
+    ui->retranslateUi(this);
+    if (hall != nullptr)
+        ui->retranslateUi(hall);
 }

@@ -3,7 +3,7 @@
 void setPicture(QLabel* label, const char dir[]){
     QImage img(dir);
     label->setPixmap(QPixmap::fromImage(img));
-    label->show();
+    if (label->isHidden()) label->show();
 }
 
 Notice::Notice(QWidget *parent) : QWidget(parent) {

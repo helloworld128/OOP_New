@@ -30,8 +30,8 @@ SOURCES += \
     dialog.cpp \
     ai.cpp \
     myitem.cpp \
-    waitingroom.cpp \
-    util.cpp
+    util.cpp \
+    onlinemodule.cpp
 
 HEADERS += \
         widget.h \
@@ -39,13 +39,13 @@ HEADERS += \
     dialog.h \
     ai.h \
     myitem.h \
-    waitingroom.h \
-    util.h
+    util.h \
+    onlinemodule.h
 
 FORMS += \
         widget.ui \
     dialog.ui \
-    waitingroom.ui
+    onlinemodule.ui
 
 DISTFILES +=
 

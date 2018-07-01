@@ -210,14 +210,14 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>120</x>
+     <x>90</x>
      <y>0</y>
-     <width>91</width>
+     <width>131</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>Server IP(test):</string>
+    <string>Server IP(TestOnly):</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="IP">
@@ -230,11 +230,31 @@
     </rect>
    </property>
   </widget>
+  <widget class="QLabel" name="Connecting">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>49</y>
+     <width>411</width>
+     <height>200</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 20pt &quot;Adobe Arabic&quot;;</string>
+   </property>
+   <property name="text">
+    <string>Connecting to Server...</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
   <zorder>Buttons</zorder>
   <zorder>Display</zorder>
   <zorder>ChooseGame</zorder>
   <zorder>label</zorder>
   <zorder>IP</zorder>
+  <zorder>Connecting</zorder>
  </widget>
  <resources/>
  <connections/>

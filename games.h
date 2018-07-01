@@ -4,6 +4,8 @@
 #include <QLabel>
 #include <QLCDNumber>
 #include <QMediaPlayer>
+#include <QMovie>
+#include <QVector>
 
 class Game:public QObject
 {
@@ -12,13 +14,13 @@ public:
     Game(QLabel* _currentPlayerPict);
     friend class ReversiAi;
     friend class FIRAi;
-    void reStart(int count, int active, int*** record);
+    void reStart(int count, int active, int*** record, QPoint* moves);
     void setPlayerType(int arg);
     void click(int x, int y);
     virtual void undo();
     virtual void init(bool bIsHuman, bool wIsHuman);
     virtual void nextPlayer();
-    virtual void showResult() = 0;
+    void showResult();
     virtual ~Game();
 
     QPoint vTopLeft;
@@ -28,18 +30,28 @@ public:
     int moveCount = -1;
     int activePlayer = 0;      //0-Black; 1-White
     int previousMove[100][9][9];
+    QPoint previousMovePoint[100];
     int isOnlineGame = false;
+    //int isWatcher = false;
     bool ready[2] = {false, false};
+    enum PLAYERTYPE{AI,HUMAN,ONLINE};
+    PLAYERTYPE playerType[2];
 
 signals:
     void aiPlay();
     void sendPut(int x, int y);
     void sendNotice(const QString& text);
+    void resetReady();
+    void replyRequestBoard(int** board, int currentPlayer);
 
 protected slots:
     void startGame();
     void opponentPut(int x, int y);
-    void opponentLeft();
+    void opponentLeft(bool isWatching);
+    void opponentGiveUp();
+    void opponentStopOnce();
+    void receiveRequestBoard();
+    void receiveBoard(int **_board, int currentPlayer);
 
 protected:
     void drawChess(int x,int y, int player);
@@ -49,14 +61,13 @@ protected:
     virtual bool canPut(int xpos, int ypos) = 0;
     virtual void calculatePossibleMoves();
     virtual void check();
-
+    virtual QString generateResultStr() = 0;
 
     bool gameover = false;
-    enum PLAYERTYPE{AI,HUMAN,ONLINE};
     QLabel* pictures[9][9];
+    QLabel* lastMoveHint[9][9];
     int board[9][9];
     std::vector<QPoint> possibleMoves;
-    PLAYERTYPE playerType[2];
     int previousPlayer[100];
     int gridNum;
     QLabel* currentPlayerPict;
@@ -70,15 +81,16 @@ public:
     void init(bool bIsHuman, bool wIsHuman);
     bool canPut(int xpos, int ypos);
     void put(int xpos, int ypos);
-    void showResult();
     void calculateChessNum();
     void undo();
     void hint();
     void hideHint();
     virtual ~Reversi();
+    QLCDNumber *black, *white;
 
 private:
-    QLCDNumber *black, *white;
+    QString generateResultStr();
+    QVector<QMovie*> movies;
 };
 
 class FIR:public Game
@@ -86,10 +98,10 @@ class FIR:public Game
 public:
     FIR(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict);
     bool canPut(int xpos, int ypos);
-    void showResult();
     void check(int xpos, int ypos);
     virtual ~FIR();
 private:
+    QString generateResultStr();
     bool FullFlag;
 };
 
@@ -99,11 +111,12 @@ public:
     Go(QWidget* parent, QPoint vTL, QLabel* _currentPlayerPict);
     bool canPut(int xpos, int ypos);
     void put(int xpos, int ypos);
-    void showResult();
+    virtual ~Go();
+private:
+    QString generateResultStr();
     bool judgeRepeat(int xpos, int ypos, int** Board);
     bool stillalive(int xpos, int ypos, int Player, int** _board);
     void eliminate(int xpos, int ypos, int Player);
-    virtual ~Go();
 };
 
 #endif // GAMES_H
